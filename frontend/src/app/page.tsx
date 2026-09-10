@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/auth-context';
+import { getDashboardRoute } from '@/lib/auth-routes';
 import {
   Shield,
   User,
@@ -133,15 +134,7 @@ export default function Home() {
               Active Session: <strong className="font-semibold text-zinc-900 dark:text-white">{user.username || user.email}</strong> ({user.role})
             </span>
             <Link
-              href={
-                user.role === 'SUPER_ADMIN'
-                  ? '/admin/dashboard'
-                  : user.role === 'WORKER'
-                  ? '/worker/dashboard'
-                  : user.role === 'OFFICE_STAFF'
-                  ? '/office-staff/dashboard'
-                  : '/customer/dashboard'
-              }
+              href={getDashboardRoute(user.role)}
               className="inline-flex items-center gap-1 text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline ml-2"
             >
               Go to Dashboard <ArrowRight className="w-3.5 h-3.5" />

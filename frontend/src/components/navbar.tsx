@@ -3,7 +3,8 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
-import { useAuth } from '../context/auth-context';
+import { useAuth } from '@/context/auth-context';
+import { getDashboardRoute } from '@/lib/auth-routes';
 import { RoleBadge } from './role-badge';
 import {
   Shield,
@@ -30,17 +31,7 @@ export function Navbar() {
 
   const getDashboardHref = () => {
     if (!user) return '/';
-    switch (user.role) {
-      case 'SUPER_ADMIN':
-        return '/admin/dashboard';
-      case 'WORKER':
-        return '/worker/dashboard';
-      case 'OFFICE_STAFF':
-        return '/office-staff/dashboard';
-      case 'CUSTOMER':
-      default:
-        return '/customer/dashboard';
-    }
+    return getDashboardRoute(user.role);
   };
 
   return (

@@ -21,6 +21,20 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const TOKEN_KEY = 'kk_auth_token';
 const USER_KEY = 'kk_auth_user';
+const ROLE_KEY = 'kk_auth_role';
+
+function setAuthCookies(token: string, role: string) {
+  if (typeof document === 'undefined') return;
+  const maxAge = 60 * 60 * 24 * 7; // 7 days
+  document.cookie = `${TOKEN_KEY}=${encodeURIComponent(token)}; path=/; max-age=${maxAge}; SameSite=Lax`;
+  document.cookie = `${ROLE_KEY}=${encodeURIComponent(role)}; path=/; max-age=${maxAge}; SameSite=Lax`;
+}
+
+function clearAuthCookies() {
+  if (typeof document === 'undefined') return;
+  document.cookie = `${TOKEN_KEY}=; path=/; max-age=0; SameSite=Lax`;
+  document.cookie = `${ROLE_KEY}=; path=/; max-age=0; SameSite=Lax`;
+}
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -33,8 +47,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const storedUser = localStorage.getItem(USER_KEY);
 
       if (storedToken && storedUser) {
+        const parsedUser = JSON.parse(storedUser);
         setToken(storedToken);
-        setUser(JSON.parse(storedUser));
+        setUser(parsedUser);
+        setAuthCookies(storedToken, parsedUser.role);
 
         // Background check to keep profile in sync
         api
@@ -42,14 +58,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           .then((freshUser) => {
             setUser(freshUser);
             localStorage.setItem(USER_KEY, JSON.stringify(freshUser));
+            setAuthCookies(storedToken, freshUser.role);
           })
           .catch(() => {
             // Token expired or invalid
             localStorage.removeItem(TOKEN_KEY);
             localStorage.removeItem(USER_KEY);
+            clearAuthCookies();
             setToken(null);
             setUser(null);
           });
+      } else {
+        clearAuthCookies();
       }
     } catch {
       // Ignored
@@ -64,6 +84,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       localStorage.setItem(TOKEN_KEY, newToken);
       localStorage.setItem(USER_KEY, JSON.stringify(newUser));
+      setAuthCookies(newToken, newUser.role);
     } catch {
       // Ignored
     }
@@ -75,6 +96,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       localStorage.removeItem(TOKEN_KEY);
       localStorage.removeItem(USER_KEY);
+      clearAuthCookies();
     } catch {
       // Ignored
     }

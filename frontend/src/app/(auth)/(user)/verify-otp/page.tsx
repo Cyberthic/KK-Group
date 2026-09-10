@@ -67,7 +67,7 @@ function VerifyOtpContent() {
       if (res.token && res.user) {
         login(res.token, res.user);
         setTimeout(() => {
-          router.push('/customer/dashboard');
+          router.push('/dashboard');
         }, 1000);
       }
     } catch (err: any) {

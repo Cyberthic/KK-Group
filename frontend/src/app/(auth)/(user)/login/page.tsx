@@ -38,7 +38,7 @@ export default function CustomerLoginPage() {
       const res = await api.customerLogin({ email, password });
       if (res.token && res.user) {
         login(res.token, res.user);
-        router.push('/customer/dashboard');
+        router.push('/dashboard');
       }
     } catch (err: any) {
       const msg = err.message || 'Failed to sign in';
