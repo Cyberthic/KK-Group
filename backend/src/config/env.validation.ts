@@ -15,4 +15,29 @@ export const envValidationSchema = Joi.object({
 
   CORS_ORIGIN: Joi.string()
     .default('http://localhost:3000'),
+
+  JWT_SECRET: Joi.string()
+    .default('kk-group-super-secret-jwt-key-2026!'),
+
+  JWT_EXPIRES_IN: Joi.string()
+    .default('7d'),
+
+  SUPER_ADMIN_EMAIL: Joi.string()
+    .email()
+    .default('admin@kkgroup.com'),
+
+  SUPER_ADMIN_USERNAME: Joi.string()
+    .default('superadmin'),
+
+  SUPER_ADMIN_PASSWORD: Joi.string()
+    .default('AdminPassword@123'),
+
+  APP_EMAIL: Joi.string().email().allow('', null),
+  APP_PASSWORD: Joi.string().allow('', null),
+
+  SMTP_HOST: Joi.string().allow('', null),
+  SMTP_PORT: Joi.number().allow('', null).default(587),
+  SMTP_USER: Joi.string().allow('', null),
+  SMTP_PASS: Joi.string().allow('', null),
+  SMTP_FROM: Joi.string().allow('', null).default('"KK Group" <noreply@kkgroup.com>'),
 });
