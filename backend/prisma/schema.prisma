@@ -47,11 +47,13 @@ model Otp {
   type      OtpType  @default(EMAIL_VERIFICATION)
   expiresAt DateTime
   isUsed    Boolean  @default(false)
+  attempts  Int      @default(0)
   createdAt DateTime @default(now())
 
   userId String?
   user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([email, code])
+  @@index([email, isUsed])
   @@map("otps")
 }
+

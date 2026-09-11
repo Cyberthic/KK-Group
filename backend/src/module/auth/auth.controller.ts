@@ -9,7 +9,8 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { CurrentUser, Public, Roles } from '../../common';
+import { Throttle } from '@nestjs/throttler';
+import { CurrentUser, Public, Roles, RATE_LIMITS } from '../../common';
 import { Role } from '../../database';
 import { AuthService } from './auth.service';
 import {
@@ -31,6 +32,7 @@ export class AuthController {
   // ==========================================
 
   @Public()
+  @Throttle({ default: RATE_LIMITS.REGISTER })
   @Post('customer/register')
   @HttpCode(HttpStatus.CREATED)
   async registerCustomer(@Body() dto: RegisterCustomerDto) {
@@ -38,6 +40,7 @@ export class AuthController {
   }
 
   @Public()
+  @Throttle({ default: RATE_LIMITS.VERIFY_OTP })
   @Post('customer/verify-otp')
   @HttpCode(HttpStatus.OK)
   async verifyOtp(@Body() dto: VerifyOtpDto) {
@@ -45,6 +48,7 @@ export class AuthController {
   }
 
   @Public()
+  @Throttle({ default: RATE_LIMITS.RESEND_OTP })
   @Post('customer/resend-otp')
   @HttpCode(HttpStatus.OK)
   async resendOtp(@Body() dto: ResendOtpDto) {
@@ -52,6 +56,7 @@ export class AuthController {
   }
 
   @Public()
+  @Throttle({ default: RATE_LIMITS.LOGIN })
   @Post('customer/login')
   @HttpCode(HttpStatus.OK)
   async customerLogin(@Body() dto: CustomerLoginDto) {
@@ -63,6 +68,7 @@ export class AuthController {
   // ==========================================
 
   @Public()
+  @Throttle({ default: RATE_LIMITS.LOGIN })
   @Post('staff/login')
   @HttpCode(HttpStatus.OK)
   async staffLogin(@Body() dto: StaffLoginDto) {
@@ -74,6 +80,7 @@ export class AuthController {
   // ==========================================
 
   @Public()
+  @Throttle({ default: RATE_LIMITS.LOGIN })
   @Post('admin/login')
   @HttpCode(HttpStatus.OK)
   async adminLogin(@Body() dto: AdminLoginDto) {

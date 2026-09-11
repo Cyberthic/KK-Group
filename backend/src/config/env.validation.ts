@@ -17,7 +17,8 @@ export const envValidationSchema = Joi.object({
     .default('http://localhost:3000'),
 
   JWT_SECRET: Joi.string()
-    .default('kk-group-super-secret-jwt-key-2026!'),
+    .min(32)
+    .required(),
 
   JWT_EXPIRES_IN: Joi.string()
     .default('7d'),

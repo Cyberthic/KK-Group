@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { AuthController } from './auth.controller';
+import { AuthRepository } from './auth.repository';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 
@@ -13,9 +14,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        secret:
-          configService.get<string>('auth.jwtSecret') ||
-          'kk-group-super-secret-jwt-key-2026!',
+        secret: configService.getOrThrow<string>('auth.jwtSecret'),
         signOptions: {
           expiresIn: (configService.get<string>('auth.jwtExpiresIn') || '7d') as any,
         },
@@ -23,7 +22,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
-  exports: [AuthService, JwtStrategy, PassportModule, JwtModule],
+  providers: [AuthRepository, AuthService, JwtStrategy],
+  exports: [AuthRepository, AuthService, JwtStrategy, PassportModule, JwtModule],
 })
 export class AuthModule {}

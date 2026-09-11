@@ -1,18 +1,19 @@
 import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { VALIDATION_MESSAGES } from '../../../common';
 import { Role } from '../../../database';
 
 export class StaffLoginDto {
   @IsString()
-  @IsNotEmpty({ message: 'Username is required' })
+  @IsNotEmpty({ message: VALIDATION_MESSAGES.USERNAME_REQUIRED })
   username: string;
 
   @IsString()
-  @IsNotEmpty({ message: 'Password is required' })
+  @IsNotEmpty({ message: VALIDATION_MESSAGES.PASSWORD_REQUIRED })
   password: string;
 
   @IsOptional()
   @IsEnum(Role, {
-    message: 'portalRole must be WORKER or OFFICE_STAFF',
+    message: VALIDATION_MESSAGES.PORTAL_ROLE_INVALID,
   })
   portalRole?: Role;
 }

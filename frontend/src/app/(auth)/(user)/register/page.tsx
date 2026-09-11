@@ -27,8 +27,8 @@ export default function CustomerRegisterPage() {
     e.preventDefault();
     setErrorMessage('');
 
-    if (password.length < 6) {
-      setErrorMessage('Password must be at least 6 characters long');
+    if (password.length < 8) {
+      setErrorMessage('Password must be at least 8 characters long');
       return;
     }
 
@@ -53,19 +53,19 @@ export default function CustomerRegisterPage() {
   return (
     <div className="flex-1 flex flex-col justify-center items-center px-4 sm:px-6 lg:px-8 py-12">
       <div className="w-full max-w-md">
-        {/* Header */}
+        {/* Portal Header */}
         <div className="text-center mb-8">
           <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-600 flex items-center justify-center text-white mx-auto mb-4 shadow-lg shadow-emerald-500/20">
             <UserPlus className="w-6 h-6" />
           </div>
           <span className="inline-block text-[11px] font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 mb-2">
-            Customer Registration
+            Customer Portal
           </span>
           <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 dark:text-white">
             Create Customer Account
           </h2>
           <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-            You will receive a 6-digit confirmation code via email
+            Join KK Group today and manage your operations seamlessly
           </p>
         </div>
 
@@ -105,7 +105,7 @@ export default function CustomerRegisterPage() {
                 htmlFor="password"
                 className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5"
               >
-                Password (min. 6 characters)
+                Password (min. 8 chars, 1 uppercase, 1 number, 1 symbol)
               </label>
               <div className="relative">
                 <Lock className="w-4 h-4 text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -113,7 +113,7 @@ export default function CustomerRegisterPage() {
                   id="password"
                   type="password"
                   required
-                  minLength={6}
+                  minLength={8}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
@@ -135,7 +135,7 @@ export default function CustomerRegisterPage() {
                   id="confirmPassword"
                   type="password"
                   required
-                  minLength={6}
+                  minLength={8}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="••••••••"

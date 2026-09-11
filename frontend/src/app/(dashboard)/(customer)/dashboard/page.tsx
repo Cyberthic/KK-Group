@@ -3,6 +3,7 @@
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/auth-context';
+import { getDashboardRoute } from '@/lib/auth-routes';
 import { RoleBadge } from '@/components/role-badge';
 import {
   User,
@@ -23,8 +24,12 @@ export default function CustomerDashboardPage() {
   const { user, token, isLoading } = useAuth();
 
   useEffect(() => {
-    if (!isLoading && (!token || !user)) {
-      router.push('/login');
+    if (!isLoading) {
+      if (!token || !user) {
+        router.push('/login');
+      } else if (user.role !== 'CUSTOMER') {
+        router.push(getDashboardRoute(user.role));
+      }
     }
   }, [isLoading, token, user, router]);
 

@@ -9,9 +9,11 @@ import { envValidationSchema } from './config/env.validation';
 import { PrismaModule } from './database/prisma.module';
 import { MailModule } from './module/mail/mail.module';
 import { AuthModule } from './module/auth/auth.module';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import {
   HttpExceptionFilter,
   JwtAuthGuard,
+  RATE_LIMITS,
   RolesGuard,
   TransformInterceptor,
 } from './common';
@@ -29,11 +31,17 @@ import {
       },
     }),
 
+    ThrottlerModule.forRoot([RATE_LIMITS.GLOBAL]),
+
     PrismaModule,
     MailModule,
     AuthModule,
   ],
   providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,

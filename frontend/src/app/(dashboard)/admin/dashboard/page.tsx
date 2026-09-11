@@ -76,8 +76,8 @@ export default function AdminDashboardPage() {
       return;
     }
 
-    if (newPassword.length < 6) {
-      setCreateError('Password must be at least 6 characters long');
+    if (newPassword.length < 8) {
+      setCreateError('Password must be at least 8 characters long');
       return;
     }
 
@@ -323,13 +323,13 @@ export default function AdminDashboardPage() {
                   htmlFor="newPassword"
                   className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5"
                 >
-                  Temporary Password (min. 6 chars)
+                  Temporary Password (min. 8 chars, uppercase, number & symbol)
                 </label>
                 <input
                   id="newPassword"
                   type="text"
                   required
-                  minLength={6}
+                  minLength={8}
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   placeholder="StaffPassword@123"

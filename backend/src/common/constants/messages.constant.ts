@@ -1,0 +1,78 @@
+export const AUTH_MESSAGES = {
+  // Error Messages - Customer & Registration
+  EMAIL_ALREADY_EXISTS:
+    'An account with this email address already exists. Please sign in.',
+  EMAIL_NOT_FOUND: 'No account found for this email address.',
+  ACCOUNT_ALREADY_VERIFIED:
+    'This account is already verified. Please sign in.',
+  INVALID_CREDENTIALS: 'Invalid email or password.',
+  ACCOUNT_DEACTIVATED:
+    'Your account has been deactivated. Please contact support.',
+
+  // Error Messages - OTP Engine
+  INVALID_OR_EXPIRED_OTP:
+    'Invalid or expired verification code. Please request a new one.',
+  OTP_MAX_ATTEMPTS_EXCEEDED:
+    'Too many failed attempts. This verification code has been permanently invalidated. Please request a new one.',
+  OTP_COOLDOWN: (seconds: number) =>
+    `Please wait ${seconds} seconds before requesting another verification code.`,
+  OTP_REMAINING_ATTEMPTS: (remaining: number) =>
+    `Invalid verification code. ${remaining} ${remaining === 1 ? 'attempt' : 'attempts'} remaining.`,
+  EMAIL_NOT_VERIFIED_RECENT:
+    'Email not verified. A verification code was recently sent to your email.',
+  EMAIL_NOT_VERIFIED_DISPATCHED:
+    'Email not verified. A fresh verification code has been dispatched to your email.',
+
+  // Error Messages - Staff & Portal Segregation
+  INVALID_STAFF_CREDENTIALS: 'Invalid staff username or password.',
+  INVALID_STAFF_PORTAL: 'Invalid credentials for staff portal access.',
+  STAFF_ACCOUNT_DEACTIVATED:
+    'Your staff account has been deactivated. Please contact Super Admin.',
+  PORTAL_ACCESS_DENIED: (expectedRole: string, actualRole: string) =>
+    `Access denied: This portal is designated for ${expectedRole}s only. Your account is registered as ${actualRole}. Please use your dedicated portal.`,
+  INVALID_STAFF_ROLE:
+    'Invalid role specified. Staff role must be either WORKER or OFFICE_STAFF.',
+  USERNAME_ALREADY_EXISTS: (username: string) =>
+    `A user with username '${username}' already exists. Please choose a different username.`,
+  STAFF_NOT_FOUND: 'Staff member not found',
+  ADMIN_CANNOT_BE_DELETED: 'Super Admin accounts cannot be deleted',
+
+  // Error Messages - Super Admin & Guards
+  INVALID_ADMIN_CREDENTIALS: 'Invalid administrator credentials.',
+  ADMIN_ACCOUNT_DEACTIVATED: 'Super Admin account has been deactivated.',
+  USER_NOT_FOUND: 'User profile not found',
+  TOKEN_INVALID_OR_MISSING: 'Authentication token is invalid or missing',
+  USER_INACTIVE_OR_NOT_FOUND: 'User account is inactive or not found',
+  NO_ACCESS_PERMISSIONS: 'User does not have access permissions',
+  FORBIDDEN_RESOURCE: (requiredRoles: string[], currentRole: string) =>
+    `Forbidden resource: requires one of [${requiredRoles.join(', ')}], current role is ${currentRole}`,
+
+  // Success Messages
+  REGISTRATION_INITIATED:
+    'Registration initiated. Please enter the 6-digit verification code sent to your email.',
+  EMAIL_VERIFIED_SUCCESS:
+    'Email verified successfully! You are now logged in.',
+  OTP_DISPATCHED_SUCCESS:
+    'A fresh verification code has been dispatched to your email.',
+  CUSTOMER_SIGNIN_SUCCESS: 'Customer sign in successful.',
+  STAFF_SIGNIN_SUCCESS: (role: string) => `${role} sign in successful.`,
+  ADMIN_SIGNIN_SUCCESS: 'Super Admin sign in successful.',
+  STAFF_CREATED_SUCCESS: (roleName: string) =>
+    `${roleName} created successfully.`,
+  STAFF_DELETED_SUCCESS: 'Staff member removed successfully',
+} as const;
+
+export const VALIDATION_MESSAGES = {
+  EMAIL_REQUIRED: 'Email is required',
+  EMAIL_INVALID: 'Please provide a valid email address',
+  PASSWORD_REQUIRED: 'Password is required',
+  PASSWORD_MIN_LENGTH: 'Password must be at least 8 characters long',
+  PASSWORD_COMPLEXITY:
+    'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character',
+  USERNAME_REQUIRED: 'Username is required',
+  USERNAME_MIN_LENGTH: 'Username must be at least 3 characters long',
+  USERNAME_FORMAT:
+    'Username can only contain letters, numbers, underscores, and dashes',
+  ROLE_INVALID_STAFF: 'Role must be either WORKER or OFFICE_STAFF',
+  PORTAL_ROLE_INVALID: 'portalRole must be WORKER or OFFICE_STAFF',
+} as const;

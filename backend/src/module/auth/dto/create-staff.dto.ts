@@ -1,22 +1,34 @@
 import { IsEnum, IsNotEmpty, IsString, Matches, MinLength } from 'class-validator';
+import {
+  REGEX_PATTERNS,
+  SECURITY_CONSTANTS,
+  VALIDATION_MESSAGES,
+} from '../../../common';
 import { Role } from '../../../database';
 
 export class CreateStaffDto {
   @IsString()
-  @IsNotEmpty({ message: 'Username is required' })
-  @MinLength(3, { message: 'Username must be at least 3 characters long' })
-  @Matches(/^[a-zA-Z0-9_-]+$/, {
-    message: 'Username can only contain letters, numbers, underscores, and dashes',
+  @IsNotEmpty({ message: VALIDATION_MESSAGES.USERNAME_REQUIRED })
+  @MinLength(SECURITY_CONSTANTS.USERNAME_MIN_LENGTH, {
+    message: VALIDATION_MESSAGES.USERNAME_MIN_LENGTH,
+  })
+  @Matches(REGEX_PATTERNS.USERNAME, {
+    message: VALIDATION_MESSAGES.USERNAME_FORMAT,
   })
   username: string;
 
   @IsString()
-  @IsNotEmpty({ message: 'Password is required' })
-  @MinLength(6, { message: 'Password must be at least 6 characters long' })
+  @IsNotEmpty({ message: VALIDATION_MESSAGES.PASSWORD_REQUIRED })
+  @MinLength(SECURITY_CONSTANTS.PASSWORD_MIN_LENGTH, {
+    message: VALIDATION_MESSAGES.PASSWORD_MIN_LENGTH,
+  })
+  @Matches(REGEX_PATTERNS.PASSWORD, {
+    message: VALIDATION_MESSAGES.PASSWORD_COMPLEXITY,
+  })
   password: string;
 
   @IsEnum(Role, {
-    message: 'Role must be either WORKER or OFFICE_STAFF',
+    message: VALIDATION_MESSAGES.ROLE_INVALID_STAFF,
   })
   role: Role;
 }

@@ -1,6 +1,7 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
+import { MAIL_CONSTANTS } from '../../common';
 
 @Injectable()
 export class MailService implements OnModuleInit {
@@ -16,7 +17,7 @@ export class MailService implements OnModuleInit {
     const pass = this.configService.get<string>('mail.pass');
     this.fromAddress =
       this.configService.get<string>('mail.from') ||
-      (user ? `"KK Group" <${user}>` : '"KK Group" <noreply@kkgroup.com>');
+      (user ? `"KK Group" <${user}>` : MAIL_CONSTANTS.DEFAULT_FROM);
 
     if (user && pass) {
       if (service === 'gmail') {
@@ -64,9 +65,9 @@ export class MailService implements OnModuleInit {
   async sendOtpEmail(
     to: string,
     otp: string,
-    purpose = 'Customer Account Verification',
+    purpose = MAIL_CONSTANTS.PURPOSE_VERIFICATION,
   ): Promise<boolean> {
-    const subject = `Your KK Group Verification Code: ${otp}`;
+    const subject = MAIL_CONSTANTS.SUBJECT_OTP(otp);
     const html = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff;">
         <div style="text-align: center; margin-bottom: 24px;">
@@ -92,10 +93,15 @@ export class MailService implements OnModuleInit {
       </div>
     `;
 
-    // Always log OTP in console for immediate developer accessibility
-    this.logger.log(
-      `\n========================================\n[OTP DISPATCH] To: ${to}\nPurpose: ${purpose}\nCODE: >>> ${otp} <<<\nExpires in: 10 minutes\n========================================`,
-    );
+    // In production or when SMTP transporter is active, mask recipient and do not leak cleartext OTP
+    const maskedEmail = to.replace(/(?<=.{2}).(?=[^@]*?@)/g, '*');
+    if (this.transporter) {
+      this.logger.log(`[OTP DISPATCH] Dispatched verification code to ${maskedEmail} for ${purpose}`);
+    } else {
+      this.logger.warn(
+        `[DEV MODE - SMTP NOT CONFIGURED] Fallback OTP for ${to}: ${otp}`,
+      );
+    }
 
     if (this.transporter) {
       try {

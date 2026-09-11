@@ -1,3 +1,4 @@
+import * as crypto from 'node:crypto';
 import {
   BadRequestException,
   ConflictException,
@@ -11,8 +12,14 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { OtpType, PrismaService, Role } from '../../database';
+import {
+  AUTH_MESSAGES,
+  MAIL_CONSTANTS,
+  SECURITY_CONSTANTS,
+} from '../../common';
+import { OtpType, Role } from '../../database';
 import { MailService } from '../mail/mail.service';
+import { AuthRepository } from './auth.repository';
 import {
   AdminLoginDto,
   CreateStaffDto,
@@ -26,17 +33,21 @@ import {
 @Injectable()
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
-  private readonly saltRounds = 10;
+  private readonly saltRounds = SECURITY_CONSTANTS.BCRYPT_SALT_ROUNDS;
 
   constructor(
-    private readonly prisma: PrismaService,
+    private readonly authRepository: AuthRepository,
     private readonly jwtService: JwtService,
     private readonly mailService: MailService,
     private readonly configService: ConfigService,
   ) {}
 
   private generate6DigitOtp(): string {
-    return Math.floor(100000 + Math.random() * 900000).toString();
+    return crypto.randomInt(100000, 1000000).toString();
+  }
+
+  private hashOtp(code: string): string {
+    return crypto.createHash('sha256').update(code).digest('hex');
   }
 
   private generateToken(user: {
@@ -82,67 +93,52 @@ export class AuthService {
 
   async registerCustomer(dto: RegisterCustomerDto) {
     const email = dto.email.trim().toLowerCase();
-    const existingUser = await this.prisma.user.findUnique({
-      where: { email },
-    });
+    const existingUser = await this.authRepository.findUserByEmail(email);
 
     const hashedPassword = await bcrypt.hash(dto.password, this.saltRounds);
 
     let user;
     if (existingUser) {
       if (existingUser.isEmailVerified) {
-        throw new ConflictException(
-          'An account with this email address already exists. Please sign in.',
-        );
+        throw new ConflictException(AUTH_MESSAGES.EMAIL_ALREADY_EXISTS);
       }
-      // If user exists but unverified, update password and issue a fresh OTP
-      user = await this.prisma.user.update({
-        where: { id: existingUser.id },
-        data: {
-          password: hashedPassword,
-        },
-      });
+      // Security hardening: Do not overwrite password without email verification
+      user = existingUser;
     } else {
-      user = await this.prisma.user.create({
-        data: {
-          email,
-          password: hashedPassword,
-          role: Role.CUSTOMER,
-          isEmailVerified: false,
-          isActive: true,
-        },
+      user = await this.authRepository.createUser({
+        email,
+        password: hashedPassword,
+        role: Role.CUSTOMER,
+        isEmailVerified: false,
+        isActive: true,
       });
     }
 
     // Invalidate any existing active OTPs for this email
-    await this.prisma.otp.updateMany({
-      where: { email, isUsed: false },
-      data: { isUsed: true },
-    });
+    await this.authRepository.invalidateActiveOtps(email);
 
-    // Create 6-digit OTP valid for 10 minutes
+    // Create 6-digit cryptographically secure OTP valid for configured expiry
     const code = this.generate6DigitOtp();
-    const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+    const hashedCode = this.hashOtp(code);
+    const expiresAt = new Date(Date.now() + SECURITY_CONSTANTS.OTP_EXPIRY_MS);
 
-    await this.prisma.otp.create({
-      data: {
-        email,
-        code,
-        type: OtpType.EMAIL_VERIFICATION,
-        expiresAt,
-        userId: user.id,
-      },
+    await this.authRepository.createOtp({
+      email,
+      code: hashedCode,
+      type: OtpType.EMAIL_VERIFICATION,
+      expiresAt,
+      attempts: 0,
+      userId: user.id,
     });
 
     await this.mailService.sendOtpEmail(
       email,
       code,
-      'Customer Account Verification',
+      MAIL_CONSTANTS.PURPOSE_VERIFICATION,
     );
 
     return {
-      message:
-        'Registration initiated. Please enter the 6-digit verification code sent to your email.',
+      message: AUTH_MESSAGES.REGISTRATION_INITIATED,
       email,
     };
   }
@@ -151,46 +147,52 @@ export class AuthService {
     const email = dto.email.trim().toLowerCase();
     const code = dto.code.trim();
 
-    const user = await this.prisma.user.findUnique({
-      where: { email },
-    });
+    const user = await this.authRepository.findUserByEmail(email);
 
     if (!user) {
-      throw new NotFoundException('No account found for this email address.');
+      throw new NotFoundException(AUTH_MESSAGES.EMAIL_NOT_FOUND);
     }
 
-    const otpRecord = await this.prisma.otp.findFirst({
-      where: {
-        email,
-        code,
-        isUsed: false,
-        expiresAt: { gt: new Date() },
-      },
-      orderBy: { createdAt: 'desc' },
-    });
+    const otpRecord = await this.authRepository.findActiveOtpByEmail(email);
 
     if (!otpRecord) {
+      throw new BadRequestException(AUTH_MESSAGES.INVALID_OR_EXPIRED_OTP);
+    }
+
+    // Check brute-force attempts
+    const incomingHash = this.hashOtp(code);
+    if (otpRecord.code !== incomingHash) {
+      const newAttempts = otpRecord.attempts + 1;
+      if (newAttempts >= SECURITY_CONSTANTS.OTP_MAX_ATTEMPTS) {
+        await this.authRepository.updateOtp(otpRecord.id, {
+          isUsed: true,
+          attempts: newAttempts,
+        });
+        throw new BadRequestException(AUTH_MESSAGES.OTP_MAX_ATTEMPTS_EXCEEDED);
+      }
+
+      await this.authRepository.updateOtp(otpRecord.id, {
+        attempts: newAttempts,
+      });
+
+      const remainingAttempts = SECURITY_CONSTANTS.OTP_MAX_ATTEMPTS - newAttempts;
       throw new BadRequestException(
-        'Invalid or expired verification code. Please request a new one.',
+        AUTH_MESSAGES.OTP_REMAINING_ATTEMPTS(remainingAttempts),
       );
     }
 
     // Mark OTP used
-    await this.prisma.otp.update({
-      where: { id: otpRecord.id },
-      data: { isUsed: true },
-    });
+    await this.authRepository.updateOtp(otpRecord.id, { isUsed: true });
 
     // Mark user as verified
-    const updatedUser = await this.prisma.user.update({
-      where: { id: user.id },
-      data: { isEmailVerified: true },
+    const updatedUser = await this.authRepository.updateUser(user.id, {
+      isEmailVerified: true,
     });
 
     const token = this.generateToken(updatedUser);
 
     return {
-      message: 'Email verified successfully! You are now logged in.',
+      message: AUTH_MESSAGES.EMAIL_VERIFIED_SUCCESS,
       token,
       user: this.sanitizeUser(updatedUser),
     };
@@ -199,47 +201,52 @@ export class AuthService {
   async resendOtp(dto: ResendOtpDto) {
     const email = dto.email.trim().toLowerCase();
 
-    const user = await this.prisma.user.findUnique({
-      where: { email },
-    });
+    const user = await this.authRepository.findUserByEmail(email);
 
     if (!user) {
-      throw new NotFoundException('No account found for this email address.');
+      throw new NotFoundException(AUTH_MESSAGES.EMAIL_NOT_FOUND);
     }
 
     if (user.isEmailVerified) {
-      throw new BadRequestException(
-        'This account is already verified. Please sign in.',
-      );
+      throw new BadRequestException(AUTH_MESSAGES.ACCOUNT_ALREADY_VERIFIED);
+    }
+
+    // Check cooldown on backend
+    const latestOtp = await this.authRepository.findLatestOtpByEmail(email);
+
+    if (latestOtp) {
+      const elapsedMs = Date.now() - latestOtp.createdAt.getTime();
+      const cooldownMs = SECURITY_CONSTANTS.OTP_COOLDOWN_MS;
+      if (elapsedMs < cooldownMs) {
+        const waitSeconds = Math.ceil((cooldownMs - elapsedMs) / 1000);
+        throw new BadRequestException(AUTH_MESSAGES.OTP_COOLDOWN(waitSeconds));
+      }
     }
 
     // Invalidate previous OTPs
-    await this.prisma.otp.updateMany({
-      where: { email, isUsed: false },
-      data: { isUsed: true },
-    });
+    await this.authRepository.invalidateActiveOtps(email);
 
     const code = this.generate6DigitOtp();
-    const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+    const hashedCode = this.hashOtp(code);
+    const expiresAt = new Date(Date.now() + SECURITY_CONSTANTS.OTP_EXPIRY_MS);
 
-    await this.prisma.otp.create({
-      data: {
-        email,
-        code,
-        type: OtpType.EMAIL_VERIFICATION,
-        expiresAt,
-        userId: user.id,
-      },
+    await this.authRepository.createOtp({
+      email,
+      code: hashedCode,
+      type: OtpType.EMAIL_VERIFICATION,
+      expiresAt,
+      attempts: 0,
+      userId: user.id,
     });
 
     await this.mailService.sendOtpEmail(
       email,
       code,
-      'Customer Account Verification',
+      MAIL_CONSTANTS.PURPOSE_VERIFICATION,
     );
 
     return {
-      message: 'A fresh verification code has been dispatched to your email.',
+      message: AUTH_MESSAGES.OTP_DISPATCHED_SUCCESS,
       email,
     };
   }
@@ -247,54 +254,59 @@ export class AuthService {
   async customerLogin(dto: CustomerLoginDto) {
     const email = dto.email.trim().toLowerCase();
 
-    const user = await this.prisma.user.findUnique({
-      where: { email },
-    });
+    const user = await this.authRepository.findUserByEmail(email);
 
     if (!user || user.role !== Role.CUSTOMER) {
-      throw new UnauthorizedException('Invalid email or password.');
+      throw new UnauthorizedException(AUTH_MESSAGES.INVALID_CREDENTIALS);
     }
 
     if (!user.isActive) {
-      throw new UnauthorizedException(
-        'Your account has been deactivated. Please contact support.',
-      );
+      throw new UnauthorizedException(AUTH_MESSAGES.ACCOUNT_DEACTIVATED);
     }
 
     const isMatch = await bcrypt.compare(dto.password, user.password);
     if (!isMatch) {
-      throw new UnauthorizedException('Invalid email or password.');
+      throw new UnauthorizedException(AUTH_MESSAGES.INVALID_CREDENTIALS);
     }
 
     if (!user.isEmailVerified) {
-      // Auto-trigger a new OTP
-      await this.prisma.otp.updateMany({
-        where: { email, isUsed: false },
-        data: { isUsed: true },
-      });
+      // Check cooldown before dispatching a new OTP
+      const latestOtp = await this.authRepository.findActiveOtpByEmail(email);
+
+      if (latestOtp) {
+        const elapsedMs = Date.now() - latestOtp.createdAt.getTime();
+        if (elapsedMs < SECURITY_CONSTANTS.OTP_COOLDOWN_MS) {
+          throw new ForbiddenException({
+            message: AUTH_MESSAGES.EMAIL_NOT_VERIFIED_RECENT,
+            code: 'EMAIL_NOT_VERIFIED',
+            email,
+          });
+        }
+      }
+
+      await this.authRepository.invalidateActiveOtps(email);
 
       const code = this.generate6DigitOtp();
-      const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+      const hashedCode = this.hashOtp(code);
+      const expiresAt = new Date(Date.now() + SECURITY_CONSTANTS.OTP_EXPIRY_MS);
 
-      await this.prisma.otp.create({
-        data: {
-          email,
-          code,
-          type: OtpType.EMAIL_VERIFICATION,
-          expiresAt,
-          userId: user.id,
-        },
+      await this.authRepository.createOtp({
+        email,
+        code: hashedCode,
+        type: OtpType.EMAIL_VERIFICATION,
+        expiresAt,
+        attempts: 0,
+        userId: user.id,
       });
 
       await this.mailService.sendOtpEmail(
         email,
         code,
-        'Customer Account Verification',
+        MAIL_CONSTANTS.PURPOSE_VERIFICATION,
       );
 
       throw new ForbiddenException({
-        message:
-          'Email not verified. A fresh verification code has been dispatched to your email.',
+        message: AUTH_MESSAGES.EMAIL_NOT_VERIFIED_DISPATCHED,
         code: 'EMAIL_NOT_VERIFIED',
         email,
       });
@@ -302,7 +314,7 @@ export class AuthService {
 
     const token = this.generateToken(user);
     return {
-      message: 'Customer sign in successful.',
+      message: AUTH_MESSAGES.CUSTOMER_SIGNIN_SUCCESS,
       token,
       user: this.sanitizeUser(user),
     };
@@ -315,42 +327,36 @@ export class AuthService {
   async staffLogin(dto: StaffLoginDto) {
     const username = dto.username.trim();
 
-    const user = await this.prisma.user.findUnique({
-      where: { username },
-    });
+    const user = await this.authRepository.findUserByUsername(username);
 
     if (!user) {
-      throw new UnauthorizedException('Invalid staff username or password.');
+      throw new UnauthorizedException(AUTH_MESSAGES.INVALID_STAFF_CREDENTIALS);
     }
 
     if (user.role !== Role.WORKER && user.role !== Role.OFFICE_STAFF) {
-      throw new UnauthorizedException(
-        'Invalid credentials for staff portal access.',
-      );
+      throw new UnauthorizedException(AUTH_MESSAGES.INVALID_STAFF_PORTAL);
     }
 
     if (!user.isActive) {
-      throw new UnauthorizedException(
-        'Your staff account has been deactivated. Please contact Super Admin.',
-      );
+      throw new UnauthorizedException(AUTH_MESSAGES.STAFF_ACCOUNT_DEACTIVATED);
     }
 
     if (dto.portalRole && user.role !== dto.portalRole) {
       const expectedPortal = dto.portalRole.toLowerCase().replace('_', ' ');
       const userRole = user.role.toLowerCase().replace('_', ' ');
       throw new ForbiddenException(
-        `Access denied: This portal is designated for ${expectedPortal}s only. Your account is registered as ${userRole}. Please use your dedicated portal.`,
+        AUTH_MESSAGES.PORTAL_ACCESS_DENIED(expectedPortal, userRole),
       );
     }
 
     const isMatch = await bcrypt.compare(dto.password, user.password);
     if (!isMatch) {
-      throw new UnauthorizedException('Invalid staff username or password.');
+      throw new UnauthorizedException(AUTH_MESSAGES.INVALID_STAFF_CREDENTIALS);
     }
 
     const token = this.generateToken(user);
     return {
-      message: `${user.role} sign in successful.`,
+      message: AUTH_MESSAGES.STAFF_SIGNIN_SUCCESS(user.role),
       token,
       user: this.sanitizeUser(user),
     };
@@ -364,34 +370,24 @@ export class AuthService {
     const identifier = dto.identifier.trim();
 
     // Support logging in by either email or username
-    const user = await this.prisma.user.findFirst({
-      where: {
-        role: Role.SUPER_ADMIN,
-        OR: [
-          { email: identifier.toLowerCase() },
-          { username: identifier },
-        ],
-      },
-    });
+    const user = await this.authRepository.findSuperAdminByIdentifier(identifier);
 
     if (!user) {
-      throw new UnauthorizedException('Invalid administrator credentials.');
+      throw new UnauthorizedException(AUTH_MESSAGES.INVALID_ADMIN_CREDENTIALS);
     }
 
     if (!user.isActive) {
-      throw new UnauthorizedException(
-        'Super Admin account has been deactivated.',
-      );
+      throw new UnauthorizedException(AUTH_MESSAGES.ADMIN_ACCOUNT_DEACTIVATED);
     }
 
     const isMatch = await bcrypt.compare(dto.password, user.password);
     if (!isMatch) {
-      throw new UnauthorizedException('Invalid administrator credentials.');
+      throw new UnauthorizedException(AUTH_MESSAGES.INVALID_ADMIN_CREDENTIALS);
     }
 
     const token = this.generateToken(user);
     return {
-      message: 'Super Admin sign in successful.',
+      message: AUTH_MESSAGES.ADMIN_SIGNIN_SUCCESS,
       token,
       user: this.sanitizeUser(user),
     };
@@ -405,31 +401,23 @@ export class AuthService {
     const username = dto.username.trim();
 
     if (dto.role !== Role.WORKER && dto.role !== Role.OFFICE_STAFF) {
-      throw new BadRequestException(
-        'Invalid role specified. Staff role must be either WORKER or OFFICE_STAFF.',
-      );
+      throw new BadRequestException(AUTH_MESSAGES.INVALID_STAFF_ROLE);
     }
 
-    const existingUser = await this.prisma.user.findUnique({
-      where: { username },
-    });
+    const existingUser = await this.authRepository.findUserByUsername(username);
 
     if (existingUser) {
-      throw new ConflictException(
-        `A user with username '${username}' already exists. Please choose a different username.`,
-      );
+      throw new ConflictException(AUTH_MESSAGES.USERNAME_ALREADY_EXISTS(username));
     }
 
     const hashedPassword = await bcrypt.hash(dto.password, this.saltRounds);
 
-    const newStaff = await this.prisma.user.create({
-      data: {
-        username,
-        password: hashedPassword,
-        role: dto.role,
-        isEmailVerified: true, // Staff created by admin are pre-verified
-        isActive: true,
-      },
+    const newStaff = await this.authRepository.createUser({
+      username,
+      password: hashedPassword,
+      role: dto.role,
+      isEmailVerified: true, // Staff created by admin are pre-verified
+      isActive: true,
     });
 
     this.logger.log(
@@ -437,64 +425,34 @@ export class AuthService {
     );
 
     return {
-      message: `${dto.role.replace('_', ' ')} created successfully.`,
+      message: AUTH_MESSAGES.STAFF_CREATED_SUCCESS(dto.role.replace('_', ' ')),
       staff: this.sanitizeUser(newStaff),
     };
   }
 
   async listStaff(role?: Role) {
-    const whereClause: any = {
-      role: role ? role : { in: [Role.WORKER, Role.OFFICE_STAFF] },
-    };
-
-    const staffList = await this.prisma.user.findMany({
-      where: whereClause,
-      select: {
-        id: true,
-        username: true,
-        email: true,
-        role: true,
-        isActive: true,
-        createdAt: true,
-        updatedAt: true,
-      },
-      orderBy: { createdAt: 'desc' },
-    });
-
-    return staffList;
+    return this.authRepository.findStaff(role);
   }
 
   async deleteStaff(id: string) {
-    const user = await this.prisma.user.findUnique({ where: { id } });
+    const user = await this.authRepository.findUserById(id);
     if (!user) {
-      throw new NotFoundException('Staff member not found');
+      throw new NotFoundException(AUTH_MESSAGES.STAFF_NOT_FOUND);
     }
 
     if (user.role === Role.SUPER_ADMIN) {
-      throw new ForbiddenException('Super Admin accounts cannot be deleted');
+      throw new ForbiddenException(AUTH_MESSAGES.ADMIN_CANNOT_BE_DELETED);
     }
 
-    await this.prisma.user.delete({ where: { id } });
-    return { message: 'Staff member removed successfully' };
+    await this.authRepository.deleteUser(id);
+    return { message: AUTH_MESSAGES.STAFF_DELETED_SUCCESS };
   }
 
   async getMe(userId: string) {
-    const user = await this.prisma.user.findUnique({
-      where: { id: userId },
-      select: {
-        id: true,
-        email: true,
-        username: true,
-        role: true,
-        isEmailVerified: true,
-        isActive: true,
-        createdAt: true,
-        updatedAt: true,
-      },
-    });
+    const user = await this.authRepository.findActiveUserForJwt(userId);
 
     if (!user) {
-      throw new NotFoundException('User profile not found');
+      throw new NotFoundException(AUTH_MESSAGES.USER_NOT_FOUND);
     }
 
     return user;

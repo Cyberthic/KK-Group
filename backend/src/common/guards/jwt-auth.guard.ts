@@ -3,6 +3,8 @@ import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 
+import { AUTH_MESSAGES } from '../constants';
+
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
   constructor(private reflector: Reflector) {
@@ -24,7 +26,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 
   handleRequest(err: any, user: any, info: any) {
     if (err || !user) {
-      throw err || new UnauthorizedException('Authentication token is invalid or missing');
+      throw err || new UnauthorizedException(AUTH_MESSAGES.TOKEN_INVALID_OR_MISSING);
     }
     return user;
   }
