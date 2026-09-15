@@ -35,7 +35,7 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100 font-sans selection:bg-indigo-500 selection:text-white">
+      <body className="min-h-full flex flex-col bg-white text-zinc-900 font-sans selection:bg-emerald-500 selection:text-white">
         <AuthProvider>
           <main className="flex-1 flex flex-col">{children}</main>
         </AuthProvider>
