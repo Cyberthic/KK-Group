@@ -1,5 +1,6 @@
 import React from 'react';
 import { RoleGuard } from '@/components/role-guard';
+import { AdminLayout } from '@/components/Admin/admin-layout';
 
 export default function AdminDashboardLayout({
   children,
@@ -13,7 +14,7 @@ export default function AdminDashboardLayout({
       roleLabel="Super Admin"
       accentColor="purple"
     >
-      {children}
+      <AdminLayout>{children}</AdminLayout>
     </RoleGuard>
   );
 }
