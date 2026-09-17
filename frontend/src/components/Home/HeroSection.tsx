@@ -31,7 +31,7 @@ export function HeroSection() {
   };
 
   return (
-    <section className="relative w-full overflow-hidden bg-[#0d2315] border-b border-emerald-900/20 pt-32 pb-16 sm:pb-24 lg:pb-32">
+    <section className="relative w-full min-h-[100svh] flex items-center overflow-hidden bg-[#0d2315] border-b border-emerald-900/20 pt-32 pb-16 sm:pb-24 lg:pb-32">
       {/* Hero Background Image */}
       <div className="absolute inset-0 z-0">
         <Image
@@ -65,15 +65,15 @@ export function HeroSection() {
 
             {/* Big Bold Headline */}
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-[64px] font-bold text-white tracking-tight leading-[1.08] drop-shadow-md">
-              Professional <br />
-              Lawn Care for <br />
-              Every Season
+              Complete <br />
+              Property Solutions <br />
+              Under One Roof
             </h1>
 
             {/* Subtitle */}
             <p className="mt-5 sm:mt-6 text-zinc-200 text-sm sm:text-base max-w-xl leading-relaxed">
-              Tired of brown patches and weeds? We specialize in transforming lawns into vibrant,
-              picture-perfect landscapes that you&apos;ll love.
+              From tree care and landscaping to electrical, plumbing, and full-scale construction. 
+              We are your trusted experts for comprehensive residential and commercial services.
             </p>
 
             {/* CTA Buttons */}
@@ -176,19 +176,19 @@ export function HeroSection() {
                           onChange={(e) => setFormData({ ...formData, service: e.target.value })}
                           className="w-full appearance-none bg-[#f4f7f5] dark:bg-zinc-800 border border-zinc-200/80 dark:border-zinc-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all pr-8"
                         >
-                          <option value="Lawn Mowing & Maintenance">Lawn Mowing & Maintenance</option>
-                          <option value="Coconut Harvesting & Tree Care">
-                            Coconut Harvesting & Tree Care
-                          </option>
-                          <option value="Electrical & Equipment Service">
-                            Electrical & Equipment Service
-                          </option>
-                          <option value="Plumbing & Irrigation Solutions">
-                            Plumbing & Irrigation Solutions
-                          </option>
-                          <option value="Seasonal Cleanup & Weed Control">
-                            Seasonal Cleanup & Weed Control
-                          </option>
+                          <option value="Cococare - Tree Services">Cococare - Tree Services</option>
+                          <option value="Electrical Services">Electrical Services</option>
+                          <option value="Plumbing Services">Plumbing Services</option>
+                          <option value="Construction Services">Construction Services</option>
+                          <option value="Gardening & Landscaping">Gardening & Landscaping</option>
+                          <option value="Welding Services">Welding Services</option>
+                          <option value="JCB & Excavation">JCB & Excavation</option>
+                          <option value="Borewell Services">Borewell Services</option>
+                          <option value="Construction Materials">Construction Materials</option>
+                          <option value="Real Estate">Real Estate</option>
+                          <option value="Engineering Consulting">Engineering Consulting</option>
+                          <option value="Hotel Services">Hotel Services</option>
+                          <option value="Chicken & Egg Farming">Chicken & Egg Farming</option>
                         </select>
                         <ChevronDown className="w-4 h-4 text-zinc-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                       </div>

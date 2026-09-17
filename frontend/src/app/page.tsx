@@ -6,6 +6,7 @@ import { Footer } from '@/components/Common/Footer';
 import { EnterprisePortalsModal } from '@/components/Common/EnterprisePortalsModal';
 import { HeroSection } from '@/components/Home/HeroSection';
 import { CallOrChatStrip } from '@/components/Home/CallOrChatStrip';
+import { ServicesSection } from '@/components/Home/ServicesSection';
 import { AboutSection } from '@/components/Home/AboutSection';
 import { TeamRolesStrip } from '@/components/Home/TeamRolesStrip';
 import { TestimonialsSection } from '@/components/Home/TestimonialsSection';
@@ -25,6 +26,7 @@ export default function HeroLandingPage() {
         <CallOrChatStrip />
         <AboutSection />
         <TeamRolesStrip />
+        <ServicesSection />
         <TestimonialsSection />
         <BlogSection />
         <EmergencyBanner />

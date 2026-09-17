@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useAuth } from '@/context/auth-context';
 import { getDashboardRoute } from '@/lib/auth-routes';
 import { ChevronDown, Phone, ArrowRight, Menu, X } from 'lucide-react';
@@ -13,27 +14,35 @@ interface HomeNavbarProps {
 export function HomeNavbar({ setShowPortalModal }: HomeNavbarProps) {
   const { user, isAuthenticated } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 30);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
     <>
       {/* Floating Glassy Navbar */}
-      <header className="fixed top-4 left-1/2 -translate-x-1/2 w-[95%] max-w-7xl z-50 flex items-center justify-between px-5 sm:px-8 py-3 bg-black/40 backdrop-blur-md border border-white/20 rounded-full shadow-lg transition-all duration-300">
+      <header 
+        className={`fixed left-1/2 -translate-x-1/2 z-50 flex items-center justify-between transition-all duration-500 ease-in-out ${
+          scrolled 
+            ? 'top-4 w-[95%] max-w-7xl px-5 sm:px-8 py-3 bg-black/50 backdrop-blur-lg border border-white/20 rounded-full shadow-2xl' 
+            : 'top-0 w-full max-w-7xl px-5 sm:px-8 md:px-12 py-6 bg-transparent border-transparent'
+        }`}
+      >
         {/* Brand Pill / Logo */}
         <Link
           href="/"
-          className="flex items-center gap-3 bg-white/10 hover:bg-white/15 backdrop-blur-md border border-white/20 px-4 sm:px-5 py-2 rounded-full transition-all duration-200 group"
+          className="flex items-center gap-2 transition-all duration-200 group"
         >
-          <div className="w-7 h-7 rounded-full bg-emerald-500 flex items-center justify-center text-white shadow-sm font-bold text-xs group-hover:scale-105 transition-transform">
-            KK
+          <div className="relative w-10 h-10 flex-shrink-0 group-hover:scale-105 transition-transform">
+            <Image src="/logos/logo-bg.png" alt="KK Group Logo" fill className="object-contain" />
           </div>
-          <div className="flex flex-col">
-            <span className="text-white font-bold text-base sm:text-lg tracking-tight leading-none">
-              KK Group
-            </span>
-            <span className="text-[10px] text-emerald-300 font-medium tracking-wide uppercase">
-              Field & Lawn Care
-            </span>
-          </div>
+          <span className="text-white font-bold text-base sm:text-lg tracking-tight leading-none drop-shadow-sm">
+            KK Group
+          </span>
         </Link>
 
         {/* Desktop Nav Links */}
@@ -70,13 +79,13 @@ export function HomeNavbar({ setShowPortalModal }: HomeNavbarProps) {
           {/* Phone Pill */}
           <a
             href="tel:+17857126532"
-            className="hidden sm:flex items-center gap-3 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/25 px-4 py-2 rounded-full transition-all group"
+            className="hidden sm:flex items-center gap-2.5 transition-all group mr-2"
           >
             <div className="w-8 h-8 rounded-full bg-white text-[#16a34a] flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
               <Phone className="w-4 h-4 fill-[#16a34a]" />
             </div>
-            <div className="text-left">
-              <p className="text-[10px] text-white/75 font-medium leading-none">Call Now</p>
+            <div className="text-left drop-shadow-sm">
+              <p className="text-[10px] text-white/80 font-medium leading-none">Call Now</p>
               <p className="text-xs sm:text-sm font-bold text-white tracking-wide leading-tight">
                 (785) 712-6532
               </p>

@@ -27,12 +27,12 @@ export function AboutSection() {
         {/* Right Column: Headline, Copy & 2-Col Feature Highlights */}
         <div className="lg:col-span-7 flex flex-col items-start">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-zinc-900 tracking-tight leading-tight">
-            We don&apos;t just work on lawns, <br className="hidden lg:block"/> we bring them to life.
+            Building, maintaining, and <br className="hidden lg:block"/> transforming your spaces.
           </h2>
 
           <p className="mt-6 text-zinc-600 text-base sm:text-lg leading-relaxed max-w-2xl">
-            At Snowly, we believe every lawn deserves expert care. Our mission is to deliver reliable,
-            affordable, and professional lawn services that make your yard look its best all year long.
+            At KK Group, we believe every property deserves expert care and quality craftsmanship. Our mission is to deliver comprehensive,
+            professional solutions—from construction and electrical to landscaping and real estate—so your projects are handled with excellence.
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mt-10 w-full">
@@ -41,9 +41,9 @@ export function AboutSection() {
                 <Sprout className="w-6 h-6" />
               </div>
               <div>
-                <h4 className="font-bold text-zinc-900 text-base">Greener Lawns</h4>
+                <h4 className="font-bold text-zinc-900 text-base">Complete Solutions</h4>
                 <p className="text-sm text-zinc-500 mt-2 leading-relaxed">
-                  Whether you want a small refresh or full transformation, our experts are here to help.
+                  Whether you need a minor repair or a full-scale construction project, our experts are here to help.
                 </p>
               </div>
             </div>

@@ -11,10 +11,10 @@ export function Footer() {
               <div className="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center text-white shadow-lg shadow-emerald-600/20">
                 <Leaf className="w-6 h-6" />
               </div>
-              <span className="font-extrabold text-2xl text-zinc-900 tracking-tight">Snowly</span>
+              <span className="font-extrabold text-2xl text-zinc-900 tracking-tight">KK Group</span>
             </div>
             <p className="text-sm leading-relaxed max-w-sm mb-8">
-              Professional lawn care and snow removal services designed to keep your property vibrant, safe, and worry-free all year round.
+              Professional multi-service solutions including construction, electrical, plumbing, real estate, and landscaping. Quality and reliability under one roof.
             </p>
             <div className="flex gap-4">
               {['Facebook', 'Twitter', 'LinkedIn', 'Instagram'].map((social) => (
@@ -74,7 +74,7 @@ export function Footer() {
         </div>
 
         <div className="pt-8 text-center text-sm font-medium text-zinc-400">
-          <p>© {new Date().getFullYear()} Snowly. All Rights Reserved.</p>
+          <p>© {new Date().getFullYear()} KK Group. All Rights Reserved.</p>
         </div>
       </div>
     </footer>
