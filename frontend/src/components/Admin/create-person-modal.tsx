@@ -13,18 +13,40 @@ interface CreatePersonModalProps {
 }
 
 export function CreatePersonModal({ isOpen, onClose, role, token, onSuccess }: CreatePersonModalProps) {
+  const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [isUsernameManuallyEdited, setIsUsernameManuallyEdited] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
   if (!isOpen) return null;
 
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setEmail(val);
+    if (!isUsernameManuallyEdited && val.includes('@')) {
+      const derived = val.split('@')[0].toLowerCase().replace(/[^a-zA-Z0-9_-]/g, '_');
+      setUsername(derived);
+    }
+  };
+
+  const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setIsUsernameManuallyEdited(true);
+    setUsername(e.target.value);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
-    if (username.length < 3) {
+    const finalUsername = username.trim() || (email.includes('@') ? email.split('@')[0].toLowerCase().replace(/[^a-zA-Z0-9_-]/g, '_') : '');
+
+    if (!finalUsername && !email) {
+      setError('Please provide either an email or a username.');
+      return;
+    }
+    if (finalUsername && finalUsername.length < 3) {
       setError('Username must be at least 3 characters.');
       return;
     }
@@ -35,9 +57,19 @@ export function CreatePersonModal({ isOpen, onClose, role, token, onSuccess }: C
 
     setIsLoading(true);
     try {
-      await api.createStaff({ username, password, role }, token);
+      await api.createStaff(
+        {
+          username: finalUsername || undefined,
+          email: email.trim() || undefined,
+          password,
+          role,
+        },
+        token,
+      );
+      setEmail('');
       setUsername('');
       setPassword('');
+      setIsUsernameManuallyEdited(false);
       onSuccess();
       onClose();
     } catch (err: any) {
@@ -67,14 +99,28 @@ export function CreatePersonModal({ isOpen, onClose, role, token, onSuccess }: C
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-400 mb-1">Username</label>
+            <label className="block text-sm font-medium text-gray-400 mb-1">
+              Email Address <span className="text-gray-600 font-normal">(Optional)</span>
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={handleEmailChange}
+              className="w-full px-4 py-2.5 bg-[#1A1C23] border border-gray-800 rounded-xl text-gray-200 placeholder-gray-600 focus:outline-none focus:border-[#7B4DFF] transition-colors"
+              placeholder="e.g. user@example.com"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-400 mb-1">
+              Username <span className="text-gray-600 font-normal">(Auto-derived from email if left blank)</span>
+            </label>
             <input
               type="text"
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={handleUsernameChange}
               className="w-full px-4 py-2.5 bg-[#1A1C23] border border-gray-800 rounded-xl text-gray-200 placeholder-gray-600 focus:outline-none focus:border-[#7B4DFF] transition-colors"
               placeholder="e.g. johndoe"
-              required
             />
           </div>
 

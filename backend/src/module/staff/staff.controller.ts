@@ -32,6 +32,12 @@ export class StaffController {
   }
 
   @Roles(Role.SUPER_ADMIN)
+  @Get(':username')
+  async getStaffByUsername(@Param('username') username: string) {
+    return this.staffService.getStaffByUsername(username);
+  }
+
+  @Roles(Role.SUPER_ADMIN)
   @Delete(':id')
   async deleteStaff(@Param('id') id: string) {
     return this.staffService.deleteStaff(id);

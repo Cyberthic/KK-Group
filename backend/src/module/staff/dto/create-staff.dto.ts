@@ -1,6 +1,8 @@
 import {
+  IsEmail,
   IsEnum,
   IsNotEmpty,
+  IsOptional,
   IsString,
   Matches,
   MinLength,
@@ -13,12 +15,16 @@ import {
 import { Role } from '../../../database';
 
 export class CreateStaffDto {
+  @IsOptional()
+  @IsEmail({}, { message: VALIDATION_MESSAGES.EMAIL_INVALID })
+  email?: string;
+
+  @IsOptional()
   @IsString()
-  @IsNotEmpty({ message: VALIDATION_MESSAGES.USERNAME_REQUIRED })
   @MinLength(SECURITY_CONSTANTS.USERNAME_MIN_LENGTH, {
     message: VALIDATION_MESSAGES.USERNAME_MIN_LENGTH,
   })
-  username: string;
+  username?: string;
 
   @IsString()
   @IsNotEmpty({ message: VALIDATION_MESSAGES.PASSWORD_REQUIRED })

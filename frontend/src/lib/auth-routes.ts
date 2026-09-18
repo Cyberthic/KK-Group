@@ -1,4 +1,4 @@
-import { UserRole } from './api';
+import { UserRole } from '@/services';
 
 export const ROLE_DASHBOARDS: Record<UserRole, string> = {
   SUPER_ADMIN: '/admin/dashboard',

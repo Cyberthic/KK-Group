@@ -16,6 +16,7 @@ import {
   AUTH_MESSAGES,
   MAIL_CONSTANTS,
   SECURITY_CONSTANTS,
+  resolveUniqueUsername,
 } from '../../common';
 import { OtpType, Role } from '../../database';
 import { MailService } from '../mail/mail.service';
@@ -101,11 +102,33 @@ export class AuthService {
       if (existingUser.isEmailVerified) {
         throw new ConflictException(AUTH_MESSAGES.EMAIL_ALREADY_EXISTS);
       }
-      // Security hardening: Do not overwrite password without email verification
+      // If the unverified user has no username, backfill it now
+      if (!existingUser.username) {
+        const candidateUsername = await resolveUniqueUsername(
+          email,
+          async (candidate) => {
+            const found = await this.authRepository.findUserByUsername(candidate);
+            return !!found && found.id !== existingUser.id;
+          },
+        );
+        await this.authRepository.updateUser(existingUser.id, {
+          username: candidateUsername,
+        });
+        existingUser.username = candidateUsername;
+      }
       user = existingUser;
     } else {
+      const candidateUsername = await resolveUniqueUsername(
+        email,
+        async (candidate) => {
+          const found = await this.authRepository.findUserByUsername(candidate);
+          return !!found;
+        },
+      );
+
       user = await this.authRepository.createUser({
         email,
+        username: candidateUsername,
         password: hashedPassword,
         role: Role.CUSTOMER,
         isEmailVerified: false,

@@ -6,7 +6,12 @@ import {
 import * as bcrypt from 'bcrypt';
 import { StaffRepository } from './staff.repository';
 import { CreateStaffDto, ListStaffDto } from './dto';
-import { AUTH_MESSAGES, SECURITY_CONSTANTS } from '../../common';
+import {
+  AUTH_MESSAGES,
+  SECURITY_CONSTANTS,
+  VALIDATION_MESSAGES,
+  resolveUniqueUsername,
+} from '../../common';
 import { Role } from '../../database';
 
 @Injectable()
@@ -20,9 +25,32 @@ export class StaffService {
       );
     }
 
-    const existingUser = await this.staffRepo.findByUsername(dto.username);
-    if (existingUser) {
-      throw new BadRequestException(AUTH_MESSAGES.USERNAME_ALREADY_EXISTS);
+    let finalUsername = dto.username?.trim();
+    if (!finalUsername) {
+      if (dto.email) {
+        finalUsername = await resolveUniqueUsername(dto.email, async (candidate) => {
+          const found = await this.staffRepo.findByUsername(candidate);
+          return !!found;
+        });
+      } else {
+        throw new BadRequestException(VALIDATION_MESSAGES.USERNAME_REQUIRED);
+      }
+    } else {
+      const existingUser = await this.staffRepo.findByUsername(finalUsername);
+      if (existingUser) {
+        throw new BadRequestException(
+          AUTH_MESSAGES.USERNAME_ALREADY_EXISTS(finalUsername),
+        );
+      }
+    }
+
+    if (dto.email) {
+      const existingEmail = await this.staffRepo.findByEmail(
+        dto.email.toLowerCase().trim(),
+      );
+      if (existingEmail) {
+        throw new BadRequestException(AUTH_MESSAGES.EMAIL_ALREADY_EXISTS);
+      }
     }
 
     const hashedPassword = await bcrypt.hash(
@@ -31,7 +59,8 @@ export class StaffService {
     );
 
     const user = await this.staffRepo.create({
-      username: dto.username,
+      username: finalUsername,
+      email: dto.email ? dto.email.toLowerCase().trim() : undefined,
       password: hashedPassword,
       role: dto.role,
       isEmailVerified: true,
@@ -59,10 +88,28 @@ export class StaffService {
     };
   }
 
+  async getStaffByUsername(username: string) {
+    const user = await this.staffRepo.findByUsername(username);
+    if (!user) {
+      throw new NotFoundException(AUTH_MESSAGES.USER_NOT_FOUND);
+    }
+
+    if (
+      user.role !== Role.WORKER &&
+      user.role !== Role.OFFICE_STAFF &&
+      user.role !== Role.CUSTOMER
+    ) {
+      throw new NotFoundException(AUTH_MESSAGES.USER_NOT_FOUND);
+    }
+
+    const { password: _, ...userWithoutPassword } = user;
+    return userWithoutPassword;
+  }
+
   async deleteStaff(id: string) {
     const user = await this.staffRepo.findById(id);
     if (!user) {
-      throw new NotFoundException('Staff not found');
+      throw new NotFoundException(AUTH_MESSAGES.STAFF_NOT_FOUND);
     }
 
     if (user.role !== Role.WORKER && user.role !== Role.OFFICE_STAFF && user.role !== Role.CUSTOMER) {
@@ -70,6 +117,6 @@ export class StaffService {
     }
 
     await this.staffRepo.delete(id);
-    return { message: 'Staff deleted successfully' };
+    return { message: AUTH_MESSAGES.STAFF_DELETED_SUCCESS };
   }
 }

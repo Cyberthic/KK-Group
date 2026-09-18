@@ -1,9 +1,8 @@
 'use client';
 import React from 'react';
-import { Trash2, Loader2, MoreHorizontal } from 'lucide-react';
+import NextLink from 'next/link';
+import { Trash2, Loader2, MoreHorizontal, ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react';
 import { User as StaffUser } from '@/services';
-
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface PeopleTableProps {
   people: StaffUser[];
@@ -11,9 +10,10 @@ interface PeopleTableProps {
   onPageChange?: (page: number) => void;
   onDelete: (id: string) => void;
   isDeleting: string | null;
+  basePath?: string;
 }
 
-export function PeopleTable({ people, meta, onPageChange, onDelete, isDeleting }: PeopleTableProps) {
+export function PeopleTable({ people, meta, onPageChange, onDelete, isDeleting, basePath }: PeopleTableProps) {
   if (people.length === 0) {
     return (
       <div className="bg-[#14151A] rounded-2xl border border-gray-800 p-8 text-center flex flex-col items-center justify-center">
@@ -22,13 +22,23 @@ export function PeopleTable({ people, meta, onPageChange, onDelete, isDeleting }
     );
   }
 
+  const getProfileHref = (person: StaffUser) => {
+    if (basePath) return `${basePath}/${person.username}`;
+    const roleMap: Record<string, string> = {
+      CUSTOMER: '/admin/people/customers',
+      WORKER: '/admin/people/workers',
+      OFFICE_STAFF: '/admin/people/office-staff',
+    };
+    return `${roleMap[person.role] || '/admin/people/customers'}/${person.username}`;
+  };
+
   return (
     <div className="bg-[#14151A] rounded-2xl border border-gray-800 overflow-hidden">
       <div className="overflow-x-auto custom-scrollbar">
         <table className="w-full text-sm text-left text-gray-400">
           <thead className="text-xs text-gray-500 bg-[#1A1C23] border-b border-gray-800/50">
             <tr>
-              <th scope="col" className="px-6 py-4 font-medium">Username</th>
+              <th scope="col" className="px-6 py-4 font-medium">User / Email</th>
               <th scope="col" className="px-6 py-4 font-medium">Role</th>
               <th scope="col" className="px-6 py-4 font-medium text-center">Status</th>
               <th scope="col" className="px-6 py-4 font-medium">Joined Date</th>
@@ -36,55 +46,76 @@ export function PeopleTable({ people, meta, onPageChange, onDelete, isDeleting }
             </tr>
           </thead>
           <tbody>
-            {people.map((person) => (
-              <tr key={person.id} className="hover:bg-[#1A1C23] transition-colors border-b border-gray-800/30 last:border-0">
-                <td className="px-6 py-4">
-                   <div className="flex items-center gap-3">
-                     <div className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-xs font-bold text-[#7B4DFF]">
-                       {person.username?.charAt(0).toUpperCase() || 'U'}
-                     </div>
-                     <span className="font-medium text-gray-200">@{person.username}</span>
-                   </div>
-                </td>
-                <td className="px-6 py-4">
-                   <span className="px-2.5 py-1 bg-[#2A2D35] text-gray-300 rounded-md text-xs font-medium border border-gray-700">
-                     {person.role.replace('_', ' ')}
-                   </span>
-                </td>
-                <td className="px-6 py-4 text-center">
-                  <div className="flex items-center justify-center gap-2">
-                    <div className={`w-2 h-2 rounded-full ${person.isActive ? 'bg-green-500' : 'bg-red-500'}`}></div>
-                    <span className="text-gray-300">{person.isActive ? 'Active' : 'Inactive'}</span>
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {new Date(person.createdAt).toLocaleDateString('en-US', {
-                    month: 'short',
-                    day: 'numeric',
-                    year: 'numeric'
-                  })}
-                </td>
-                <td className="px-6 py-4 text-right">
-                  <div className="flex items-center justify-end gap-2">
-                    <button className="p-2 text-gray-500 hover:text-gray-300 hover:bg-[#2A2D35] rounded-lg transition-colors">
-                      <MoreHorizontal className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => onDelete(person.id)}
-                      disabled={isDeleting === person.id}
-                      className="p-2 text-red-500/70 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors disabled:opacity-50"
-                      title="Delete User"
-                    >
-                      {isDeleting === person.id ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      ) : (
-                        <Trash2 className="w-4 h-4" />
-                      )}
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
+            {people.map((person) => {
+              const profileHref = getProfileHref(person);
+              return (
+                <tr key={person.id} className="hover:bg-[#1A1C23] transition-colors border-b border-gray-800/30 last:border-0">
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-xl bg-gray-800 flex items-center justify-center text-xs font-bold text-[#7B4DFF]">
+                        {person.username?.charAt(0).toUpperCase() || 'U'}
+                      </div>
+                      <div className="flex flex-col">
+                        <NextLink
+                          href={profileHref}
+                          className="font-medium text-gray-200 hover:text-[#7B4DFF] transition-colors"
+                        >
+                          @{person.username}
+                        </NextLink>
+                        {person.email ? (
+                          <span className="text-xs text-gray-400 truncate max-w-[200px]">
+                            {person.email}
+                          </span>
+                        ) : (
+                          <span className="text-xs text-gray-400">No email</span>
+                        )}
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="px-2.5 py-1 bg-[#2A2D35] text-gray-300 rounded-md text-xs font-medium border border-gray-700">
+                      {person.role.replace('_', ' ')}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    <div className="flex items-center justify-center gap-2">
+                      <div className={`w-2 h-2 rounded-full ${person.isActive ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                      <span className="text-gray-300">{person.isActive ? 'Active' : 'Inactive'}</span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {new Date(person.createdAt).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric'
+                    })}
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      <NextLink
+                        href={profileHref}
+                        className="p-2 text-gray-400 hover:text-white hover:bg-[#2A2D35] rounded-lg transition-colors inline-flex items-center justify-center"
+                        title="View Profile Details"
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                      </NextLink>
+                      <button
+                        onClick={() => onDelete(person.id)}
+                        disabled={isDeleting === person.id}
+                        className="p-2 text-red-500/70 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors disabled:opacity-50"
+                        title="Delete User"
+                      >
+                        {isDeleting === person.id ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <Trash2 className="w-4 h-4" />
+                        )}
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

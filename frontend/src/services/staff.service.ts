@@ -3,7 +3,12 @@ import type { User } from './types';
 
 export const staffService = {
   createStaff: (
-    data: { username: string; password: string; role: 'WORKER' | 'OFFICE_STAFF' | 'CUSTOMER' },
+    data: {
+      username?: string;
+      email?: string;
+      password: string;
+      role: 'WORKER' | 'OFFICE_STAFF' | 'CUSTOMER';
+    },
     token: string,
   ) =>
     request<{ message: string; staff: User }>('/staff', {
@@ -27,6 +32,11 @@ export const staffService = {
       token,
     );
   },
+
+  getStaffByUsername: (username: string, token: string) =>
+    request<User>(`/staff/${username}`, {
+      method: 'GET',
+    }, token),
 
   deleteStaff: (id: string, token: string) =>
     request<{ message: string }>(`/staff/${id}`, {

@@ -1,25 +1,59 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+
+import React, { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '@/context/auth-context';
 import { api, User as StaffUser } from '@/services';
 import { PeopleTable } from '@/components/Admin/people-table';
+import { PeopleCards } from '@/components/Admin/people-cards';
+import { PeopleSkeleton } from '@/components/Admin/people-skeleton';
 import { CreatePersonModal } from '@/components/Admin/create-person-modal';
-import { Users, Plus, Search } from 'lucide-react';
+import { Building2, Plus, Search, RefreshCw, LayoutGrid, List } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 export default function OfficeStaffPage() {
   const { token, user, isLoading: authLoading } = useAuth();
   const router = useRouter();
-  
+
   const [staff, setStaff] = useState<StaffUser[]>([]);
-  const [meta, setMeta] = useState<{ total: number; page: number; limit: number; totalPages: number } | undefined>(undefined);
+  const [meta, setMeta] = useState<
+    { total: number; page: number; limit: number; totalPages: number } | undefined
+  >(undefined);
   const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
-  
+  const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
+
   const [searchTerm, setSearchTerm] = useState('');
   const [page, setPage] = useState(1);
-  const limit = 10;
+  const limit = 9;
+
+  const loadStaff = useCallback(
+    async (search: string, currentPage: number, showRefreshIndicator = false) => {
+      if (!token) return;
+      if (showRefreshIndicator) {
+        setIsRefreshing(true);
+      } else {
+        setIsLoading(true);
+      }
+      try {
+        const result = await api.listStaff(token, {
+          role: 'OFFICE_STAFF',
+          search,
+          page: currentPage,
+          limit,
+        });
+        setStaff(result.data);
+        setMeta(result.meta);
+      } catch (error) {
+        console.error('Failed to load office staff', error);
+      } finally {
+        setIsLoading(false);
+        setIsRefreshing(false);
+      }
+    },
+    [token, limit],
+  );
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -28,7 +62,7 @@ export default function OfficeStaffPage() {
       }
     }, 400);
     return () => clearTimeout(handler);
-  }, [searchTerm, page, token, user]);
+  }, [searchTerm, page, token, user, loadStaff]);
 
   useEffect(() => {
     if (!authLoading) {
@@ -38,30 +72,20 @@ export default function OfficeStaffPage() {
     }
   }, [authLoading, token, user, router]);
 
-  const loadStaff = async (search: string, currentPage: number) => {
-    if (!token) return;
-    setIsLoading(true);
-    try {
-      const result = await api.listStaff(token, { role: 'OFFICE_STAFF', search, page: currentPage, limit });
-      setStaff(result.data);
-      setMeta(result.meta);
-    } catch (error) {
-      console.error('Failed to load office staff', error);
-    } finally {
-      setIsLoading(false);
-    }
+  const handleReload = () => {
+    loadStaff(searchTerm, page, true);
   };
 
   const handleDelete = async (id: string) => {
     if (!token) return;
     if (!confirm('Are you sure you want to delete this staff member?')) return;
-    
+
     setIsDeleting(id);
     try {
       await api.deleteStaff(id, token);
       loadStaff(searchTerm, page);
     } catch (error) {
-      console.error('Failed to delete staff', error);
+      console.error('Failed to delete staff member', error);
       alert('Failed to delete staff member');
     } finally {
       setIsDeleting(null);
@@ -69,31 +93,58 @@ export default function OfficeStaffPage() {
   };
 
   if (authLoading) {
-    return <div className="p-8 text-gray-500">Loading office staff...</div>;
+    return (
+      <div className="space-y-6 max-w-[1200px] mx-auto pb-10">
+        <PeopleSkeleton count={6} viewMode="grid" />
+      </div>
+    );
   }
 
   return (
     <div className="space-y-6 max-w-[1200px] mx-auto pb-10">
+      {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-           <h1 className="text-2xl font-bold text-gray-100 flex items-center gap-3">
-             <div className="p-2 bg-[#1A1C23] border border-gray-800 rounded-xl">
-               <Users className="w-6 h-6 text-[#7B4DFF]" />
-             </div>
-             Office Staff Management
-           </h1>
-           <p className="text-gray-500 text-sm mt-1">Manage office staff accounts and permissions</p>
+          <h1 className="text-2xl font-bold text-gray-100 flex items-center gap-3">
+            <div className="p-2 bg-[#1A1C23] border border-gray-800 rounded-xl">
+              <Building2 className="w-6 h-6 text-purple-400" />
+            </div>
+            Office Staff Management
+          </h1>
+          <p className="text-gray-500 text-sm mt-1">
+            Manage administrative personnel, staff credentials, and portal accounts
+          </p>
         </div>
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="flex items-center gap-2 bg-[#7B4DFF] hover:bg-[#6A3DEE] px-4 py-2 rounded-xl text-sm font-medium text-white shadow-[0_0_15px_rgba(123,77,255,0.3)] transition-all"
-        >
-          <Plus className="w-4 h-4" />
-          Add Office Staff
-        </button>
+
+        <div className="flex items-center gap-2.5 w-full sm:w-auto">
+          {/* In-place Refetch Button */}
+          <button
+            onClick={handleReload}
+            disabled={isRefreshing || isLoading}
+            className="flex items-center gap-2 bg-[#14151A] hover:bg-[#1A1C23] border border-gray-800 px-3.5 py-2 rounded-xl text-sm font-medium text-gray-300 hover:text-white transition-all disabled:opacity-50"
+            title="Refetch without reloading the full page"
+          >
+            <RefreshCw
+              className={`w-4 h-4 text-purple-400 ${
+                isRefreshing ? 'animate-spin' : ''
+              }`}
+            />
+            <span>{isRefreshing ? 'Refetching...' : 'Reload'}</span>
+          </button>
+
+          {/* Add Office Staff Button */}
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="flex items-center gap-2 bg-[#7B4DFF] hover:bg-[#6A3DEE] px-4 py-2 rounded-xl text-sm font-medium text-white shadow-[0_0_15px_rgba(123,77,255,0.3)] transition-all ml-auto sm:ml-0"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Add Office Staff</span>
+          </button>
+        </div>
       </div>
 
-      <div className="flex items-center gap-4 bg-[#14151A] p-4 rounded-2xl border border-gray-800">
+      {/* Search, Filters and View Toggle */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-[#14151A] p-4 rounded-2xl border border-gray-800">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
           <input
@@ -104,18 +155,69 @@ export default function OfficeStaffPage() {
               setSearchTerm(e.target.value);
               setPage(1);
             }}
-            className="w-full pl-10 pr-4 py-2 bg-[#1A1C23] border border-gray-800 rounded-xl text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-[#7B4DFF] transition-colors"
+            className="w-full pl-10 pr-4 py-2 bg-[#1A1C23] border border-gray-800 rounded-xl text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
           />
+        </div>
+
+        <div className="flex items-center justify-between sm:justify-end gap-3">
+          {meta && (
+            <span className="text-xs text-gray-500">
+              Total: <span className="text-gray-300 font-medium">{meta.total}</span>
+            </span>
+          )}
+
+          {/* View Mode Toggle */}
+          <div className="flex items-center bg-[#1A1C23] border border-gray-800 p-1 rounded-xl">
+            <button
+              type="button"
+              onClick={() => setViewMode('grid')}
+              className={`p-1.5 rounded-lg transition-all ${
+                viewMode === 'grid'
+                  ? 'bg-purple-600 text-white shadow-sm'
+                  : 'text-gray-400 hover:text-gray-200'
+              }`}
+              title="Grid View"
+            >
+              <LayoutGrid className="w-4 h-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode('table')}
+              className={`p-1.5 rounded-lg transition-all ${
+                viewMode === 'table'
+                  ? 'bg-purple-600 text-white shadow-sm'
+                  : 'text-gray-400 hover:text-gray-200'
+              }`}
+              title="Table View"
+            >
+              <List className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </div>
 
-      <PeopleTable 
-        people={staff} 
-        meta={meta}
-        onPageChange={setPage}
-        onDelete={handleDelete} 
-        isDeleting={isDeleting} 
-      />
+      {/* Main Content: Cards Grid or Table */}
+      {isLoading && !isRefreshing ? (
+        <PeopleSkeleton count={limit} viewMode={viewMode} />
+      ) : viewMode === 'grid' ? (
+        <PeopleCards
+          people={staff}
+          meta={meta}
+          onPageChange={setPage}
+          onDelete={handleDelete}
+          isDeleting={isDeleting}
+          basePath="/admin/people/office-staff"
+        />
+      ) : (
+        <PeopleTable
+          people={staff}
+          meta={meta}
+          onPageChange={setPage}
+          onDelete={handleDelete}
+          isDeleting={isDeleting}
+          basePath="/admin/people/office-staff"
+        />
+      )}
 
       <CreatePersonModal
         isOpen={isModalOpen}
