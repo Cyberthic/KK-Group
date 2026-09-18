@@ -4,7 +4,7 @@ import React, { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/auth-context';
-import { api } from '@/lib/api';
+import { api } from '@/services';
 import {
   MailCheck,
   ArrowRight,

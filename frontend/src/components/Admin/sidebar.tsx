@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -7,8 +7,16 @@ import { useAuth } from '@/context/auth-context';
 import {
   LayoutDashboard,
   Users,
+  HardHat,
+  Briefcase,
+  UserCircle,
   Building2,
+  Building,
+  Factory,
   ClipboardList,
+  FolderKanban,
+  ClipboardCheck,
+  Box,
   Clock,
   DollarSign,
   Package,
@@ -18,28 +26,27 @@ import {
   Settings,
   LogOut,
   X,
-  ChevronDown,
-  ChevronRight,
   ChevronsLeft,
-  ChevronsRight,
   Menu,
 } from 'lucide-react';
 
 const menuData = [
-  { name: 'Dashboard', icon: LayoutDashboard, href: '/admin/dashboard' },
+  { name: 'Overview', icon: LayoutDashboard, subItems: [
+      { name: 'Dashboard', icon: LayoutDashboard, href: '/admin/dashboard' },
+  ] },
   { name: 'People', icon: Users, subItems: [
-      { name: 'Workers', href: '/admin/people/workers' },
-      { name: 'Office Staff', href: '/admin/people/office-staff' },
-      { name: 'Managers', href: '/admin/people/managers' },
+      { name: 'Workers', icon: HardHat, href: '/admin/people/workers' },
+      { name: 'Office Staff', icon: Briefcase, href: '/admin/people/office-staff' },
+      { name: 'Customers', icon: UserCircle, href: '/admin/people/customers' },
     ] },
   { name: 'Businesses', icon: Building2, subItems: [
-      { name: 'Business Units', href: '/admin/businesses/units' },
-      { name: 'Departments', href: '/admin/businesses/departments' },
+      { name: 'Business Units', icon: Building, href: '/admin/businesses/units' },
+      { name: 'Departments', icon: Factory, href: '/admin/businesses/departments' },
     ] },
   { name: 'Operations', icon: ClipboardList, subItems: [
-      { name: 'Projects', href: '/admin/operations/projects' },
-      { name: 'Assignments', href: '/admin/operations/assignments' },
-      { name: 'Assets', href: '/admin/operations/assets' },
+      { name: 'Projects', icon: FolderKanban, href: '/admin/operations/projects' },
+      { name: 'Assignments', icon: ClipboardCheck, href: '/admin/operations/assignments' },
+      { name: 'Assets', icon: Box, href: '/admin/operations/assets' },
     ] },
   { name: 'Attendance', icon: Clock, href: '/admin/attendance' },
   { name: 'Finance', icon: DollarSign, href: '/admin/finance' },
@@ -57,9 +64,7 @@ interface SidebarProps {
   onToggleCollapse?: () => void; // Desktop toggle
 }
 
-const MenuItem = ({ item, pathname, onClose, isCollapsed, onToggleCollapse }: any) => {
-  const [isOpen, setIsOpen] = useState(false);
-
+const MenuItem = ({ item, pathname, onClose, isCollapsed }: any) => {
   if (item.type === 'divider') {
     return <div className={`h-px bg-gray-800 my-4 ${isCollapsed ? 'mx-2' : 'mx-4'}`} />;
   }
@@ -67,48 +72,40 @@ const MenuItem = ({ item, pathname, onClose, isCollapsed, onToggleCollapse }: an
   const hasSubItems = !!item.subItems;
   const isActive = pathname === item.href || (hasSubItems && item.subItems.some((sub: any) => pathname.startsWith(sub.href)));
 
-  const handleSubItemClick = () => {
-    if (isCollapsed && onToggleCollapse) {
-      onToggleCollapse();
-    }
-    setIsOpen(!isOpen);
-  };
-
   if (hasSubItems) {
     return (
-      <li className="mb-1 relative group">
-        <button
-          onClick={handleSubItemClick}
-          className={`w-full flex items-center ${isCollapsed ? 'justify-center px-0 py-3' : 'justify-between px-4 py-3'} rounded-xl transition-all duration-200 ${
-            isActive && !isOpen && !isCollapsed
-              ? 'bg-[#1A1C23] text-gray-200 border border-gray-700/50'
-              : 'text-gray-400 hover:bg-[#1A1C23] hover:text-gray-200'
-          }`}
+      <li className="mb-4">
+        <div
+          className={`flex items-center ${isCollapsed ? 'justify-center px-0 py-3' : 'px-4 py-2'} text-gray-500`}
           title={isCollapsed ? item.name : undefined}
         >
-          <div className="flex items-center gap-3">
-            <item.icon className={`w-5 h-5 ${isActive && !isOpen ? 'text-[#7B4DFF]' : 'text-gray-500'}`} />
-            {!isCollapsed && <span className="font-medium text-sm">{item.name}</span>}
-          </div>
-          {!isCollapsed && (isOpen ? <ChevronDown className="w-4 h-4 text-gray-500" /> : <ChevronRight className="w-4 h-4 text-gray-500" />)}
-        </button>
-        {isOpen && !isCollapsed && (
-          <ul className="mt-1 pl-12 space-y-1">
-            {item.subItems.map((sub: any) => (
-              <li key={sub.name}>
-                <Link
-                  href={sub.href}
-                  onClick={onClose}
-                  className={`block px-3 py-2 text-sm rounded-lg transition-colors ${
-                    pathname === sub.href
-                      ? 'text-[#7B4DFF] font-medium'
-                      : 'text-gray-500 hover:text-gray-300'
-                  }`}
-                >
-                  {sub.name}
-                </Link>
-              </li>
-            ))}
+          {isCollapsed ? (
+            <item.icon className={`w-5 h-5 ${isActive ? 'text-[#7B4DFF]' : 'text-gray-500'}`} />
+          ) : (
+            <span className="font-semibold text-xs uppercase tracking-wider">{item.name}</span>
+          )}
+        </div>
+        {!isCollapsed && (
+          <ul className="mt-1 space-y-1">
+            {item.subItems.map((sub: any) => {
+              const SubIcon = sub.icon;
+              return (
+                <li key={sub.name}>
+                  <Link
+                    href={sub.href}
+                    onClick={onClose}
+                    className={`flex items-center gap-3 px-4 py-2.5 mx-2 text-sm rounded-xl transition-colors ${
+                      pathname === sub.href
+                        ? 'bg-[#1A1C23] text-[#7B4DFF] font-medium border border-gray-700/50'
+                        : 'text-gray-400 hover:bg-[#1A1C23] hover:text-gray-200'
+                    }`}
+                  >
+                    {SubIcon && <SubIcon className="w-4 h-4" />}
+                    <span>{sub.name}</span>
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
         )}
       </li>
@@ -116,19 +113,19 @@ const MenuItem = ({ item, pathname, onClose, isCollapsed, onToggleCollapse }: an
   }
 
   return (
-    <li className="mb-1 relative group">
+    <li className="mb-1">
       <Link
         href={item.href}
         onClick={onClose}
         title={isCollapsed ? item.name : undefined}
-        className={`flex items-center ${isCollapsed ? 'justify-center px-0 py-3' : 'justify-between px-4 py-3'} rounded-xl transition-all duration-200 ${
+        className={`flex items-center ${isCollapsed ? 'justify-center px-0 py-3 mx-2' : 'px-4 py-2.5 mx-2'} rounded-xl transition-all duration-200 ${
           isActive
-            ? 'bg-[#1A1C23] text-gray-200 border border-gray-700/50'
+            ? 'bg-[#1A1C23] text-[#7B4DFF] font-medium border border-gray-700/50'
             : 'text-gray-400 hover:bg-[#1A1C23] hover:text-gray-200'
         }`}
       >
         <div className="flex items-center gap-3">
-          <item.icon className={`w-5 h-5 ${isActive ? 'text-[#7B4DFF]' : 'text-gray-500'}`} />
+          <item.icon className="w-5 h-5" />
           {!isCollapsed && <span className="font-medium text-sm">{item.name}</span>}
         </div>
       </Link>
@@ -187,17 +184,11 @@ export function Sidebar({ onClose, isCollapsed = false, onToggleCollapse }: Side
         </div>
       )}
 
-      {!isCollapsed && (
-        <div className="px-6 mb-2">
-           <p className="text-xs font-semibold text-gray-600 uppercase tracking-widest whitespace-nowrap">Main Menu</p>
-        </div>
-      )}
-
       {/* Navigation */}
-      <nav className={`flex-1 pb-6 ${isCollapsed ? 'px-2' : 'px-4'}`}>
+      <nav className={`flex-1 pb-6 ${isCollapsed ? 'px-1' : 'px-2'}`}>
         <ul>
           {menuData.map((item, idx) => (
-            <MenuItem key={idx} item={item} pathname={pathname} onClose={onClose} isCollapsed={isCollapsed} onToggleCollapse={onToggleCollapse} />
+            <MenuItem key={idx} item={item} pathname={pathname} onClose={onClose} isCollapsed={isCollapsed} />
           ))}
         </ul>
       </nav>

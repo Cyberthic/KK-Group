@@ -1,5 +1,5 @@
 import React from 'react';
-import { UserRole } from '../lib/api';
+import { UserRole } from '../services';
 
 interface RoleBadgeProps {
   role: UserRole;

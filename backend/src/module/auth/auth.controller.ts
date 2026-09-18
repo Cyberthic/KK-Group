@@ -15,7 +15,6 @@ import { Role } from '../../database';
 import { AuthService } from './auth.service';
 import {
   AdminLoginDto,
-  CreateStaffDto,
   CustomerLoginDto,
   RegisterCustomerDto,
   ResendOtpDto,
@@ -87,28 +86,7 @@ export class AuthController {
     return this.authService.adminLogin(dto);
   }
 
-  // ==========================================
-  // SUPER ADMIN STAFF MANAGEMENT (PROTECTED)
-  // ==========================================
 
-  @Roles(Role.SUPER_ADMIN)
-  @Post('admin/create-staff')
-  @HttpCode(HttpStatus.CREATED)
-  async createStaff(@Body() dto: CreateStaffDto) {
-    return this.authService.createStaff(dto);
-  }
-
-  @Roles(Role.SUPER_ADMIN)
-  @Get('admin/staff')
-  async listStaff(@Query('role') role?: Role) {
-    return this.authService.listStaff(role);
-  }
-
-  @Roles(Role.SUPER_ADMIN)
-  @Delete('admin/staff/:id')
-  async deleteStaff(@Param('id') id: string) {
-    return this.authService.deleteStaff(id);
-  }
 
   // ==========================================
   // CURRENT AUTHENTICATED USER

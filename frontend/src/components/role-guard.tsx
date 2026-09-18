@@ -3,7 +3,7 @@
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/auth-context';
-import { UserRole } from '@/lib/api';
+import { UserRole } from '@/services';
 import { getDashboardRoute } from '@/lib/auth-routes';
 import { Loader2 } from 'lucide-react';
 

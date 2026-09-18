@@ -22,7 +22,6 @@ import { MailService } from '../mail/mail.service';
 import { AuthRepository } from './auth.repository';
 import {
   AdminLoginDto,
-  CreateStaffDto,
   CustomerLoginDto,
   RegisterCustomerDto,
   ResendOtpDto,
@@ -393,60 +392,7 @@ export class AuthService {
     };
   }
 
-  // ==========================================
-  // SUPER ADMIN STAFF MANAGEMENT FLOW
-  // ==========================================
 
-  async createStaff(dto: CreateStaffDto) {
-    const username = dto.username.trim();
-
-    if (dto.role !== Role.WORKER && dto.role !== Role.OFFICE_STAFF) {
-      throw new BadRequestException(AUTH_MESSAGES.INVALID_STAFF_ROLE);
-    }
-
-    const existingUser = await this.authRepository.findUserByUsername(username);
-
-    if (existingUser) {
-      throw new ConflictException(AUTH_MESSAGES.USERNAME_ALREADY_EXISTS(username));
-    }
-
-    const hashedPassword = await bcrypt.hash(dto.password, this.saltRounds);
-
-    const newStaff = await this.authRepository.createUser({
-      username,
-      password: hashedPassword,
-      role: dto.role,
-      isEmailVerified: true, // Staff created by admin are pre-verified
-      isActive: true,
-    });
-
-    this.logger.log(
-      `Staff member created: username='${username}', role='${dto.role}'`,
-    );
-
-    return {
-      message: AUTH_MESSAGES.STAFF_CREATED_SUCCESS(dto.role.replace('_', ' ')),
-      staff: this.sanitizeUser(newStaff),
-    };
-  }
-
-  async listStaff(role?: Role) {
-    return this.authRepository.findStaff(role);
-  }
-
-  async deleteStaff(id: string) {
-    const user = await this.authRepository.findUserById(id);
-    if (!user) {
-      throw new NotFoundException(AUTH_MESSAGES.STAFF_NOT_FOUND);
-    }
-
-    if (user.role === Role.SUPER_ADMIN) {
-      throw new ForbiddenException(AUTH_MESSAGES.ADMIN_CANNOT_BE_DELETED);
-    }
-
-    await this.authRepository.deleteUser(id);
-    return { message: AUTH_MESSAGES.STAFF_DELETED_SUCCESS };
-  }
 
   async getMe(userId: string) {
     const user = await this.authRepository.findActiveUserForJwt(userId);

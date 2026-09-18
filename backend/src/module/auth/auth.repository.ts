@@ -74,25 +74,7 @@ export class AuthRepository {
     });
   }
 
-  async findStaff(role?: Role) {
-    const whereClause: Prisma.UserWhereInput = {
-      role: role ? role : { in: [Role.WORKER, Role.OFFICE_STAFF] },
-    };
 
-    return this.prisma.user.findMany({
-      where: whereClause,
-      select: {
-        id: true,
-        username: true,
-        email: true,
-        role: true,
-        isActive: true,
-        createdAt: true,
-        updatedAt: true,
-      },
-      orderBy: { createdAt: 'desc' },
-    });
-  }
 
   // ==========================================
   // OTP DATABASE OPERATIONS
