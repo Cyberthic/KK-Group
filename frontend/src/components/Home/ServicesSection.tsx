@@ -1,8 +1,11 @@
-import React from 'react';
+'use client';
+
+import React, { useState } from 'react';
 import { 
   TreePine, Zap, Droplets, HardHat, Sprout, Flame, 
-  Tractor, Wrench, Pickaxe, Building2, Ruler, Hotel, Bird, CheckCircle2, Sparkles
+  Tractor, Wrench, Pickaxe, Building2, Ruler, Hotel, Bird, CheckCircle2, Sparkles, ArrowRight
 } from 'lucide-react';
+import { EnquiryModal } from './EnquiryModal';
 
 const SERVICES = [
   {
@@ -125,6 +128,8 @@ const SERVICES = [
 ];
 
 export function ServicesSection() {
+  const [selectedService, setSelectedService] = useState<string | null>(null);
+
   return (
     <section id="services" className="py-20 md:py-28 max-w-7xl mx-auto px-6 sm:px-10 md:px-14">
       <div className="text-center max-w-3xl mx-auto mb-16">
@@ -148,11 +153,11 @@ export function ServicesSection() {
             </div>
             
             <h3 className="font-bold text-xl text-zinc-900 mb-3">{service.title}</h3>
-            <p className="text-sm text-zinc-500 leading-relaxed mb-8 flex-1">
+            <p className="text-sm text-zinc-500 leading-relaxed mb-6 flex-1">
               {service.description}
             </p>
 
-            <ul className="space-y-3 mt-auto pt-6 border-t border-zinc-100">
+            <ul className="space-y-3 mb-6 pt-6 border-t border-zinc-100">
               {service.points.map((point, idx) => (
                 <li key={idx} className="flex items-start gap-3">
                   <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
@@ -160,9 +165,24 @@ export function ServicesSection() {
                 </li>
               ))}
             </ul>
+
+            <button
+              onClick={() => setSelectedService(service.title)}
+              className="w-full mt-auto flex items-center justify-center gap-2 bg-zinc-900 hover:bg-emerald-600 text-white font-medium text-sm py-3 px-4 rounded-xl transition-all duration-200 group/btn"
+            >
+              <span>Enquire for Service</span>
+              <ArrowRight className="w-4 h-4 text-zinc-400 group-hover/btn:text-white group-hover/btn:translate-x-0.5 transition-all" />
+            </button>
           </div>
         ))}
       </div>
+
+      <EnquiryModal
+        isOpen={!!selectedService}
+        onClose={() => setSelectedService(null)}
+        serviceTitle={selectedService || ''}
+      />
     </section>
   );
 }
+

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/auth-context';
 import { getDashboardRoute } from '@/lib/auth-routes';
@@ -17,11 +17,19 @@ import {
   Settings,
   Bell,
   ArrowUpRight,
+  Phone,
+  MapPin,
+  RefreshCw,
+  Loader2,
+  Sparkles,
 } from 'lucide-react';
+import { EnquiryService, ServiceEnquiry } from '@/services';
 
 export default function CustomerDashboardPage() {
   const router = useRouter();
   const { user, token, isLoading } = useAuth();
+  const [enquiries, setEnquiries] = useState<ServiceEnquiry[]>([]);
+  const [loadingEnquiries, setLoadingEnquiries] = useState(true);
 
   useEffect(() => {
     if (!isLoading) {
@@ -32,6 +40,25 @@ export default function CustomerDashboardPage() {
       }
     }
   }, [isLoading, token, user, router]);
+
+  const loadEnquiries = useCallback(async () => {
+    if (!token) return;
+    setLoadingEnquiries(true);
+    try {
+      const res = await EnquiryService.getCustomerEnquiries(token);
+      setEnquiries(res.enquiries || []);
+    } catch {
+      // Graceful fallback
+    } finally {
+      setLoadingEnquiries(false);
+    }
+  }, [token]);
+
+  useEffect(() => {
+    if (token && user?.role === 'CUSTOMER') {
+      loadEnquiries();
+    }
+  }, [loadEnquiries, token, user]);
 
   if (isLoading || !user) {
     return (
@@ -48,7 +75,7 @@ export default function CustomerDashboardPage() {
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white text-2xl font-bold shadow-inner">
-              {user.email?.charAt(0).toUpperCase() || 'C'}
+              {user.email?.charAt(0).toUpperCase() || user.name?.charAt(0).toUpperCase() || 'C'}
             </div>
             <div>
               <div className="flex items-center gap-2 mb-1">
@@ -61,7 +88,7 @@ export default function CustomerDashboardPage() {
                 </span>
               </div>
               <h1 className="text-2xl sm:text-3xl font-black tracking-tight">
-                Welcome back, {user.email?.split('@')[0]}
+                Welcome back, {user.name || user.email?.split('@')[0]}
               </h1>
               <p className="text-xs sm:text-sm text-emerald-100 mt-0.5">
                 {user.email}
@@ -70,12 +97,13 @@ export default function CustomerDashboardPage() {
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="text-right hidden sm:block">
-              <p className="text-[11px] uppercase tracking-wider text-emerald-200 font-semibold">
-                Account Status
-              </p>
-              <p className="text-sm font-bold text-white">Active &amp; Confirmed</p>
-            </div>
+            <a
+              href="/#services"
+              className="flex items-center gap-2 bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/20 text-white text-xs font-semibold px-4 py-2.5 rounded-xl transition-all shadow-sm"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Book New Service</span>
+            </a>
           </div>
         </div>
       </div>
@@ -92,30 +120,22 @@ export default function CustomerDashboardPage() {
 
             <div className="space-y-3.5 text-xs">
               <div className="flex justify-between py-2 border-b border-zinc-100 dark:border-zinc-800">
-                <span className="text-zinc-500 dark:text-zinc-400">Account ID</span>
-                <span className="font-mono text-zinc-700 dark:text-zinc-300 text-[11px] truncate max-w-[180px]">
-                  {user.id}
+                <span className="text-zinc-500 dark:text-zinc-400">Account Name</span>
+                <span className="font-semibold text-zinc-900 dark:text-white">
+                  {user.name || 'Valued Customer'}
                 </span>
               </div>
 
               <div className="flex justify-between py-2 border-b border-zinc-100 dark:border-zinc-800">
-                <span className="text-zinc-500 dark:text-zinc-400">Primary Email</span>
-                <span className="font-semibold text-zinc-800 dark:text-zinc-200">
+                <span className="text-zinc-500 dark:text-zinc-400">Email</span>
+                <span className="font-semibold text-zinc-900 dark:text-white">
                   {user.email}
                 </span>
               </div>
 
               <div className="flex justify-between py-2 border-b border-zinc-100 dark:border-zinc-800">
-                <span className="text-zinc-500 dark:text-zinc-400">Assigned Role</span>
+                <span className="text-zinc-500 dark:text-zinc-400">Account Type</span>
                 <RoleBadge role={user.role} size="sm" />
-              </div>
-
-              <div className="flex justify-between py-2 border-b border-zinc-100 dark:border-zinc-800">
-                <span className="text-zinc-500 dark:text-zinc-400">OTP Confirmation</span>
-                <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
-                  <ShieldCheck className="w-3.5 h-3.5" />
-                  Verified
-                </span>
               </div>
 
               <div className="flex justify-between py-2">
@@ -137,7 +157,7 @@ export default function CustomerDashboardPage() {
               Security Check
             </h3>
             <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed mb-4">
-              Your customer account is protected with email OTP verification on sign-up and salted bcrypt password hashing.
+              Your customer account is protected with email OTP verification and encrypted authentication.
             </p>
             <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-700 dark:text-emerald-300 flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
@@ -146,72 +166,112 @@ export default function CustomerDashboardPage() {
           </div>
         </div>
 
-        {/* Right Column: Customer Services & Activity */}
+        {/* Right Column: Customer Enquiries & Bookings */}
         <div className="lg:col-span-2 space-y-6">
           <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 shadow-sm">
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h2 className="text-lg font-bold text-zinc-900 dark:text-white">
-                  Customer Workspace
+                <h2 className="text-base font-bold text-zinc-900 dark:text-white">
+                  My Service Bookings &amp; Enquiries
                 </h2>
                 <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                  Quick access to customer orders, requests, and inquiries
-                </p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="p-5 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:border-emerald-500/40 bg-zinc-50/50 dark:bg-zinc-950/50 transition-all group cursor-pointer">
-                <div className="w-10 h-10 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
-                  <ShoppingBag className="w-5 h-5" />
-                </div>
-                <h4 className="text-sm font-bold text-zinc-900 dark:text-white mb-1 flex items-center justify-between">
-                  <span>My Active Requests</span>
-                  <ArrowUpRight className="w-4 h-4 text-zinc-400 group-hover:text-emerald-500 transition-colors" />
-                </h4>
-                <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                  View and manage your service bookings and status updates.
+                  Real-time status updates on services you requested
                 </p>
               </div>
 
-              <div className="p-5 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:border-indigo-500/40 bg-zinc-50/50 dark:bg-zinc-950/50 transition-all group cursor-pointer">
-                <div className="w-10 h-10 rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
-                  <Bell className="w-5 h-5" />
-                </div>
-                <h4 className="text-sm font-bold text-zinc-900 dark:text-white mb-1 flex items-center justify-between">
-                  <span>Notifications &amp; Updates</span>
-                  <ArrowUpRight className="w-4 h-4 text-zinc-400 group-hover:text-indigo-500 transition-colors" />
-                </h4>
-                <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                  Check communication logs and task completion messages.
+              <button
+                onClick={loadEnquiries}
+                className="p-2 rounded-xl text-zinc-400 hover:text-zinc-600 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all"
+                title="Refresh"
+              >
+                <RefreshCw className="w-4 h-4" />
+              </button>
+            </div>
+
+            {loadingEnquiries ? (
+              <div className="py-12 flex flex-col items-center justify-center text-zinc-400">
+                <Loader2 className="w-6 h-6 animate-spin text-emerald-500 mb-2" />
+                <span className="text-xs">Loading your enquiries...</span>
+              </div>
+            ) : enquiries.length === 0 ? (
+              <div className="py-12 text-center text-zinc-400 rounded-xl border border-dashed border-zinc-200 dark:border-zinc-800 p-6">
+                <ShoppingBag className="w-8 h-8 text-zinc-400 mx-auto mb-2" />
+                <p className="text-xs font-semibold text-zinc-600 dark:text-zinc-300">
+                  No service enquiries found
                 </p>
+                <p className="text-[11px] text-zinc-400 mt-1 mb-4">
+                  Browse our 13 home &amp; commercial services and submit an enquiry anytime.
+                </p>
+                <a
+                  href="/#services"
+                  className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:underline"
+                >
+                  <span>Explore Services</span>
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                </a>
               </div>
-            </div>
-          </div>
+            ) : (
+              <div className="space-y-4">
+                {enquiries.map((enq) => {
+                  const isCompleted = enq.status === 'COMPLETED';
+                  const isInProgress = enq.status === 'IN_PROGRESS';
+                  const isAssigned = enq.status === 'ASSIGNED';
 
-          {/* Activity Log */}
-          <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 shadow-sm">
-            <h3 className="text-sm font-bold text-zinc-900 dark:text-white uppercase tracking-wider mb-4 flex items-center gap-2">
-              <Clock className="w-4 h-4 text-zinc-400" />
-              Recent Authentication History
-            </h3>
+                  return (
+                    <div
+                      key={enq.id}
+                      className="p-4 rounded-xl border border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-950/40 space-y-2.5"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                            {enq.trackingNumber}
+                          </span>
+                          <h4 className="text-xs font-bold text-zinc-900 dark:text-white">
+                            {enq.serviceName}
+                          </h4>
+                        </div>
 
-            <div className="space-y-3 text-xs">
-              <div className="flex items-center justify-between p-3 rounded-xl bg-zinc-50 dark:bg-zinc-950/60 border border-zinc-100 dark:border-zinc-800">
-                <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 rounded-full bg-emerald-500" />
-                  <div>
-                    <p className="font-semibold text-zinc-900 dark:text-white">
-                      Email OTP Authentication Confirmed
-                    </p>
-                    <p className="text-[11px] text-zinc-400">
-                      Verified via 6-digit one-time code
-                    </p>
-                  </div>
-                </div>
-                <span className="text-[11px] text-zinc-400 font-mono">Today</span>
+                        <span
+                          className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${
+                            isCompleted
+                              ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                              : isInProgress
+                              ? 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400'
+                              : isAssigned
+                              ? 'bg-sky-500/10 text-sky-600 dark:text-sky-400'
+                              : 'bg-amber-500/10 text-amber-600 dark:text-amber-400'
+                          }`}
+                        >
+                          {enq.status.replace('_', ' ')}
+                        </span>
+                      </div>
+
+                      <p className="text-xs text-zinc-600 dark:text-zinc-300">
+                        {enq.message}
+                      </p>
+
+                      {enq.worker && (
+                        <div className="text-[11px] text-sky-700 dark:text-sky-300 bg-sky-50 dark:bg-sky-950/30 p-2.5 rounded-lg border border-sky-100 dark:border-sky-900 flex items-center justify-between">
+                          <span>
+                            Assigned Worker: <strong>{enq.worker.name || 'Specialist'}</strong>
+                          </span>
+                          {enq.worker.phone && (
+                            <a
+                              href={`tel:${enq.worker.phone}`}
+                              className="font-semibold underline flex items-center gap-1"
+                            >
+                              <Phone className="w-3 h-3" />
+                              <span>{enq.worker.phone}</span>
+                            </a>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>

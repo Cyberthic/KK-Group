@@ -10,6 +10,7 @@ import { PrismaModule } from './database/prisma.module';
 import { MailModule } from './module/mail/mail.module';
 import { AuthModule } from './module/auth/auth.module';
 import { AdminModule } from './module/admin/admin.module';
+import { EnquiryModule } from './module/enquiry/enquiry.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import {
   HttpExceptionFilter,
@@ -38,6 +39,7 @@ import {
     MailModule,
     AuthModule,
     AdminModule,
+    EnquiryModule,
   ],
   providers: [
     {

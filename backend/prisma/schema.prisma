@@ -24,20 +24,38 @@ enum OtpType {
   PASSWORD_RESET
 }
 
+enum ServiceStatus {
+  PENDING
+  ASSIGNED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum WorkerStatus {
+  AVAILABLE
+  BUSY
+  OFF_DUTY
+}
+
 model User {
-  id              String   @id @default(uuid())
+  id              String        @id @default(uuid())
   name            String?
-  email           String?  @unique
-  username        String?  @unique
+  email           String?       @unique
+  username        String?       @unique
   phone           String?
   password        String
-  role            Role     @default(CUSTOMER)
-  isEmailVerified Boolean  @default(false)
-  isActive        Boolean  @default(true)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  role            Role          @default(CUSTOMER)
+  workerStatus    WorkerStatus? @default(AVAILABLE)
+  isEmailVerified Boolean       @default(false)
+  isActive        Boolean       @default(true)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 
-  otps Otp[]
+  otps                Otp[]
+  customerEnquiries   ServiceEnquiry[] @relation("CustomerEnquiries")
+  officeEnquiries     ServiceEnquiry[] @relation("OfficeEnquiries")
+  workerAssignments   ServiceEnquiry[] @relation("WorkerAssignments")
 
   @@map("users")
 }
@@ -57,5 +75,39 @@ model Otp {
 
   @@index([email, isUsed])
   @@map("otps")
+}
+
+model ServiceEnquiry {
+  id             String        @id @default(uuid())
+  trackingNumber String        @unique
+  serviceName    String
+  customerName   String
+  customerEmail  String?
+  customerPhone  String
+  location       String?
+  preferredDate  DateTime?
+  message        String
+  status         ServiceStatus @default(PENDING)
+  notes          String?
+
+  customerId     String?
+  customer       User?         @relation("CustomerEnquiries", fields: [customerId], references: [id], onDelete: SetNull)
+
+  officeStaffId  String?
+  officeStaff    User?         @relation("OfficeEnquiries", fields: [officeStaffId], references: [id], onDelete: SetNull)
+
+  workerId       String?
+  worker         User?         @relation("WorkerAssignments", fields: [workerId], references: [id], onDelete: SetNull)
+
+  assignedAt     DateTime?
+  completedAt    DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([status])
+  @@index([trackingNumber])
+  @@index([workerId])
+  @@index([customerId])
+  @@map("service_enquiries")
 }
 

@@ -24,7 +24,7 @@ export const AUTH_MESSAGES = {
     'Email not verified. A fresh verification code has been dispatched to your email.',
 
   // Error Messages - Staff & Portal Segregation
-  INVALID_STAFF_CREDENTIALS: 'Invalid staff username or password.',
+  INVALID_STAFF_CREDENTIALS: 'Invalid username or password.',
   INVALID_STAFF_PORTAL: 'Invalid credentials for staff portal access.',
   STAFF_ACCOUNT_DEACTIVATED:
     'Your staff account has been deactivated. Please contact Super Admin.',
@@ -97,6 +97,18 @@ export const PEOPLE_MESSAGES = {
   NAME_REQUIRED: 'Name is required',
   PHONE_REQUIRED: 'Mobile number is required',
   CUSTOMER_EMAIL_REQUIRED: 'Email address is required for customer accounts',
+};
+
+export const ENQUIRY_MESSAGES = {
+  ENQUIRY_CREATED_SUCCESS: 'Your service enquiry has been submitted successfully',
+  ENQUIRY_NOT_FOUND: 'Service enquiry not found',
+  WORKER_NOT_FOUND: 'Worker not found or invalid role',
+  WORKER_NOT_AVAILABLE: 'Selected worker is currently not available for assignment',
+  ENQUIRY_ASSIGNED_SUCCESS: 'Service enquiry successfully assigned to worker',
+  WORKER_STATUS_UPDATED: 'Worker availability status updated successfully',
+  STATUS_UPDATED_SUCCESS: 'Work ticket status updated successfully',
+  ENQUIRIES_FETCHED_SUCCESS: 'Service enquiries retrieved successfully',
+  WORKERS_FETCHED_SUCCESS: 'Available workers retrieved successfully',
 } as const;
 
 

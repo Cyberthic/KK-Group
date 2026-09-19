@@ -356,7 +356,7 @@ export class AuthService {
     }
 
     if (user.role !== Role.WORKER && user.role !== Role.OFFICE_STAFF) {
-      throw new UnauthorizedException(AUTH_MESSAGES.INVALID_STAFF_PORTAL);
+      throw new UnauthorizedException(AUTH_MESSAGES.INVALID_STAFF_CREDENTIALS);
     }
 
     if (!user.isActive) {
@@ -364,11 +364,7 @@ export class AuthService {
     }
 
     if (dto.portalRole && user.role !== dto.portalRole) {
-      const expectedPortal = dto.portalRole.toLowerCase().replace('_', ' ');
-      const userRole = user.role.toLowerCase().replace('_', ' ');
-      throw new ForbiddenException(
-        AUTH_MESSAGES.PORTAL_ACCESS_DENIED(expectedPortal, userRole),
-      );
+      throw new UnauthorizedException(AUTH_MESSAGES.INVALID_STAFF_CREDENTIALS);
     }
 
     const isMatch = await bcrypt.compare(dto.password, user.password);

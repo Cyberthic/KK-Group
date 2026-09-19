@@ -1,82 +1,166 @@
-import React from 'react';
-import { Phone, MapPin, Mail, Globe, Leaf } from 'lucide-react';
+'use client';
+
+import React, { useState } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { ArrowRight, CheckCircle2, Phone, Mail, MapPin } from 'lucide-react';
 
 export function Footer() {
+  const [email, setEmail] = useState('');
+  const [subscribed, setSubscribed] = useState(false);
+
+  const handleSubscribe = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (email) {
+      setSubscribed(true);
+    }
+  };
+
   return (
-    <footer className="bg-zinc-50 text-zinc-600 pt-20 pb-12 border-t border-zinc-200">
-      <div className="max-w-7xl mx-auto px-6 sm:px-10 md:px-14">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 pb-16 border-b border-zinc-200">
-          <div className="lg:col-span-4">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center text-white shadow-lg shadow-emerald-600/20">
-                <Leaf className="w-6 h-6" />
+    <footer className="relative w-full bg-[#05140c] text-white pt-20 pb-12 overflow-hidden border-t border-emerald-950 select-none">
+      
+      {/* Background radial highlight */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[300px] bg-emerald-500/5 blur-[120px] pointer-events-none" />
+
+      <div className="relative z-10 max-w-6xl mx-auto px-6 sm:px-8">
+        
+        {/* Top Grid: Brand Seal, Blurb, Subscribe & Links */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 sm:gap-12 pb-16 border-b border-emerald-900/30">
+          
+          {/* Col 1: Circular Brand Seal & Blurb */}
+          <div className="md:col-span-5 flex flex-col items-start">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="relative w-12 h-12 rounded-full bg-[#00754a] border-2 border-emerald-400/40 p-1 flex items-center justify-center shadow-lg shadow-emerald-950 overflow-hidden">
+                <Image
+                  src="/logos/logo-bg.png"
+                  alt="KK Group Circular Seal"
+                  fill
+                  className="object-contain p-1"
+                />
               </div>
-              <span className="font-extrabold text-2xl text-zinc-900 tracking-tight">KK Group</span>
+              <div>
+                <h4 className="font-black text-xl tracking-wider uppercase">KK GROUP</h4>
+                <p className="text-[10px] text-emerald-400 font-bold uppercase tracking-widest">
+                  Excellence Across Every Field
+                </p>
+              </div>
             </div>
-            <p className="text-sm leading-relaxed max-w-sm mb-8">
-              Professional multi-service solutions including construction, electrical, plumbing, real estate, and landscaping. Quality and reliability under one roof.
+
+            <p className="text-xs text-emerald-100/70 leading-relaxed max-w-sm mb-6">
+              From precision palm tree climbing and certified electrical installations to heavy earthmoving and turnkey structural engineering. KK Group delivers trusted mastery under one unified roof.
             </p>
-            <div className="flex gap-4">
-              {['Facebook', 'Twitter', 'LinkedIn', 'Instagram'].map((social) => (
-                <a key={social} href="#" className="w-10 h-10 rounded-full bg-white border border-zinc-200 flex items-center justify-center text-zinc-400 hover:text-emerald-600 hover:border-emerald-300 hover:shadow-md transition-all">
-                  <Globe className="w-4 h-4" />
+
+            <div className="space-y-2 text-xs text-emerald-200/80 font-medium">
+              <div className="flex items-center gap-2">
+                <Phone className="w-3.5 h-3.5 text-emerald-400" />
+                <span>+91 (785) 712-6532 / 24/7 Operations</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Mail className="w-3.5 h-3.5 text-emerald-400" />
+                <span>dispatch@kkgroup.com</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <MapPin className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Central HQ: Coimbatore, Tamil Nadu</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Col 2: Navigation Links */}
+          <div className="md:col-span-3">
+            <h5 className="font-black text-xs uppercase tracking-widest text-emerald-400 mb-4">
+              Explore
+            </h5>
+            <ul className="space-y-2.5 text-xs text-emerald-100/80 font-semibold">
+              <li>
+                <a href="#services" className="hover:text-emerald-300 transition-colors">
+                  All 13 Services
                 </a>
-              ))}
-            </div>
-          </div>
-
-          <div className="lg:col-span-2">
-            <h4 className="font-bold text-zinc-900 mb-6">Quick Links</h4>
-            <ul className="space-y-4 text-sm font-medium">
-              {['Home', 'About Us', 'Services', 'Blog', 'Contact Us'].map((link) => (
-                <li key={link}>
-                  <a href="#" className="hover:text-emerald-600 transition-colors">{link}</a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="lg:col-span-3">
-            <h4 className="font-bold text-zinc-900 mb-6">Contact Us</h4>
-            <ul className="space-y-4 text-sm font-medium">
-              <li className="flex items-center gap-3">
-                <Phone className="w-4 h-4 text-emerald-600" />
-                <span className="text-zinc-700">123 456 7890</span>
               </li>
-              <li className="flex items-center gap-3">
-                <MapPin className="w-4 h-4 text-emerald-600" />
-                <span className="text-zinc-700">421 Allen, Mexico 4233</span>
+              <li>
+                <a href="#popular" className="hover:text-emerald-300 transition-colors">
+                  Popular Offerings
+                </a>
               </li>
-              <li className="flex items-center gap-3">
-                <Mail className="w-4 h-4 text-emerald-600" />
-                <span className="text-zinc-700">snowly@gmail.com</span>
+              <li>
+                <a href="#branches" className="hover:text-emerald-300 transition-colors">
+                  Our Regional Branches
+                </a>
+              </li>
+              <li>
+                <Link href="/login" className="hover:text-emerald-300 transition-colors">
+                  Enterprise Portal Login
+                </Link>
+              </li>
+              <li>
+                <a href="#contact" className="hover:text-emerald-300 transition-colors">
+                  Direct Enquiry Desk
+                </a>
               </li>
             </ul>
           </div>
 
-          <div className="lg:col-span-3">
-            <h4 className="font-bold text-zinc-900 mb-6">Working Hours</h4>
-            <div className="bg-white rounded-2xl p-6 border border-zinc-100 shadow-xl shadow-zinc-200/40 space-y-4 text-sm font-medium">
-              <div className="flex justify-between pb-3 border-b border-zinc-50">
-                <span className="text-zinc-900">Mon-Fri:</span>
-                <span className="text-zinc-500">6:00 AM - 7:00 PM</span>
+          {/* Col 3: Subscribe Form (Matches Reference Layout) */}
+          <div className="md:col-span-4">
+            <h5 className="font-black text-xs uppercase tracking-widest text-emerald-400 mb-2">
+              SUBSCRIBE
+            </h5>
+            <p className="text-[11px] text-emerald-200/70 mb-4">
+              Join our VIP list to receive seasonal tree care reminders, maintenance tips, and exclusive rates.
+            </p>
+
+            {subscribed ? (
+              <div className="bg-[#0b291a] border border-emerald-500/40 rounded-2xl p-4 flex items-center gap-2.5 text-xs text-emerald-300">
+                <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                <span>Thank you for subscribing to KK Group updates!</span>
               </div>
-              <div className="flex justify-between pb-3 border-b border-zinc-50">
-                <span className="text-zinc-900">Saturday:</span>
-                <span className="text-zinc-500">2:00 PM - 9:00 PM</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-zinc-900">Sunday:</span>
-                <span className="text-emerald-600 font-bold">Closed</span>
-              </div>
-            </div>
+            ) : (
+              <form onSubmit={handleSubscribe} className="space-y-2">
+                <div className="relative flex items-center">
+                  <input
+                    type="email"
+                    required
+                    placeholder="ENTER YOUR EMAIL..."
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full bg-[#0c2b1c] border border-emerald-700/50 rounded-full px-5 py-3 text-xs text-white placeholder:text-emerald-500/60 uppercase tracking-wider focus:outline-none focus:ring-2 focus:ring-emerald-400 pr-12 font-mono"
+                  />
+                  <button
+                    type="submit"
+                    className="absolute right-1.5 w-9 h-9 rounded-full bg-[#00754a] hover:bg-[#00875a] text-white flex items-center justify-center transition-all shadow-md active:scale-95"
+                    aria-label="Submit newsletter subscription"
+                  >
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                </div>
+                <p className="text-[10px] text-emerald-500/80 pl-2">
+                  No spam. Unsubscribe at any time.
+                </p>
+              </form>
+            )}
+          </div>
+
+        </div>
+
+        {/* Bottom Sub-bar */}
+        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between text-[11px] text-emerald-400/60 gap-4">
+          <p>&copy; {new Date().getFullYear()} KK Group Enterprises. All Rights Reserved.</p>
+          <div className="flex items-center gap-6">
+            <span className="hover:text-emerald-300 cursor-pointer">Privacy Policy</span>
+            <span className="hover:text-emerald-300 cursor-pointer">Terms of Service</span>
+            <span className="hover:text-emerald-300 cursor-pointer">Safety Guidelines</span>
           </div>
         </div>
 
-        <div className="pt-8 text-center text-sm font-medium text-zinc-400">
-          <p>© {new Date().getFullYear()} KK Group. All Rights Reserved.</p>
-        </div>
       </div>
+
+      {/* Massive Faint Watermark at the Very Bottom (Matches "CONTACT" in reference design) */}
+      <div className="relative w-full overflow-hidden pointer-events-none mt-8 -mb-6 flex justify-center">
+        <span className="text-[64px] sm:text-[110px] md:text-[140px] lg:text-[180px] font-black tracking-[0.15em] uppercase text-emerald-950/40 select-none whitespace-nowrap font-sans leading-none">
+          KK GROUP
+        </span>
+      </div>
+
     </footer>
   );
 }
