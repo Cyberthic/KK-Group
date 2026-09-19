@@ -11,8 +11,8 @@ import {
   REGEX_PATTERNS,
   SECURITY_CONSTANTS,
   VALIDATION_MESSAGES,
-} from '../../../common';
-import { Role } from '../../../database';
+} from '../../../../common';
+import { Role } from '../../../../database';
 
 export class CreateStaffDto {
   @IsOptional()

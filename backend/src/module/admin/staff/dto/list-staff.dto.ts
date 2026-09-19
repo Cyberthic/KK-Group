@@ -1,6 +1,6 @@
 import { IsEnum, IsInt, IsOptional, IsString, Min } from 'class-validator';
 import { Type } from 'class-transformer';
-import { Role } from '../../../database';
+import { Role } from '../../../../database';
 
 export class ListStaffDto {
   @IsOptional()

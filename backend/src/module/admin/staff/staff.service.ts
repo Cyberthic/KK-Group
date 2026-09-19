@@ -11,8 +11,8 @@ import {
   SECURITY_CONSTANTS,
   VALIDATION_MESSAGES,
   resolveUniqueUsername,
-} from '../../common';
-import { Role } from '../../database';
+} from '../../../common';
+import { Role } from '../../../database';
 
 @Injectable()
 export class StaffService {

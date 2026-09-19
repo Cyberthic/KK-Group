@@ -9,7 +9,7 @@ import { envValidationSchema } from './config/env.validation';
 import { PrismaModule } from './database/prisma.module';
 import { MailModule } from './module/mail/mail.module';
 import { AuthModule } from './module/auth/auth.module';
-import { StaffModule } from './module/staff/staff.module';
+import { AdminModule } from './module/admin/admin.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import {
   HttpExceptionFilter,
@@ -37,7 +37,7 @@ import {
     PrismaModule,
     MailModule,
     AuthModule,
-    StaffModule,
+    AdminModule,
   ],
   providers: [
     {

@@ -76,3 +76,12 @@ export const VALIDATION_MESSAGES = {
   ROLE_INVALID_STAFF: 'Role must be either WORKER or OFFICE_STAFF',
   PORTAL_ROLE_INVALID: 'portalRole must be WORKER or OFFICE_STAFF',
 } as const;
+
+export const DASHBOARD_MESSAGES = {
+  STATS_FETCHED_SUCCESS: 'Admin dashboard statistics retrieved successfully',
+  TRENDS_FETCHED_SUCCESS: 'Admin registration trends retrieved successfully',
+  ROLES_FETCHED_SUCCESS: 'Role distribution retrieved successfully',
+  RECENT_ACTIVITY_FETCHED_SUCCESS: 'Recent activities retrieved successfully',
+  OVERVIEW_FETCHED_SUCCESS: 'Admin dashboard overview retrieved successfully',
+} as const;
+

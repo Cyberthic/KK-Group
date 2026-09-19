@@ -9,12 +9,12 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { Roles } from '../../common';
-import { Role } from '../../database';
+import { Roles } from '../../../common';
+import { Role } from '../../../database';
 import { StaffService } from './staff.service';
 import { CreateStaffDto, ListStaffDto } from './dto';
 
-@Controller('staff')
+@Controller(['admin/staff', 'staff'])
 export class StaffController {
   constructor(private readonly staffService: StaffService) {}
 
