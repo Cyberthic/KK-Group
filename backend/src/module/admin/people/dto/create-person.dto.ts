@@ -14,7 +14,7 @@ import {
 } from '../../../../common';
 import { Role } from '../../../../database';
 
-export class CreateStaffDto {
+export class CreatePersonDto {
   @IsOptional()
   @IsEmail({}, { message: VALIDATION_MESSAGES.EMAIL_INVALID })
   email?: string;

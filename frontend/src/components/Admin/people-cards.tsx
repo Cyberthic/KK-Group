@@ -14,10 +14,10 @@ import {
   CheckCircle2,
   XCircle,
 } from 'lucide-react';
-import { User as StaffUser } from '@/services';
+import { User } from '@/services';
 
 interface PeopleCardsProps {
-  people: StaffUser[];
+  people: User[];
   meta?: { total: number; page: number; limit: number; totalPages: number };
   onPageChange?: (page: number) => void;
   onDelete: (id: string) => void;
@@ -47,7 +47,7 @@ export function PeopleCards({
     );
   }
 
-  const getProfileHref = (person: StaffUser) => {
+  const getProfileHref = (person: User) => {
     if (basePath) {
       return `${basePath}/${person.username}`;
     }

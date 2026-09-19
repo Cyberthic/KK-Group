@@ -85,3 +85,11 @@ export const DASHBOARD_MESSAGES = {
   OVERVIEW_FETCHED_SUCCESS: 'Admin dashboard overview retrieved successfully',
 } as const;
 
+export const PEOPLE_MESSAGES = {
+  PERSON_NOT_FOUND: 'Person not found',
+  PERSON_CREATED_SUCCESS: (roleName: string) => `${roleName} created successfully.`,
+  PERSON_DELETED_SUCCESS: 'Person removed successfully',
+  CANNOT_MANAGE_ROLE: 'Can only manage WORKER, OFFICE_STAFF, or CUSTOMER roles',
+} as const;
+
+

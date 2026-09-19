@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService, Role, User } from '../../../database';
 import { Prisma } from '../../../generated/prisma';
-import { ListStaffDto } from './dto';
+import { ListPeopleDto } from './dto';
 
 @Injectable()
-export class StaffRepository {
+export class PeopleRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(data: Prisma.UserCreateInput): Promise<User> {
@@ -21,7 +21,7 @@ export class StaffRepository {
     });
   }
 
-  async findManyPaginated(dto: ListStaffDto) {
+  async findManyPaginated(dto: ListPeopleDto) {
     const { role, search, page = 1, limit = 10 } = dto;
     
     const where: Prisma.UserWhereInput = {

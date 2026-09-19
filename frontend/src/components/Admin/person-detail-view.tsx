@@ -22,7 +22,7 @@ import {
   AlertTriangle,
 } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
-import { api, User as StaffUser } from '@/services';
+import { api, User } from '@/services';
 
 interface PersonDetailViewProps {
   username: string;
@@ -40,7 +40,7 @@ export function PersonDetailView({
   const { token, user: currentUser, isLoading: authLoading } = useAuth();
   const router = useRouter();
 
-  const [person, setPerson] = useState<StaffUser | null>(null);
+  const [person, setPerson] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -52,7 +52,7 @@ export function PersonDetailView({
     setIsLoading(true);
     setError(null);
     try {
-      const data = await api.getStaffByUsername(username, token);
+      const data = await api.getPersonByUsername(username, token);
       setPerson(data);
     } catch (err: any) {
       console.error('Failed to fetch person details', err);
@@ -96,7 +96,7 @@ export function PersonDetailView({
 
     setIsDeleting(true);
     try {
-      await api.deleteStaff(person.id, token);
+      await api.deletePerson(person.id, token);
       router.push(backHref);
     } catch (err: any) {
       console.error('Failed to delete user', err);

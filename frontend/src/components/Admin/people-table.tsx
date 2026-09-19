@@ -2,10 +2,10 @@
 import React from 'react';
 import NextLink from 'next/link';
 import { Trash2, Loader2, MoreHorizontal, ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react';
-import { User as StaffUser } from '@/services';
+import { User } from '@/services';
 
 interface PeopleTableProps {
-  people: StaffUser[];
+  people: User[];
   meta?: { total: number; page: number; limit: number; totalPages: number };
   onPageChange?: (page: number) => void;
   onDelete: (id: string) => void;
@@ -22,7 +22,7 @@ export function PeopleTable({ people, meta, onPageChange, onDelete, isDeleting, 
     );
   }
 
-  const getProfileHref = (person: StaffUser) => {
+  const getProfileHref = (person: User) => {
     if (basePath) return `${basePath}/${person.username}`;
     const roleMap: Record<string, string> = {
       CUSTOMER: '/admin/people/customers',

@@ -57,7 +57,7 @@ export function CreatePersonModal({ isOpen, onClose, role, token, onSuccess }: C
 
     setIsLoading(true);
     try {
-      await api.createStaff(
+      await api.createPerson(
         {
           username: finalUsername || undefined,
           email: email.trim() || undefined,

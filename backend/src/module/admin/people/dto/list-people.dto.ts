@@ -2,7 +2,7 @@ import { IsEnum, IsInt, IsOptional, IsString, Min } from 'class-validator';
 import { Type } from 'class-transformer';
 import { Role } from '../../../../database';
 
-export class ListStaffDto {
+export class ListPeopleDto {
   @IsOptional()
   @IsEnum(Role)
   role?: Role;

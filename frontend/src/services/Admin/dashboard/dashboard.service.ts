@@ -1,5 +1,5 @@
-import { request } from '../api-client';
-import type { User, UserRole } from '../types';
+import { request } from '../../api-client';
+import type { User, UserRole } from '../../types';
 
 export interface DashboardStats {
   totalUsers: number;

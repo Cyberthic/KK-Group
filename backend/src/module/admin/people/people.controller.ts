@@ -1,0 +1,45 @@
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
+import { Roles } from '../../../common';
+import { Role } from '../../../database';
+import { PeopleService } from './people.service';
+import { CreatePersonDto, ListPeopleDto } from './dto';
+
+@Controller(['admin/people', 'people'])
+export class PeopleController {
+  constructor(private readonly peopleService: PeopleService) {}
+
+  @Roles(Role.SUPER_ADMIN)
+  @Post()
+  @HttpCode(HttpStatus.CREATED)
+  async createPerson(@Body() dto: CreatePersonDto) {
+    return this.peopleService.createPerson(dto);
+  }
+
+  @Roles(Role.SUPER_ADMIN)
+  @Get()
+  async listPeople(@Query() query: ListPeopleDto) {
+    return this.peopleService.listPeople(query);
+  }
+
+  @Roles(Role.SUPER_ADMIN)
+  @Get(':username')
+  async getPersonByUsername(@Param('username') username: string) {
+    return this.peopleService.getPersonByUsername(username);
+  }
+
+  @Roles(Role.SUPER_ADMIN)
+  @Delete(':id')
+  async deletePerson(@Param('id') id: string) {
+    return this.peopleService.deletePerson(id);
+  }
+}

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '@/context/auth-context';
-import { api, User as StaffUser } from '@/services';
+import { api, User } from '@/services';
 import { PeopleTable } from '@/components/Admin/people-table';
 import { PeopleCards } from '@/components/Admin/people-cards';
 import { PeopleSkeleton } from '@/components/Admin/people-skeleton';
@@ -14,7 +14,7 @@ export default function WorkersPage() {
   const { token, user, isLoading: authLoading } = useAuth();
   const router = useRouter();
 
-  const [staff, setStaff] = useState<StaffUser[]>([]);
+  const [people, setPeople] = useState<User[]>([]);
   const [meta, setMeta] = useState<
     { total: number; page: number; limit: number; totalPages: number } | undefined
   >(undefined);
@@ -28,7 +28,7 @@ export default function WorkersPage() {
   const [page, setPage] = useState(1);
   const limit = 9;
 
-  const loadStaff = useCallback(
+  const loadPeople = useCallback(
     async (search: string, currentPage: number, showRefreshIndicator = false) => {
       if (!token) return;
       if (showRefreshIndicator) {
@@ -37,13 +37,13 @@ export default function WorkersPage() {
         setIsLoading(true);
       }
       try {
-        const result = await api.listStaff(token, {
+        const result = await api.listPeople(token, {
           role: 'WORKER',
           search,
           page: currentPage,
           limit,
         });
-        setStaff(result.data);
+        setPeople(result.data);
         setMeta(result.meta);
       } catch (error) {
         console.error('Failed to load workers', error);
@@ -58,11 +58,11 @@ export default function WorkersPage() {
   useEffect(() => {
     const handler = setTimeout(() => {
       if (token && user?.role === 'SUPER_ADMIN') {
-        loadStaff(searchTerm, page);
+        loadPeople(searchTerm, page);
       }
     }, 400);
     return () => clearTimeout(handler);
-  }, [searchTerm, page, token, user, loadStaff]);
+  }, [searchTerm, page, token, user, loadPeople]);
 
   useEffect(() => {
     if (!authLoading) {
@@ -73,7 +73,7 @@ export default function WorkersPage() {
   }, [authLoading, token, user, router]);
 
   const handleReload = () => {
-    loadStaff(searchTerm, page, true);
+    loadPeople(searchTerm, page, true);
   };
 
   const handleDelete = async (id: string) => {
@@ -82,8 +82,8 @@ export default function WorkersPage() {
 
     setIsDeleting(id);
     try {
-      await api.deleteStaff(id, token);
-      loadStaff(searchTerm, page);
+      await api.deletePerson(id, token);
+      loadPeople(searchTerm, page);
     } catch (error) {
       console.error('Failed to delete worker', error);
       alert('Failed to delete worker');
@@ -201,7 +201,7 @@ export default function WorkersPage() {
         <PeopleSkeleton count={limit} viewMode={viewMode} />
       ) : viewMode === 'grid' ? (
         <PeopleCards
-          people={staff}
+          people={people}
           meta={meta}
           onPageChange={setPage}
           onDelete={handleDelete}
@@ -210,7 +210,7 @@ export default function WorkersPage() {
         />
       ) : (
         <PeopleTable
-          people={staff}
+          people={people}
           meta={meta}
           onPageChange={setPage}
           onDelete={handleDelete}
@@ -224,7 +224,7 @@ export default function WorkersPage() {
         onClose={() => setIsModalOpen(false)}
         role="WORKER"
         token={token!}
-        onSuccess={() => loadStaff(searchTerm, page)}
+        onSuccess={() => loadPeople(searchTerm, page)}
       />
     </div>
   );

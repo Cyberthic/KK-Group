@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
-import { StaffModule } from './staff/staff.module';
+import { PeopleModule } from './people/people.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 
 @Module({
-  imports: [StaffModule, DashboardModule],
-  exports: [StaffModule, DashboardModule],
+  imports: [PeopleModule, DashboardModule],
+  exports: [PeopleModule, DashboardModule],
 })
 export class AdminModule {}
+
 
