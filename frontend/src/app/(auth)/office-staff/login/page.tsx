@@ -129,7 +129,7 @@ export default function OfficeStaffLoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full mt-2 inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-sm font-semibold text-white bg-sky-600 hover:bg-sky-500 disabled:opacity-60 transition-all shadow-md shadow-sky-600/20 cursor-pointer"
+              className="w-full mt-2 inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-500 disabled:opacity-60 transition-all shadow-md shadow-indigo-600/20 cursor-pointer"
             >
               {isLoading ? (
                 <>
@@ -142,6 +142,25 @@ export default function OfficeStaffLoginPage() {
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}
+            </button>
+
+            <div className="relative my-4 flex items-center justify-center">
+              <div className="border-t border-zinc-200 dark:border-zinc-800 w-full" />
+              <span className="bg-white dark:bg-zinc-900 px-3 text-[11px] font-medium text-zinc-400 uppercase tracking-wider absolute">
+                or
+              </span>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                document.cookie = 'kk_demo_staff=true; path=/; max-age=86400; SameSite=Lax';
+                router.push('/office-staff/dashboard?demo=true');
+              }}
+              className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-semibold text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/40 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 border border-indigo-200/80 dark:border-indigo-800 transition-all cursor-pointer"
+            >
+              <span>Instant Access: Explore Finnova Invoices Demo</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </form>
         </div>

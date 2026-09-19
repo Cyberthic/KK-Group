@@ -1,68 +1,116 @@
 'use client';
 
-import React, { useState } from 'react';
-import { TopBar } from '@/components/Home/TopBar';
+import React, { useState, useEffect } from 'react';
+import { Navbar } from '@/components/Home/Navbar';
 import { HeroSection } from '@/components/Home/HeroSection';
-import { ServicesCarousel } from '@/components/Home/ServicesCarousel';
-import { UnmatchedQualitySection } from '@/components/Home/UnmatchedQualitySection';
-import { PopularServicesSection } from '@/components/Home/PopularServicesSection';
-import { BranchesSection } from '@/components/Home/BranchesSection';
-import { ContactSplitSection } from '@/components/Home/ContactSplitSection';
-import { Footer } from '@/components/Common/Footer';
-import { EnterprisePortalsModal } from '@/components/Common/EnterprisePortalsModal';
-import { EnquiryModal } from '@/components/Home/EnquiryModal';
+import { PopularPackagesSection } from '@/components/Home/PopularPackagesSection';
+import { CosmicConnectionsSection } from '@/components/Home/CosmicConnectionsSection';
+import { Footer } from '@/components/Home/Footer';
+
+const HERO_BACKGROUNDS = [
+  {
+    src: '/heros/cococare-harvesting.jpg',
+    alt: 'Cococare Palm Tree Harvesting Squads',
+  },
+  {
+    src: '/heros/electrical-services.jpg',
+    alt: 'Industrial and Domestic Electrical Systems',
+  },
+  {
+    src: '/heros/plumbing-services.jpg',
+    alt: 'Plumbing and Pipeline Infrastructure',
+  },
+  {
+    src: '/heros/residential-electrical-work-services.jpg',
+    alt: 'Residential Electrical Solutions',
+  },
+];
 
 export default function HomePage() {
-  const [showPortalModal, setShowPortalModal] = useState(false);
-  const [modalService, setModalService] = useState<string | null>(null);
+  const [currentBg, setCurrentBg] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentBg((prev) => (prev + 1) % HERO_BACKGROUNDS.length);
+    }, 6000);
+    return () => clearInterval(timer);
+  }, []);
 
   return (
-    <div className="min-h-screen bg-[#07190f] text-white font-sans antialiased selection:bg-[#00c576] selection:text-[#07190f] overflow-x-hidden">
-      
-      {/* Floating Pill Top Navbar */}
-      <TopBar 
-        setShowPortalModal={setShowPortalModal}
-        onOpenEnquiry={() => setModalService('Cococare - Tree Services')}
-      />
+    <div className="w-full min-h-screen bg-[#FAF8F2] text-[#0F172A] font-sans antialiased selection:bg-[#70FFD2] selection:text-slate-950 flex flex-col scroll-smooth">
+      {/* Fixed Navbar (Stays fixed across entire page on scroll) */}
+      <Navbar />
 
-      {/* Main Page Flow Matching Reference Design */}
-      <main>
-        {/* 1. Hero Section: "WHERE EVERY PROJECT TELLS A STORY, WHAT'S YOURS?" */}
-        <HeroSection 
-          onSelectService={(service) => setModalService(service)}
-        />
+      {/* ========================================================
+          1. FIRST SECTION: Single-Screen Hero Viewport (Light Canvas)
+      ======================================================== */}
+      <section className="h-screen w-full min-h-[700px] relative flex flex-col justify-between overflow-hidden shrink-0 pt-16 sm:pt-20">
+        {/* Full-Bleed Panoramic Backgrounds from /heros with Smooth Crossfade */}
+        <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+          {HERO_BACKGROUNDS.map((bg, index) => (
+            <div
+              key={bg.src}
+              className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+                index === currentBg ? 'opacity-100 z-1' : 'opacity-0 z-0'
+              }`}
+            >
+              <img
+                src={bg.src}
+                alt={bg.alt}
+                className="w-full h-full object-cover object-center brightness-[1.02] contrast-[1.02]"
+              />
+            </div>
+          ))}
 
-        {/* 2. Category Filter Pills & Horizontal Services Carousel */}
-        <ServicesCarousel />
+          {/* Luminous Left Vignette for Dark Headline Contrast */}
+          <div className="absolute inset-y-0 left-0 w-3/5 bg-gradient-to-r from-[#FAF8F2]/95 via-[#FAF8F2]/65 to-transparent z-10" />
+          {/* Subtle Top & Bottom Light Ambiance */}
+          <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-[#FAF8F2]/80 via-[#FAF8F2]/25 to-transparent z-10" />
+          <div className="absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-[#FAF8F2]/95 via-[#FAF8F2]/40 to-transparent z-10" />
+        </div>
 
-        {/* 3. "UNMATCHED QUALITY" Showcase + Ribbon Ticker Strip #1 */}
-        <UnmatchedQualitySection />
+        {/* Containerized Customer Side Chassis with Left & Right Breathing Space */}
+        <div className="w-full max-w-[1440px] mx-auto h-full flex flex-col justify-between py-2 sm:py-3 lg:py-4 px-6 sm:px-8 md:px-10 lg:px-12 xl:px-14 relative z-10">
+          {/* Hero Section */}
+          <HeroSection />
 
-        {/* 4. "POPULAR" Section with 3 Protruding Circular Card Headers */}
-        <PopularServicesSection />
+          {/* Background Image Carousel Pagination Indicator */}
+          <div className="absolute bottom-2 sm:bottom-3 right-6 sm:right-10 lg:right-14 z-20 hidden md:flex items-center gap-2 bg-white/80 hover:bg-white backdrop-blur-md px-3 py-1.5 rounded-full border border-slate-200/90 shadow-sm transition-all">
+            <span className="text-[10px] font-bold text-slate-600 mr-1 uppercase tracking-wider">
+              {currentBg + 1} / {HERO_BACKGROUNDS.length}
+            </span>
+            {HERO_BACKGROUNDS.map((bg, index) => (
+              <button
+                key={bg.src}
+                type="button"
+                onClick={() => setCurrentBg(index)}
+                title={bg.alt}
+                aria-label={`Switch to hero background ${index + 1}`}
+                className={`transition-all rounded-full cursor-pointer ${
+                  index === currentBg
+                    ? 'w-5 h-2 bg-[#FF9137] shadow-xs'
+                    : 'w-2 h-2 bg-slate-300 hover:bg-slate-500'
+                }`}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
 
-        {/* 5. "OUR BRANCHES" Vertical Card & 2x2 Hub Grid + Ribbon Ticker Strip #2 */}
-        <BranchesSection />
+      {/* ========================================================
+          2. SECOND SECTION: Popular Packages, Search Bar & Origami Features
+      ======================================================== */}
+      <PopularPackagesSection />
 
-        {/* 6. Side-by-Side Split: White Contact Form & Emerald "THANK YOU!" Card */}
-        <ContactSplitSection />
-      </main>
+      {/* ========================================================
+          3. THIRD SECTION: Cosmic Connections & Planetary Horizons
+      ======================================================== */}
+      <CosmicConnectionsSection />
 
-      {/* 7. Luxury Deep Green Footer with Watermark */}
+      {/* ========================================================
+          4. FOURTH SECTION: Newsletter Call-To-Action & Master Footer
+      ======================================================== */}
       <Footer />
-
-      {/* Enterprise Role Portals Modal */}
-      {showPortalModal && (
-        <EnterprisePortalsModal setShowPortalModal={setShowPortalModal} />
-      )}
-
-      {/* Direct Global Enquiry Modal */}
-      <EnquiryModal
-        isOpen={!!modalService}
-        onClose={() => setModalService(null)}
-        serviceTitle={modalService || ''}
-      />
-
     </div>
   );
 }

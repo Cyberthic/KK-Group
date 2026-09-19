@@ -12,6 +12,8 @@ interface RoleGuardProps {
   loginRoute: string;
   roleLabel: string;
   accentColor?: 'indigo' | 'amber' | 'emerald' | 'purple';
+  allowSuperAdmin?: boolean;
+  allowDemo?: boolean;
   children: React.ReactNode;
 }
 
@@ -27,23 +29,46 @@ export function RoleGuard({
   loginRoute,
   roleLabel,
   accentColor = 'indigo',
+  allowSuperAdmin = false,
+  allowDemo = false,
   children,
 }: RoleGuardProps) {
   const router = useRouter();
   const { user, token, isLoading } = useAuth();
+  const [isDemoMode, setIsDemoMode] = React.useState(false);
+
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('demo') === 'true' || document.cookie.includes('kk_demo_staff=true')) {
+        setIsDemoMode(true);
+      }
+    }
+  }, []);
 
   useEffect(() => {
-    if (isLoading) return;
+    if (isLoading || (allowDemo && isDemoMode)) return;
 
     if (!token || !user) {
       router.replace(loginRoute);
-    } else if (user.role !== allowedRole) {
+    } else if (
+      user.role !== allowedRole &&
+      !(allowSuperAdmin && user.role === 'SUPER_ADMIN')
+    ) {
       router.replace(getDashboardRoute(user.role));
     }
-  }, [isLoading, token, user, allowedRole, loginRoute, router]);
+  }, [isLoading, token, user, allowedRole, loginRoute, router, allowSuperAdmin, allowDemo, isDemoMode]);
+
+  // If in authorized demo mode, render immediately
+  if (allowDemo && isDemoMode) {
+    return <>{children}</>;
+  }
 
   // Loading state or redirecting state
-  if (isLoading || !token || !user || user.role !== allowedRole) {
+  const isAuthorized =
+    user && (user.role === allowedRole || (allowSuperAdmin && user.role === 'SUPER_ADMIN'));
+
+  if (isLoading || !token || !isAuthorized) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center p-12 min-h-[60vh] gap-3">
         <div

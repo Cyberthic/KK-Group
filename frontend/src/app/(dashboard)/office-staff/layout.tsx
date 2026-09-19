@@ -11,7 +11,9 @@ export default function OfficeStaffDashboardLayout({
       allowedRole="OFFICE_STAFF"
       loginRoute="/office-staff/login"
       roleLabel="Office Staff"
-      accentColor="emerald"
+      accentColor="purple"
+      allowSuperAdmin={true}
+      allowDemo={true}
     >
       {children}
     </RoleGuard>

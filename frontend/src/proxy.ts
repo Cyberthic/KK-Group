@@ -111,10 +111,18 @@ export function proxy(request: NextRequest) {
 
   // Office Staff
   if (pathname.startsWith('/office-staff/dashboard')) {
+    // Allow instant preview in demo mode
+    if (
+      request.nextUrl.searchParams.get('demo') === 'true' ||
+      request.cookies.get('kk_demo_staff')?.value === 'true'
+    ) {
+      return NextResponse.next();
+    }
+
     if (!isAuthenticated) {
       return redirectToLogin('/office-staff/login');
     }
-    if (role !== 'OFFICE_STAFF') {
+    if (role !== 'OFFICE_STAFF' && role !== 'SUPER_ADMIN') {
       const destination = (role && ROLE_DASHBOARDS[role]) || '/login';
       return NextResponse.redirect(new URL(destination, request.url));
     }
