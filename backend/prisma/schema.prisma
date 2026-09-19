@@ -26,8 +26,10 @@ enum OtpType {
 
 model User {
   id              String   @id @default(uuid())
+  name            String?
   email           String?  @unique
   username        String?  @unique
+  phone           String?
   password        String
   role            Role     @default(CUSTOMER)
   isEmailVerified Boolean  @default(false)

@@ -71,6 +71,17 @@ export class PeopleRepository {
     return this.prisma.user.findUnique({ where: { email } });
   }
 
+  async findExistingUsernames(candidates: string[]): Promise<string[]> {
+    if (candidates.length === 0) return [];
+    const users = await this.prisma.user.findMany({
+      where: {
+        username: { in: candidates, mode: 'insensitive' },
+      },
+      select: { username: true },
+    });
+    return users.map((u) => u.username?.toLowerCase()).filter(Boolean) as string[];
+  }
+
   async delete(id: string): Promise<User> {
     return this.prisma.user.delete({ where: { id } });
   }

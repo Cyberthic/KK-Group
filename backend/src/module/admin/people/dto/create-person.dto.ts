@@ -15,16 +15,21 @@ import {
 import { Role } from '../../../../database';
 
 export class CreatePersonDto {
-  @IsOptional()
-  @IsEmail({}, { message: VALIDATION_MESSAGES.EMAIL_INVALID })
-  email?: string;
-
-  @IsOptional()
   @IsString()
+  @IsNotEmpty({ message: 'Name is required' })
+  @MinLength(2, { message: 'Name must be at least 2 characters long' })
+  name: string;
+
+  @IsString()
+  @IsNotEmpty({ message: 'Mobile number is required' })
+  mobileNumber: string;
+
+  @IsString()
+  @IsNotEmpty({ message: VALIDATION_MESSAGES.USERNAME_REQUIRED })
   @MinLength(SECURITY_CONSTANTS.USERNAME_MIN_LENGTH, {
     message: VALIDATION_MESSAGES.USERNAME_MIN_LENGTH,
   })
-  username?: string;
+  username: string;
 
   @IsString()
   @IsNotEmpty({ message: VALIDATION_MESSAGES.PASSWORD_REQUIRED })
@@ -39,4 +44,8 @@ export class CreatePersonDto {
   @IsEnum(Role, { message: 'Role must be a valid enum value' })
   @IsNotEmpty()
   role: Role;
+
+  @IsOptional()
+  @IsEmail({}, { message: VALIDATION_MESSAGES.EMAIL_INVALID })
+  email?: string;
 }

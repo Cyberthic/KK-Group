@@ -13,6 +13,7 @@ import {
   ChevronRight,
   CheckCircle2,
   XCircle,
+  Phone,
 } from 'lucide-react';
 import { User } from '@/services';
 
@@ -136,11 +137,11 @@ export function PeopleCards({
                         href={profileHref}
                         className="font-semibold text-gray-100 hover:text-[#7B4DFF] transition-colors truncate block text-base"
                       >
-                        {person.username}
+                        {person.name || person.username}
                       </NextLink>
-                      <span className="text-xs text-gray-400 font-mono">
+                      <p className="text-xs text-gray-500 font-mono truncate">
                         @{person.username}
-                      </span>
+                      </p>
                     </div>
                   </div>
 
@@ -175,6 +176,16 @@ export function PeopleCards({
                       </span>
                     )}
                   </div>
+
+                  {/* Phone */}
+                  {person.phone && (
+                    <div className="flex items-center justify-between text-gray-400 gap-2">
+                      <span className="flex items-center gap-2 text-gray-400 truncate">
+                        <Phone className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+                        <span className="truncate">{person.phone}</span>
+                      </span>
+                    </div>
+                  )}
 
                   {/* Joined Date */}
                   <div className="flex items-center justify-between text-gray-400">

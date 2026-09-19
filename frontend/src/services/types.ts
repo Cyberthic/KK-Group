@@ -2,8 +2,10 @@ export type UserRole = 'CUSTOMER' | 'SUPER_ADMIN' | 'WORKER' | 'OFFICE_STAFF';
 
 export interface User {
   id: string;
+  name?: string | null;
   email?: string | null;
   username?: string | null;
+  phone?: string | null;
   role: UserRole;
   isEmailVerified: boolean;
   isActive: boolean;

@@ -2,10 +2,12 @@ import { request } from '../../api-client';
 import type { User } from '../../types';
 
 export interface CreatePersonData {
-  username?: string;
-  email?: string;
+  name: string;
+  mobileNumber: string;
+  username: string;
   password: string;
   role: 'WORKER' | 'OFFICE_STAFF' | 'CUSTOMER';
+  email?: string;
 }
 
 export interface ListPeopleParams {
@@ -23,6 +25,17 @@ export interface ListPeopleResponse {
     limit: number;
     totalPages: number;
   };
+}
+
+export interface UsernameAvailabilityResponse {
+  isAvailable: boolean;
+  username: string;
+  suggestions: string[];
+}
+
+export interface EmailAvailabilityResponse {
+  isAvailable: boolean;
+  email: string;
 }
 
 export const peopleService = {
@@ -51,6 +64,20 @@ export const peopleService = {
     request<User>(`/admin/people/${username}`, {
       method: 'GET',
     }, token),
+
+  checkUsername: (username: string, token: string) =>
+    request<UsernameAvailabilityResponse>(
+      `/admin/people/check-username?username=${encodeURIComponent(username)}`,
+      { method: 'GET' },
+      token,
+    ),
+
+  checkEmail: (email: string, token: string) =>
+    request<EmailAvailabilityResponse>(
+      `/admin/people/check-email?email=${encodeURIComponent(email)}`,
+      { method: 'GET' },
+      token,
+    ),
 
   deletePerson: (id: string, token: string) =>
     request<{ message: string }>(`/admin/people/${id}`, {

@@ -90,6 +90,14 @@ export const PEOPLE_MESSAGES = {
   PERSON_CREATED_SUCCESS: (roleName: string) => `${roleName} created successfully.`,
   PERSON_DELETED_SUCCESS: 'Person removed successfully',
   CANNOT_MANAGE_ROLE: 'Can only manage WORKER, OFFICE_STAFF, or CUSTOMER roles',
+  USERNAME_AVAILABLE: 'Username is available',
+  USERNAME_TAKEN: 'Username is already taken',
+  EMAIL_AVAILABLE: 'Email is available',
+  EMAIL_TAKEN: 'Email is already in use',
+  NAME_REQUIRED: 'Name is required',
+  PHONE_REQUIRED: 'Mobile number is required',
+  CUSTOMER_EMAIL_REQUIRED: 'Email address is required for customer accounts',
 } as const;
+
 
 

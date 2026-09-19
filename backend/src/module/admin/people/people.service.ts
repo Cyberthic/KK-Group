@@ -4,6 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
+import * as crypto from 'node:crypto';
 import { PeopleRepository } from './people.repository';
 import { CreatePersonDto, ListPeopleDto } from './dto';
 import {
@@ -11,13 +12,81 @@ import {
   PEOPLE_MESSAGES,
   SECURITY_CONSTANTS,
   VALIDATION_MESSAGES,
-  resolveUniqueUsername,
+  REGEX_PATTERNS,
 } from '../../../common';
 import { Role } from '../../../database';
 
 @Injectable()
 export class PeopleService {
   constructor(private readonly peopleRepo: PeopleRepository) {}
+
+  async checkUsernameAvailability(username: string) {
+    const cleanUsername = username?.trim().toLowerCase();
+    if (!cleanUsername) {
+      throw new BadRequestException(VALIDATION_MESSAGES.USERNAME_REQUIRED);
+    }
+
+    if (cleanUsername.length < SECURITY_CONSTANTS.USERNAME_MIN_LENGTH) {
+      throw new BadRequestException(VALIDATION_MESSAGES.USERNAME_MIN_LENGTH);
+    }
+
+    if (!REGEX_PATTERNS.USERNAME.test(cleanUsername)) {
+      throw new BadRequestException(VALIDATION_MESSAGES.USERNAME_FORMAT);
+    }
+
+    const existingUser = await this.peopleRepo.findByUsername(cleanUsername);
+    if (!existingUser) {
+      return {
+        isAvailable: true,
+        username: cleanUsername,
+        suggestions: [],
+      };
+    }
+
+    // Generate candidate suggestions using CSPRNG
+    const candidateSet = new Set<string>();
+    const currentYear = new Date().getFullYear();
+
+    for (let i = 0; i < 5; i++) {
+      candidateSet.add(`${cleanUsername}${crypto.randomInt(10, 99)}`);
+      candidateSet.add(`${cleanUsername}_${crypto.randomInt(10, 99)}`);
+    }
+    for (let i = 0; i < 5; i++) {
+      candidateSet.add(`${cleanUsername}${crypto.randomInt(100, 999)}`);
+      candidateSet.add(`${cleanUsername}_${crypto.randomInt(100, 999)}`);
+    }
+    candidateSet.add(`${cleanUsername}${currentYear}`);
+    candidateSet.add(`${cleanUsername}_${currentYear}`);
+    candidateSet.add(`the_${cleanUsername}`);
+    candidateSet.add(`real_${cleanUsername}`);
+
+    const candidates = Array.from(candidateSet);
+    const existingTaken = await this.peopleRepo.findExistingUsernames(candidates);
+    const takenSet = new Set(existingTaken.map((u) => u.toLowerCase()));
+
+    const availableSuggestions = candidates
+      .filter((cand) => !takenSet.has(cand.toLowerCase()))
+      .slice(0, 3);
+
+    return {
+      isAvailable: false,
+      username: cleanUsername,
+      suggestions: availableSuggestions,
+    };
+  }
+
+  async checkEmailAvailability(email: string) {
+    const cleanEmail = email?.trim().toLowerCase();
+    if (!cleanEmail) {
+      throw new BadRequestException(VALIDATION_MESSAGES.EMAIL_REQUIRED);
+    }
+
+    const existing = await this.peopleRepo.findByEmail(cleanEmail);
+    return {
+      isAvailable: !existing,
+      email: cleanEmail,
+    };
+  }
 
   async createPerson(dto: CreatePersonDto) {
     if (
@@ -28,29 +97,41 @@ export class PeopleService {
       throw new BadRequestException(PEOPLE_MESSAGES.CANNOT_MANAGE_ROLE);
     }
 
-    let finalUsername = dto.username?.trim();
-    if (!finalUsername) {
-      if (dto.email) {
-        finalUsername = await resolveUniqueUsername(dto.email, async (candidate) => {
-          const found = await this.peopleRepo.findByUsername(candidate);
-          return !!found;
-        });
-      } else {
-        throw new BadRequestException(VALIDATION_MESSAGES.USERNAME_REQUIRED);
-      }
-    } else {
-      const existingUser = await this.peopleRepo.findByUsername(finalUsername);
-      if (existingUser) {
-        throw new BadRequestException(
-          AUTH_MESSAGES.USERNAME_ALREADY_EXISTS(finalUsername),
-        );
-      }
+    const finalName = dto.name?.trim();
+    if (!finalName) {
+      throw new BadRequestException(PEOPLE_MESSAGES.NAME_REQUIRED);
     }
 
-    if (dto.email) {
-      const existingEmail = await this.peopleRepo.findByEmail(
-        dto.email.toLowerCase().trim(),
+    const finalMobile = dto.mobileNumber?.trim();
+    if (!finalMobile) {
+      throw new BadRequestException(PEOPLE_MESSAGES.PHONE_REQUIRED);
+    }
+
+    const finalUsername = dto.username?.trim().toLowerCase();
+    if (!finalUsername) {
+      throw new BadRequestException(VALIDATION_MESSAGES.USERNAME_REQUIRED);
+    }
+
+    const existingUsername = await this.peopleRepo.findByUsername(finalUsername);
+    if (existingUsername) {
+      throw new BadRequestException(
+        AUTH_MESSAGES.USERNAME_ALREADY_EXISTS(finalUsername),
       );
+    }
+
+    let finalEmail: string | undefined;
+    if (dto.role === Role.CUSTOMER) {
+      if (!dto.email?.trim()) {
+        throw new BadRequestException(PEOPLE_MESSAGES.CUSTOMER_EMAIL_REQUIRED);
+      }
+      finalEmail = dto.email.trim().toLowerCase();
+      const existingEmail = await this.peopleRepo.findByEmail(finalEmail);
+      if (existingEmail) {
+        throw new BadRequestException(AUTH_MESSAGES.EMAIL_ALREADY_EXISTS);
+      }
+    } else if (dto.email?.trim()) {
+      finalEmail = dto.email.trim().toLowerCase();
+      const existingEmail = await this.peopleRepo.findByEmail(finalEmail);
       if (existingEmail) {
         throw new BadRequestException(AUTH_MESSAGES.EMAIL_ALREADY_EXISTS);
       }
@@ -62,8 +143,10 @@ export class PeopleService {
     );
 
     const user = await this.peopleRepo.create({
+      name: finalName,
+      phone: finalMobile,
       username: finalUsername,
-      email: dto.email ? dto.email.toLowerCase().trim() : undefined,
+      email: finalEmail,
       password: hashedPassword,
       role: dto.role,
       isEmailVerified: true,

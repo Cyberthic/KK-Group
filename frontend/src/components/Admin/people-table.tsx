@@ -60,14 +60,21 @@ export function PeopleTable({ people, meta, onPageChange, onDelete, isDeleting, 
                           href={profileHref}
                           className="font-medium text-gray-200 hover:text-[#7B4DFF] transition-colors"
                         >
-                          @{person.username}
+                          {person.name || `@${person.username}`}
                         </NextLink>
-                        {person.email ? (
-                          <span className="text-xs text-gray-400 truncate max-w-[200px]">
+                        <div className="flex items-center gap-1.5 text-xs text-gray-400">
+                          <span className="font-mono text-gray-400">@{person.username}</span>
+                          {person.phone && (
+                            <>
+                              <span className="text-gray-600">•</span>
+                              <span className="text-gray-400">{person.phone}</span>
+                            </>
+                          )}
+                        </div>
+                        {person.email && (
+                          <span className="text-[11px] text-gray-500 truncate max-w-[200px]">
                             {person.email}
                           </span>
-                        ) : (
-                          <span className="text-xs text-gray-400">No email</span>
                         )}
                       </div>
                     </div>

@@ -12,7 +12,12 @@ import {
 import { Roles } from '../../../common';
 import { Role } from '../../../database';
 import { PeopleService } from './people.service';
-import { CreatePersonDto, ListPeopleDto } from './dto';
+import {
+  CheckEmailDto,
+  CheckUsernameDto,
+  CreatePersonDto,
+  ListPeopleDto,
+} from './dto';
 
 @Controller(['admin/people', 'people'])
 export class PeopleController {
@@ -29,6 +34,18 @@ export class PeopleController {
   @Get()
   async listPeople(@Query() query: ListPeopleDto) {
     return this.peopleService.listPeople(query);
+  }
+
+  @Roles(Role.SUPER_ADMIN)
+  @Get('check-username')
+  async checkUsername(@Query() query: CheckUsernameDto) {
+    return this.peopleService.checkUsernameAvailability(query.username);
+  }
+
+  @Roles(Role.SUPER_ADMIN)
+  @Get('check-email')
+  async checkEmail(@Query() query: CheckEmailDto) {
+    return this.peopleService.checkEmailAvailability(query.email);
   }
 
   @Roles(Role.SUPER_ADMIN)

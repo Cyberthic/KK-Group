@@ -299,7 +299,7 @@ export function PersonDetailView({
             <div>
               <div className="flex flex-wrap items-center gap-3 mb-1">
                 <h2 className="text-2xl font-bold text-gray-100">
-                  {person.username}
+                  {person.name || person.username}
                 </h2>
                 <span
                   className={`px-3 py-1 text-xs font-semibold rounded-lg border ${theme.bg} ${theme.text} ${theme.border} uppercase tracking-wider`}
@@ -381,6 +381,14 @@ export function PersonDetailView({
               </div>
             </div>
 
+            {/* Full Name */}
+            <div className="flex justify-between items-center py-1 border-b border-gray-800/40">
+              <span className="text-gray-500">Full Name</span>
+              <span className="font-medium text-gray-200">
+                {person.name || 'Not provided'}
+              </span>
+            </div>
+
             {/* Username */}
             <div className="flex justify-between items-center py-1 border-b border-gray-800/40">
               <span className="text-gray-500">Username</span>
@@ -436,6 +444,14 @@ export function PersonDetailView({
                   {person.isEmailVerified ? 'Verified' : 'Unverified'}
                 </span>
               </div>
+            </div>
+
+            {/* Mobile Number */}
+            <div className="flex justify-between items-center py-1 border-b border-gray-800/40">
+              <span className="text-gray-500">Mobile Number</span>
+              <span className="font-medium text-gray-200">
+                {person.phone || 'Not provided'}
+              </span>
             </div>
 
             {/* Created At */}
