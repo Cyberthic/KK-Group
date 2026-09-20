@@ -1,421 +1,293 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import {
-  Play,
   ArrowRight,
-  ChevronLeft,
-  ChevronRight,
-  Star,
-  ShieldCheck,
-  Headphones,
-  CalendarCheck,
-  Lock,
+  Sparkles,
+  Shirt,
+  Leaf,
+  Gem,
+  ShoppingCart,
+  Heart,
 } from 'lucide-react';
-import { EnquiryBox } from './EnquiryBox';
+import { useLanguage } from '@/context/language-context';
+import { translations } from '@/lib/translations';
 
 export function HeroSection() {
-  // ========================================================
-  // Services Auto-Scrolling Carousel Data & Engine
-  // ========================================================
-  const services = [
-    {
-      id: 'cococare',
-      title: 'Cococare Harvesting',
-      region: 'Palakkad, Kerala',
-      rating: '4.9',
-      image:
-        'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=600&auto=format&fit=crop&q=80',
-    },
-    {
-      id: 'jcb',
-      title: 'JCB Heavy Machinery',
-      region: 'Ernakulam / Kochi',
-      rating: '4.8',
-      image:
-        'https://images.unsplash.com/photo-1579273166629-9e8c3b9b47e2?w=600&auto=format&fit=crop&q=80',
-    },
-    {
-      id: 'plastering',
-      title: 'Plastering Squads',
-      region: 'Thrissur / Malappuram',
-      rating: '4.9',
-      image:
-        'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&auto=format&fit=crop&q=80',
-    },
-    {
-      id: 'tiling',
-      title: 'Tile & Marble Laying',
-      region: 'Calicut / Wayanad',
-      rating: '4.8',
-      image:
-        'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=600&auto=format&fit=crop&q=80',
-    },
-    {
-      id: 'painting',
-      title: 'Commercial Painting',
-      region: 'Coimbatore, TN',
-      rating: '4.7',
-      image:
-        'https://images.unsplash.com/photo-1562259949-e8e7689d7828?w=600&auto=format&fit=crop&q=80',
-    },
-    {
-      id: 'pruning',
-      title: 'Crown Cleaning & Care',
-      region: 'Pollachi / Alathur',
-      rating: '4.9',
-      image:
-        'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=600&auto=format&fit=crop&q=80',
-    },
-    {
-      id: 'excavation',
-      title: 'Trenching & Drainage',
-      region: 'Palakkad / Ottapalam',
-      rating: '4.8',
-      image:
-        'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=600&auto=format&fit=crop&q=80',
-    },
-    {
-      id: 'workforce',
-      title: 'Field Squad Units',
-      region: 'All Kerala Districts',
-      rating: '4.9',
-      image:
-        'https://images.unsplash.com/photo-1541888946425-d0fbb186c5f6?w=600&auto=format&fit=crop&q=80',
-    },
-  ];
-
-  // Carousel Infinite Scrolling State
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isTransitionEnabled, setIsTransitionEnabled] = useState(true);
-  const [isPaused, setIsPaused] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-
-  // Detect Mobile Viewport for responsive step width
-  useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 640);
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  // Auto-scroll one by one every 3.2 seconds
-  useEffect(() => {
-    if (isPaused) return;
-    const interval = setInterval(() => {
-      setIsTransitionEnabled(true);
-      setCurrentIndex((prev) => prev + 1);
-    }, 3200);
-    return () => clearInterval(interval);
-  }, [isPaused]);
-
-  // Seamless circular loop reset when reaching end of primary array
-  useEffect(() => {
-    if (currentIndex >= services.length) {
-      const timer = setTimeout(() => {
-        setIsTransitionEnabled(false);
-        setCurrentIndex(0);
-      }, 700);
-      return () => clearTimeout(timer);
-    }
-  }, [currentIndex, services.length]);
-
-  // Manual Previous / Next controls
-  const handlePrev = () => {
-    setIsTransitionEnabled(true);
-    if (currentIndex === 0) {
-      setIsTransitionEnabled(false);
-      setCurrentIndex(services.length);
-      setTimeout(() => {
-        setIsTransitionEnabled(true);
-        setCurrentIndex(services.length - 1);
-      }, 20);
-    } else {
-      setCurrentIndex((prev) => prev - 1);
-    }
-  };
-
-  const handleNext = () => {
-    setIsTransitionEnabled(true);
-    setCurrentIndex((prev) => prev + 1);
-  };
+  const { language } = useLanguage();
+  const t = translations[language].hero;
 
   return (
-    <div className="w-full flex-1 flex flex-col justify-between pt-1 pb-1 relative z-10">
+    <div className="w-full relative overflow-visible select-none">
       {/* ========================================================
-          1. UPPER HERO ROW: Editorial Headline (Left) & Enquiry Box (Right)
+          1. UPPER SECTION: Giant Typography ("Define Your STYLE" / "Own Your ✦ WORLD")
       ======================================================== */}
-      <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center relative my-auto">
-        {/* Left Column: Editorial Serif Headline & Action Buttons */}
-        <div className="lg:col-span-7 flex flex-col justify-center z-20">
-          {/* Kicker with Sunset Orange (#FF9137) Line */}
-          <div className="flex items-center gap-2.5 mb-2 sm:mb-3">
-            <span className="w-6 sm:w-8 h-[2.5px] bg-[#FF9137] rounded-full inline-block" />
-            <span className="text-[10px] sm:text-[11px] font-black tracking-[0.28em] text-[#FF9137] uppercase">
-              KK GROUP ENTERPRISE SOLUTIONS
+      <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 pt-2 sm:pt-4 pb-2 relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end relative">
+          {/* Left Title: "Define Your" + "STYLE" */}
+          <div className="flex flex-col z-10 md:pr-16">
+            <span className="font-serif italic font-extrabold text-3xl sm:text-4xl md:text-5xl lg:text-[54px] text-[#0F172A] tracking-tight leading-none mb-1">
+              {t.defineYour}
             </span>
+            <h1 className="font-black text-6xl sm:text-7xl md:text-8xl lg:text-[104px] xl:text-[118px] text-[#8B5CF6] tracking-tight leading-[0.88] uppercase">
+              {t.style}
+            </h1>
           </div>
 
-          {/* Main Editorial Headline in Dark Espresso / Navy */}
-          <h1 className="font-serif text-5xl sm:text-6xl xl:text-[76px] 2xl:text-[84px] leading-[1.04] tracking-normal text-[#0F172A] font-normal drop-shadow-xs">
-            Adventures <br />
-            That Stay <br />
-            With You
-          </h1>
-
-          {/* Subtitle Paragraph */}
-          <p className="text-xs sm:text-sm text-slate-700 font-medium mt-3 sm:mt-4 max-w-md leading-relaxed drop-shadow-xs">
-            Deploy on-demand verified teams, heavy machinery, coconut harvesting squads, and premium operations across the region.
-          </p>
-
-          {/* Action Buttons */}
-          <div className="mt-5 sm:mt-6 flex flex-wrap items-center gap-4 sm:gap-5">
-            {/* Primary Sunset Orange (#FF9137) Button */}
-            <button
-              onClick={() => {
-                const el = document.getElementById('enquiry-card');
-                el?.scrollIntoView({ behavior: 'smooth' });
-              }}
-              className="bg-[#FF9137] hover:bg-[#FFCC4D] text-white hover:text-slate-950 font-bold text-xs sm:text-sm px-6 py-3 rounded-full shadow-md flex items-center gap-2 transition-all cursor-pointer active:scale-95"
-            >
-              <span>Explore Services</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-
-            {/* Watch Video Glass Light Button */}
-            <div className="flex items-center gap-3 group cursor-pointer">
-              <button
-                type="button"
-                title="Watch Video"
-                className="w-11 h-11 rounded-full bg-white/90 hover:bg-white backdrop-blur-md border border-slate-200/80 flex items-center justify-center text-[#0F172A] transition-all shadow-sm group-hover:scale-105 cursor-pointer"
+          {/* Right Title: "Own Your ✦" + "WORLD" */}
+          <div className="flex flex-col z-10 md:pl-16 md:items-start">
+            <div className="flex items-center gap-2 sm:gap-3 mb-1">
+              <span className="font-black text-3xl sm:text-4xl md:text-5xl lg:text-[54px] text-[#0F172A] tracking-tight leading-none">
+                {t.ownYour}
+              </span>
+              {/* Purple 4-pointed Sparkle Star */}
+              <svg
+                viewBox="0 0 24 24"
+                fill="#8B5CF6"
+                className="w-6 h-6 sm:w-8 sm:h-8 md:w-9 md:h-9 text-[#8B5CF6] shrink-0"
               >
-                <Play className="w-4 h-4 fill-[#0F172A] text-[#0F172A] ml-0.5" />
-              </button>
-              <div className="flex flex-col">
-                <span className="text-xs font-bold text-[#0F172A] leading-tight group-hover:text-[#FF9137] transition-colors">
-                  Watch Video
-                </span>
-                <span className="text-[10px] text-slate-600 font-medium">
-                  See KK Group in action
-                </span>
-              </div>
+                <path d="M12 0L14.7 9.3L24 12L14.7 14.7L12 24L9.3 14.7L0 12L9.3 9.3L12 0Z" />
+              </svg>
             </div>
+            <h1 className="font-black text-6xl sm:text-7xl md:text-8xl lg:text-[104px] xl:text-[118px] text-[#8B5CF6] tracking-tight leading-[0.88] uppercase">
+              {t.world}
+            </h1>
           </div>
-        </div>
-
-        {/* ========================================================
-            Center Flight Path Trajectory & Pin
-        ======================================================== */}
-        <div className="hidden xl:block absolute left-[44%] top-[12%] pointer-events-none z-10 w-[240px] h-[170px]">
-          <svg viewBox="0 0 240 170" className="w-full h-full overflow-visible">
-            {/* Curved dashed flight line in Sunset Orange */}
-            <path
-              d="M 210 25 C 130 15, 65 65, 42 140"
-              stroke="#FF9137"
-              strokeWidth="2"
-              strokeDasharray="4 4"
-              strokeOpacity="0.85"
-              fill="none"
-            />
-            {/* White/Orange Airplane Flying Top-Right */}
-            <g transform="translate(212, 23) rotate(35)">
-              <path d="M 0,-8 L 3,5 L 0,3 L -3,5 Z" fill="#FF9137" />
-              <path d="M -6,0 L 6,0 L 0,-4 Z" fill="#FFCC4D" />
-            </g>
-          </svg>
-
-          {/* Clean Mint (#70FFD2) Map Pin with Sunset Border */}
-          <div className="absolute left-[31px] top-[131px] flex items-center justify-center">
-            <div className="w-5 h-5 rounded-full bg-white border-2 border-[#FF9137] shadow-sm flex items-center justify-center">
-              <div className="w-2 h-2 rounded-full bg-[#70FFD2]" />
-            </div>
-          </div>
-        </div>
-
-        {/* ========================================================
-            Right Column: Standalone EnquiryBox Component
-        ======================================================== */}
-        <div className="lg:col-span-5 flex justify-end z-20 lg:pt-6 xl:pt-8">
-          <EnquiryBox />
         </div>
       </div>
 
       {/* ========================================================
-          2. LOWER HERO ROW: Popular Services (Auto-Scrolling 1-by-1) & Trust Bar
+          2. MAIN STAGE: Purple Bento Chassis with Central Model Overlay
       ======================================================== */}
-      <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-8 items-end my-auto pt-2">
-        {/* Left: Popular Services Auto-Scrolling Carousel (7 Cols) */}
-        <div className="lg:col-span-7 flex flex-col justify-end overflow-hidden">
-          {/* Header Row */}
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-3">
-              <h3 className="text-sm sm:text-base font-extrabold text-[#0F172A] tracking-tight">
-                Popular Services
-              </h3>
-              <Link
-                href="#services"
-                className="text-[11px] font-bold text-[#FF9137] hover:underline cursor-pointer"
-              >
-                View all
-              </Link>
-            </div>
+      <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 relative mt-3 sm:mt-5 pb-6">
+        {/* The Purple Bento Container Card */}
+        <div className="w-full bg-[#8E62ED] rounded-[36px] sm:rounded-[48px] md:rounded-[56px] relative overflow-hidden p-6 sm:p-10 lg:p-14 min-h-[520px] sm:min-h-[560px] lg:min-h-[580px] text-white shadow-2xl flex flex-col justify-between">
+          {/* Subtle Ambient Background Gradient Accents inside the card */}
+          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-white/5 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-purple-900/10 rounded-full blur-3xl pointer-events-none" />
 
-            {/* Left/Right Light Carousel Controls */}
-            <div className="flex items-center gap-1.5">
-              <button
-                type="button"
-                onClick={handlePrev}
-                title="Previous Service"
-                className="w-6 h-6 rounded-full bg-white/90 hover:bg-white border border-slate-200 flex items-center justify-center text-slate-800 transition-all shadow-xs cursor-pointer"
-              >
-                <ChevronLeft className="w-3 h-3" />
-              </button>
-              <button
-                type="button"
-                onClick={handleNext}
-                title="Next Service"
-                className="w-6 h-6 rounded-full bg-white/90 hover:bg-white border border-slate-200 flex items-center justify-center text-slate-800 transition-all shadow-xs cursor-pointer"
-              >
-                <ChevronRight className="w-3 h-3" />
-              </button>
-            </div>
-          </div>
+          {/* Grid Layout inside the Card: Left Column & Right Column */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-between h-full relative z-10">
+            {/* ----------------------------------------------------
+                LEFT COLUMN: Kicker, Big Headline, Subtitle, CTA, Social Proof
+            ---------------------------------------------------- */}
+            <div className="lg:col-span-5 flex flex-col justify-between z-10">
+              <div>
+                {/* ✦ New Collection Kicker */}
+                <div className="inline-flex items-center gap-1.5 text-xs sm:text-[13px] font-bold text-white/90 mb-3 sm:mb-4">
+                  <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5">
+                    <path d="M12 0L14.7 9.3L24 12L14.7 14.7L12 24L9.3 14.7L0 12L9.3 9.3L12 0Z" />
+                  </svg>
+                  <span>{t.newCollection}</span>
+                </div>
 
-          {/* Auto-Scrolling Sliding Cards Track (One by One) */}
-          <div
-            className="overflow-hidden w-full py-1"
-            onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={() => setIsPaused(false)}
-          >
-            <div
-              className={`flex ${
-                isTransitionEnabled ? 'transition-transform duration-700 ease-out' : ''
-              }`}
-              style={{
-                transform: `translateX(-${currentIndex * (isMobile ? 50 : 25)}%)`,
-              }}
-            >
-              {/* Render Primary + Duplicate Array for Seamless Infinite Loop */}
-              {[...services, ...services].map((service, index) => (
-                <div
-                  key={`${service.id}-${index}`}
-                  className="w-1/2 sm:w-1/4 shrink-0 pr-2.5"
+                {/* Main Headline: "Where Comfort Meets Confidence" */}
+                <h2 className="text-3xl sm:text-4xl lg:text-[46px] xl:text-[50px] font-extrabold text-white leading-[1.08] tracking-tight max-w-md">
+                  {t.cardHeadline1} <br />
+                  {t.cardHeadline2}
+                </h2>
+
+                {/* Subtitle Paragraph */}
+                <p className="text-purple-100/90 text-sm sm:text-base font-normal leading-relaxed max-w-sm mt-3.5 mb-7">
+                  {t.cardSubtitle}
+                </p>
+
+                {/* Explore Now Black Pill Button */}
+                <Link
+                  href="#collections"
+                  className="bg-[#0F172A] hover:bg-black text-white px-7 py-3.5 rounded-full font-bold text-sm inline-flex items-center gap-3 shadow-lg hover:shadow-xl transition-all active:scale-95 cursor-pointer group"
                 >
-                  <div className="group relative rounded-2xl overflow-hidden h-[95px] sm:h-[110px] border border-white/80 shadow-md cursor-pointer flex flex-col justify-end p-2.5 transition-all duration-300 hover:shadow-lg">
-                    {/* Background Photo */}
-                    <img
-                      src={service.image}
-                      alt={service.title}
-                      className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-500"
-                    />
-                    {/* Gradient Shading */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent pointer-events-none" />
+                  <span>{t.exploreNow}</span>
+                  <div className="w-6 h-6 rounded-full border border-white/30 group-hover:border-white flex items-center justify-center transition-colors">
+                    <ArrowRight className="w-3.5 h-3.5 text-white" />
+                  </div>
+                </Link>
+              </div>
 
-                    {/* Card Info & Rating */}
-                    <div className="relative z-10 flex items-end justify-between">
-                      <div>
-                        <div className="text-xs font-bold text-white leading-tight">
-                          {service.title}
-                        </div>
-                        <div className="text-[10px] text-slate-200 font-medium">
-                          {service.region}
-                        </div>
-                      </div>
+              {/* Bottom Left Floating Social Proof Glass Pill */}
+              <div className="mt-8 sm:mt-12 inline-flex items-center gap-3 bg-white/20 hover:bg-white/25 backdrop-blur-md border border-white/25 rounded-2xl p-2.5 px-4 shadow-md transition-all w-fit">
+                {/* 3 Overlapping Trendsetter Avatars */}
+                <div className="flex items-center -space-x-2.5">
+                  <img
+                    src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80&auto=format&fit=crop&q=80"
+                    alt="Trendsetter"
+                    className="w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 border-white object-cover"
+                  />
+                  <img
+                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&auto=format&fit=crop&q=80"
+                    alt="Trendsetter"
+                    className="w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 border-white object-cover"
+                  />
+                  <img
+                    src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&auto=format&fit=crop&q=80"
+                    alt="Trendsetter"
+                    className="w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 border-white object-cover"
+                  />
+                </div>
 
-                      {/* Star Rating Pill Badge with #FFCC4D Star */}
-                      <span className="bg-black/60 backdrop-blur-md border border-white/20 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full flex items-center gap-0.5 shadow-xs">
-                        <Star className="w-2.5 h-2.5 fill-[#FFCC4D] text-[#FFCC4D]" />
-                        <span>{service.rating}</span>
-                      </span>
-                    </div>
+                {/* Caption */}
+                <div className="flex flex-col text-[11px] font-bold text-white leading-tight">
+                  <span>{t.lovedBy}</span>
+                  <span className="font-medium text-purple-100">{t.trendsetters}</span>
+                </div>
+
+                {/* White Heart Accent */}
+                <Heart className="w-3.5 h-3.5 fill-white text-white ml-1" />
+              </div>
+            </div>
+
+            {/* ----------------------------------------------------
+                CENTER CLEARANCE: Space for the Overlapping Model
+            ---------------------------------------------------- */}
+            <div className="hidden lg:block lg:col-span-3 pointer-events-none" />
+
+            {/* ----------------------------------------------------
+                RIGHT COLUMN: 3 Features & "Featured Look" Product Card
+            ---------------------------------------------------- */}
+            <div className="lg:col-span-4 flex flex-col justify-between items-start lg:items-end z-10">
+              {/* Top Row: 3 Feature Badges */}
+              <div className="flex items-center gap-6 sm:gap-7 w-full justify-start lg:justify-end mb-6 lg:mb-4">
+                {/* Feature 1: Premium Quality */}
+                <div className="flex flex-col items-center text-center gap-1.5">
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center text-white">
+                    <Shirt className="w-5 h-5 stroke-[2.2]" />
+                  </div>
+                  <div className="text-[11px] sm:text-xs font-bold text-white leading-tight">
+                    <span>{t.feat1Title}</span> <br />
+                    <span>{t.feat1Sub}</span>
                   </div>
                 </div>
-              ))}
+
+                {/* Feature 2: Sustainable Fashion */}
+                <div className="flex flex-col items-center text-center gap-1.5">
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center text-white">
+                    <Leaf className="w-5 h-5 stroke-[2.2]" />
+                  </div>
+                  <div className="text-[11px] sm:text-xs font-bold text-white leading-tight">
+                    <span>{t.feat2Title}</span> <br />
+                    <span>{t.feat2Sub}</span>
+                  </div>
+                </div>
+
+                {/* Feature 3: Limited Edition */}
+                <div className="flex flex-col items-center text-center gap-1.5">
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center text-white">
+                    <Gem className="w-5 h-5 stroke-[2.2]" />
+                  </div>
+                  <div className="text-[11px] sm:text-xs font-bold text-white leading-tight">
+                    <span>{t.feat3Title}</span> <br />
+                    <span>{t.feat3Sub}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Bottom: "Featured Look" Product Card */}
+              <div className="flex flex-col items-start lg:items-end mt-2">
+                <span className="text-[11px] font-bold text-purple-200 uppercase tracking-wider mb-2">
+                  {t.featuredLook}
+                </span>
+
+                {/* White Floating Product Card */}
+                <div className="bg-white text-[#0F172A] rounded-3xl p-3 sm:p-3.5 shadow-2xl w-[190px] sm:w-[215px] flex flex-col gap-2.5 transition-transform hover:-translate-y-1 duration-300">
+                  {/* Product Image: Lavender Streetwear Hoodie */}
+                  <div className="relative aspect-square w-full rounded-2xl overflow-hidden bg-purple-100">
+                    <img
+                      src="https://images.unsplash.com/photo-1509967419530-da38b4704bc6?w=400&auto=format&fit=crop&q=80"
+                      alt="Graffiti Hoodie"
+                      className="w-full h-full object-cover object-top"
+                    />
+                  </div>
+
+                  {/* Product Details */}
+                  <div>
+                    <h4 className="text-xs sm:text-sm font-black text-[#0F172A] leading-tight">
+                      {t.productTitle}
+                    </h4>
+                    <p className="text-[10px] text-slate-500 font-semibold mt-0.5">
+                      {t.productSub}
+                    </p>
+                  </div>
+
+                  {/* Cart Action Button with Price */}
+                  <button
+                    type="button"
+                    className="bg-[#8E62ED] hover:bg-[#7C3AED] text-white py-2 px-3 rounded-xl flex items-center justify-between text-xs font-bold transition-all shadow-sm cursor-pointer active:scale-95"
+                  >
+                    <ShoppingCart className="w-3.5 h-3.5" />
+                    <span>{t.productPrice}</span>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Right: Glass Light Trust Features Bar (5 Cols) */}
-        <div className="lg:col-span-5 flex items-end">
-          <div className="w-full bg-white/90 backdrop-blur-xl border border-slate-200/90 rounded-2xl p-2.5 px-3 sm:px-4 flex items-center justify-between shadow-sm">
-            {/* Feature 1 */}
-            <div className="flex flex-col items-center text-center gap-1">
-              <div className="w-6 h-6 rounded-full bg-[#FFFC8C]/60 flex items-center justify-center text-[#FF9137]">
-                <ShieldCheck className="w-3.5 h-3.5" />
-              </div>
-              <span className="text-[9px] text-slate-800 font-bold leading-tight">
-                Verified <br /> Operatives
-              </span>
+        {/* ========================================================
+            3. CENTERPIECE: The Swirly Organic Shape, Orbit Rings & Model
+        ======================================================== */}
+        <div className="absolute inset-x-0 bottom-0 top-[-160px] sm:top-[-200px] md:top-[-240px] lg:top-[-280px] flex items-end justify-center pointer-events-none z-20 overflow-visible">
+          <div className="relative w-[360px] sm:w-[440px] md:w-[520px] lg:w-[620px] h-[700px] sm:h-[800px] md:h-[880px] lg:h-[940px] flex items-end justify-center">
+            {/* 3A. The Organic Lavender "Swirly" / Wavy Shape Behind the Model */}
+            <div className="absolute top-[2%] sm:top-[4%] w-[300px] sm:w-[380px] md:w-[450px] lg:w-[500px] h-[600px] sm:h-[700px] lg:h-[780px] z-0 opacity-80">
+              <svg
+                viewBox="0 0 400 700"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-full h-full drop-shadow-[0_15px_35px_rgba(142,98,237,0.35)]"
+              >
+                <path
+                  d="M200 15
+                     C290 15, 360 55, 350 110
+                     C340 165, 250 185, 280 245
+                     C315 305, 395 345, 375 410
+                     C355 475, 270 495, 295 560
+                     C320 625, 370 665, 330 700
+                     C290 715, 110 715, 70 700
+                     C30 665, 80 625, 105 560
+                     C130 495, 45 475, 25 410
+                     C5 345, 85 305, 120 245
+                     C150 185, 60 165, 50 110
+                     C40 55, 110 15, 200 15 Z"
+                  fill="#A78BFA"
+                />
+              </svg>
             </div>
 
-            <div className="w-[1px] h-7 bg-slate-200" />
-
-            {/* Feature 2 */}
-            <div className="flex flex-col items-center text-center gap-1">
-              <div className="w-6 h-6 rounded-full bg-[#70FFD2]/30 flex items-center justify-center text-emerald-800">
-                <Headphones className="w-3.5 h-3.5" />
-              </div>
-              <span className="text-[9px] text-slate-800 font-bold leading-tight">
-                24/7 Field <br /> Support
-              </span>
+            {/* 3B. Thin Orbit / Wireframe Celestial Rings behind the Model's Head */}
+            <div className="absolute top-[3%] sm:top-[5%] w-[360px] sm:w-[440px] lg:w-[520px] h-[260px] sm:h-[300px] z-0">
+              <svg viewBox="0 0 500 280" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+                {/* Ring 1 tilted left */}
+                <ellipse
+                  cx="250"
+                  cy="140"
+                  rx="220"
+                  ry="65"
+                  stroke="#8B5CF6"
+                  strokeWidth="1.6"
+                  strokeOpacity="0.55"
+                  transform="rotate(-15 250 140)"
+                />
+                {/* Ring 2 tilted right */}
+                <ellipse
+                  cx="250"
+                  cy="140"
+                  rx="205"
+                  ry="60"
+                  stroke="#C4B5FD"
+                  strokeWidth="1.4"
+                  strokeOpacity="0.5"
+                  transform="rotate(18 250 140)"
+                />
+              </svg>
             </div>
 
-            <div className="w-[1px] h-7 bg-slate-200" />
-
-            {/* Feature 3 */}
-            <div className="flex flex-col items-center text-center gap-1">
-              <div className="w-6 h-6 rounded-full bg-[#FFFC8C]/60 flex items-center justify-center text-[#FF9137]">
-                <CalendarCheck className="w-3.5 h-3.5" />
-              </div>
-              <span className="text-[9px] text-slate-800 font-bold leading-tight">
-                Flexible <br /> Scheduling
-              </span>
-            </div>
-
-            <div className="w-[1px] h-7 bg-slate-200" />
-
-            {/* Feature 4 */}
-            <div className="flex flex-col items-center text-center gap-1">
-              <div className="w-6 h-6 rounded-full bg-[#70FFD2]/30 flex items-center justify-center text-emerald-800">
-                <Lock className="w-3.5 h-3.5" />
-              </div>
-              <span className="text-[9px] text-slate-800 font-bold leading-tight">
-                Transparent <br /> Billing
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* ========================================================
-          3. STATS FOOTER STRIP (Light Crisp Bar)
-      ======================================================== */}
-      <div className="w-full pt-2.5 pb-1 border-t border-slate-300/80 flex flex-wrap items-center justify-between text-xs text-slate-700 shrink-0">
-        <div className="flex items-center gap-6 sm:gap-12">
-          <div>
-            <span className="text-sm sm:text-base font-extrabold text-[#0F172A]">500+</span>
-            <span className="text-[10px] text-slate-600 font-medium ml-1.5">Projects Completed</span>
-          </div>
-
-          <div>
-            <span className="text-sm sm:text-base font-extrabold text-[#0F172A]">10K+</span>
-            <span className="text-[10px] text-slate-600 font-medium ml-1.5">Happy Clients</span>
-          </div>
-
-          <div>
-            <span className="text-sm sm:text-base font-extrabold text-[#0F172A]">150+</span>
-            <span className="text-[10px] text-slate-600 font-medium ml-1.5">Verified Workers</span>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2 mt-1 sm:mt-0">
-          <span className="text-sm sm:text-base font-extrabold text-[#0F172A]">4.9</span>
-          <span className="text-[10px] text-slate-600 font-medium">Customer Rating</span>
-          <div className="flex items-center text-[#FFCC4D] ml-1">
-            {[...Array(5)].map((_, i) => (
-              <Star key={i} className="w-3 h-3 fill-[#FFCC4D] text-[#FFCC4D]" />
-            ))}
+            {/* 3C. The Requested Model PNG: /models/pn1.png */}
+            <img
+              src="/models/pn1.png"
+              alt="Nexora Model"
+              className="relative z-10 w-full h-full object-contain object-bottom drop-shadow-[0_25px_45px_rgba(0,0,0,0.22)]"
+            />
           </div>
         </div>
       </div>

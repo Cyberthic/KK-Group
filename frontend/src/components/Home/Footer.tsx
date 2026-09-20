@@ -10,12 +10,16 @@ import {
   MapPin,
   ShieldCheck,
   Zap,
-  FileText,
   Clock,
   ChevronRight,
 } from 'lucide-react';
+import { useLanguage } from '@/context/language-context';
+import { translations } from '@/lib/translations';
 
 export function Footer() {
+  const { language } = useLanguage();
+  const t = translations[language].footer;
+
   const [email, setEmail] = useState('');
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -49,31 +53,31 @@ export function Footer() {
               <div className="flex items-center gap-2">
                 <span className="w-6 h-[2px] bg-[#FF9137] rounded-full inline-block" />
                 <span className="text-[10px] sm:text-[11px] font-extrabold tracking-[0.25em] text-[#FF9137] uppercase">
-                  STAY INFORMED & PREPARED
+                  {t.stayInformed}
                 </span>
               </div>
 
               <h3 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#0F172A] tracking-tight leading-tight">
-                Subscribe for Priority Dispatch, Seasonal Schedules & Enterprise Rates
+                {t.newsletterTitle}
               </h3>
 
               <p className="text-xs sm:text-sm text-slate-600 font-normal leading-relaxed max-w-xl mt-1">
-                Join over 10,000 plantation managers, project contractors, and estate owners who receive weekly workforce availability and heavy machinery schedules.
+                {t.newsletterDesc}
               </p>
 
               {/* 3 Perks Chips */}
               <div className="flex flex-wrap items-center gap-4 mt-3">
                 <div className="flex items-center gap-1.5 text-xs font-bold text-[#0F172A]">
                   <Zap className="w-3.5 h-3.5 text-[#FF9137]" />
-                  <span>Priority Allocation</span>
+                  <span>{t.priority}</span>
                 </div>
                 <div className="flex items-center gap-1.5 text-xs font-bold text-[#0F172A]">
                   <ShieldCheck className="w-3.5 h-3.5 text-[#FF9137]" />
-                  <span>Verified Operatives</span>
+                  <span>{t.verified}</span>
                 </div>
                 <div className="flex items-center gap-1.5 text-xs font-bold text-[#0F172A]">
                   <Clock className="w-3.5 h-3.5 text-[#FF9137]" />
-                  <span>24-Hour Dispatch Notice</span>
+                  <span>{t.notice}</span>
                 </div>
               </div>
             </div>
@@ -85,9 +89,9 @@ export function Footer() {
                   <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto">
                     <CheckCircle2 className="w-6 h-6" />
                   </div>
-                  <h4 className="text-sm font-bold text-emerald-950">You're Subscribed!</h4>
+                  <h4 className="text-sm font-bold text-emerald-950">{t.subscribedTitle}</h4>
                   <p className="text-xs text-emerald-800 leading-relaxed">
-                    Thank you for subscribing. You'll receive our weekly field operations briefing.
+                    {t.subscribedMsg}
                   </p>
                 </div>
               ) : (
@@ -98,7 +102,7 @@ export function Footer() {
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder="Enter your corporate or personal email..."
+                      placeholder={t.emailPlaceholder}
                       className="w-full bg-transparent text-[#0F172A] text-xs sm:text-sm font-medium placeholder:text-slate-400 outline-none pr-3"
                     />
                     <button
@@ -106,12 +110,12 @@ export function Footer() {
                       disabled={isSubmitting}
                       className="bg-[#FF9137] hover:bg-[#E57A22] text-white font-bold text-xs sm:text-sm px-5 py-3 rounded-xl flex items-center gap-1.5 transition-all shadow-md active:scale-95 shrink-0 cursor-pointer disabled:opacity-60"
                     >
-                      <span>{isSubmitting ? 'Joining...' : 'Subscribe'}</span>
+                      <span>{isSubmitting ? '...' : t.subscribeBtn}</span>
                       <ArrowRight className="w-4 h-4" />
                     </button>
                   </div>
                   <p className="text-[11px] text-slate-500 pl-2">
-                    Zero spam. Unsubscribe anytime with 1-click. Protected by enterprise privacy policy.
+                    {t.spamNotice}
                   </p>
                 </form>
               )}
@@ -163,19 +167,19 @@ export function Footer() {
                   KK GROUP
                 </span>
                 <span className="text-[8px] sm:text-[9px] text-[#FF9137] font-extrabold tracking-[0.2em] uppercase mt-0.5">
-                  ENTERPRISE SOLUTIONS
+                  {language === 'ml' ? 'എന്റർപ്രൈസ് സൊല്യൂഷൻസ്' : 'ENTERPRISE SOLUTIONS'}
                 </span>
               </div>
             </Link>
 
             <p className="text-xs text-slate-600 leading-relaxed max-w-sm mt-1">
-              Deploying certified field workforce teams, heavy JCB machinery, and precision plantation climbing units under one unified operational roof.
+              {t.blurb}
             </p>
 
             <div className="space-y-2 text-xs text-slate-600 font-medium mt-2">
               <div className="flex items-center gap-2.5">
                 <Phone className="w-3.5 h-3.5 text-[#FF9137]" />
-                <span>+91 (785) 712-6532 / 24/7 Operations Desk</span>
+                <span>{t.operationsDesk}</span>
               </div>
               <div className="flex items-center gap-2.5">
                 <Mail className="w-3.5 h-3.5 text-[#FF9137]" />
@@ -183,7 +187,7 @@ export function Footer() {
               </div>
               <div className="flex items-center gap-2.5">
                 <MapPin className="w-3.5 h-3.5 text-[#FF9137]" />
-                <span>Central HQ: Palakkad & Coimbatore Divisions</span>
+                <span>{t.centralHQ}</span>
               </div>
             </div>
           </div>
@@ -191,37 +195,37 @@ export function Footer() {
           {/* Col 2: Core Services (3 cols) */}
           <div className="md:col-span-3 flex flex-col gap-3">
             <h4 className="font-extrabold text-xs uppercase tracking-widest text-[#0F172A] mb-1">
-              Specialized Services
+              {t.servicesTitle}
             </h4>
             <ul className="space-y-2 text-xs text-slate-600">
               <li>
                 <a href="#services" className="hover:text-[#FF9137] transition-colors flex items-center gap-1.5">
                   <ChevronRight className="w-3 h-3 text-[#FF9137]" />
-                  <span>Cococare Palm Harvesting</span>
+                  <span>{t.servicesList.cococare}</span>
                 </a>
               </li>
               <li>
                 <a href="#services" className="hover:text-[#FF9137] transition-colors flex items-center gap-1.5">
                   <ChevronRight className="w-3 h-3 text-[#FF9137]" />
-                  <span>JCB Earthmovers & Excavation</span>
+                  <span>{t.servicesList.jcb}</span>
                 </a>
               </li>
               <li>
                 <a href="#services" className="hover:text-[#FF9137] transition-colors flex items-center gap-1.5">
                   <ChevronRight className="w-3 h-3 text-[#FF9137]" />
-                  <span>Plastering & Masonry Squads</span>
+                  <span>{t.servicesList.plastering}</span>
                 </a>
               </li>
               <li>
                 <a href="#services" className="hover:text-[#FF9137] transition-colors flex items-center gap-1.5">
                   <ChevronRight className="w-3 h-3 text-[#FF9137]" />
-                  <span>Tile & Marble Installation</span>
+                  <span>{t.servicesList.tiling}</span>
                 </a>
               </li>
               <li>
                 <a href="#services" className="hover:text-[#FF9137] transition-colors flex items-center gap-1.5">
                   <ChevronRight className="w-3 h-3 text-[#FF9137]" />
-                  <span>Pipeline Trenching & Drainage</span>
+                  <span>{t.servicesList.pipeline}</span>
                 </a>
               </li>
             </ul>
@@ -230,32 +234,32 @@ export function Footer() {
           {/* Col 3: Company & Portals (2 cols) */}
           <div className="md:col-span-2 flex flex-col gap-3">
             <h4 className="font-extrabold text-xs uppercase tracking-widest text-[#0F172A] mb-1">
-              Company & Portals
+              {t.companyTitle}
             </h4>
             <ul className="space-y-2 text-xs text-slate-600">
               <li>
                 <a href="#about" className="hover:text-[#FF9137] transition-colors">
-                  About KK Group
+                  {t.companyList.about}
                 </a>
               </li>
               <li>
                 <Link href="/office-staff/login" className="hover:text-[#FF9137] transition-colors">
-                  Staff Portal Login
+                  {t.companyList.staff}
                 </Link>
               </li>
               <li>
                 <Link href="/worker/dashboard" className="hover:text-[#FF9137] transition-colors">
-                  Worker Job Board
+                  {t.companyList.worker}
                 </Link>
               </li>
               <li>
                 <Link href="/dashboard" className="hover:text-[#FF9137] transition-colors">
-                  Customer Portal
+                  {t.companyList.customer}
                 </Link>
               </li>
               <li>
                 <a href="#careers" className="hover:text-[#FF9137] transition-colors">
-                  Workforce Careers
+                  {t.companyList.careers}
                 </a>
               </li>
             </ul>
@@ -264,16 +268,16 @@ export function Footer() {
           {/* Col 4: Regional Deployment Centers (3 cols) */}
           <div className="md:col-span-3 flex flex-col gap-3">
             <h4 className="font-extrabold text-xs uppercase tracking-widest text-[#0F172A] mb-1">
-              Regional Centers
+              {t.centersTitle}
             </h4>
             <div className="space-y-2.5 text-xs text-slate-600">
               <div className="p-3 rounded-xl bg-white border border-slate-200/90 shadow-xs">
-                <div className="font-bold text-[#0F172A]">Palakkad Operations Hub</div>
-                <div className="text-[11px] text-slate-500">Coimbatore Highway, Alathur Zone</div>
+                <div className="font-bold text-[#0F172A]">{t.palakkadHub}</div>
+                <div className="text-[11px] text-slate-500">{t.palakkadSub}</div>
               </div>
               <div className="p-3 rounded-xl bg-white border border-slate-200/90 shadow-xs">
-                <div className="font-bold text-[#0F172A]">Kochi Earthmoving Yard</div>
-                <div className="text-[11px] text-slate-500">Ernakulam Bypass Logistics Base</div>
+                <div className="font-bold text-[#0F172A]">{t.kochiYard}</div>
+                <div className="text-[11px] text-slate-500">{t.kochiSub}</div>
               </div>
             </div>
           </div>
@@ -283,20 +287,20 @@ export function Footer() {
             3. BOTTOM SUB-BAR: Copyright, Legal & Socials
         ======================================================== */}
         <div className="flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
-          <p>&copy; {new Date().getFullYear()} KK Group Enterprises. All Rights Reserved.</p>
+          <p>&copy; {new Date().getFullYear()} KK Group Enterprises. {t.rights}</p>
 
           <div className="flex flex-wrap items-center gap-6 text-[11px]">
             <a href="#privacy" className="hover:text-[#FF9137] transition-colors">
-              Privacy Policy
+              {t.privacy}
             </a>
             <a href="#terms" className="hover:text-[#FF9137] transition-colors">
-              Terms of Service
+              {t.terms}
             </a>
             <a href="#safety" className="hover:text-[#FF9137] transition-colors">
-              Field Safety Guidelines
+              {t.safety}
             </a>
             <a href="#compliance" className="hover:text-[#FF9137] transition-colors">
-              Regulatory Compliance
+              {t.compliance}
             </a>
           </div>
 

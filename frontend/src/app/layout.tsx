@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono, Playfair_Display } from 'next/font/google';
+import { Geist, Geist_Mono, Playfair_Display, Anek_Malayalam } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/context/auth-context';
+import { LanguageProvider } from '@/context/language-context';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -19,6 +20,13 @@ const playfair = Playfair_Display({
   style: ['normal', 'italic'],
 });
 
+const anekMalayalam = Anek_Malayalam({
+  variable: '--font-anek-malayalam',
+  subsets: ['malayalam', 'latin'],
+  weight: ['300', '400', '500', '600', '700', '800'],
+  display: 'swap',
+});
+
 export const metadata: Metadata = {
   title: 'KK Group | Enterprise Workforce & Heavy Machinery Solutions',
   description:
@@ -33,12 +41,14 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} ${anekMalayalam.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-white text-zinc-900 font-sans selection:bg-emerald-500 selection:text-white">
-        <AuthProvider>
-          <main className="flex-1 flex flex-col">{children}</main>
-        </AuthProvider>
+        <LanguageProvider>
+          <AuthProvider>
+            <main className="flex-1 flex flex-col">{children}</main>
+          </AuthProvider>
+        </LanguageProvider>
       </body>
     </html>
   );

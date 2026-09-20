@@ -5,24 +5,26 @@ import Link from 'next/link';
 import {
   Search,
   Globe,
-  ChevronDown,
-  ArrowRight,
-  ShieldCheck,
+  ShoppingBag,
   Menu,
   X,
 } from 'lucide-react';
+import { useLanguage } from '@/context/language-context';
+import { translations } from '@/lib/translations';
 
 interface NavbarProps {
-  onPlanTrip?: () => void;
+  onCartClick?: () => void;
 }
 
-export function Navbar({ onPlanTrip }: NavbarProps) {
+export function Navbar({ onCartClick }: NavbarProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { language, toggleLanguage } = useLanguage();
+  const t = translations[language].navbar;
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+      setIsScrolled(window.scrollY > 15);
     };
     handleScroll();
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -31,127 +33,129 @@ export function Navbar({ onPlanTrip }: NavbarProps) {
 
   return (
     <header
-      className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
-        isScrolled || mobileMenuOpen
-          ? 'bg-[#FAF8F2]/95 backdrop-blur-xl border-b border-slate-200/80 shadow-[0_4px_25px_rgba(0,0,0,0.05)] py-2.5 sm:py-3'
-          : 'bg-transparent py-4 sm:py-5'
+      className={`fixed top-0 inset-x-0 z-50 transition-all duration-200 ${
+        isScrolled
+          ? 'bg-white/95 backdrop-blur-md border-b border-slate-100 shadow-xs py-3'
+          : 'bg-white/90 backdrop-blur-xs py-3.5 sm:py-4'
       }`}
     >
-      <div className="w-full max-w-[1440px] mx-auto px-6 sm:px-8 md:px-10 lg:px-12 xl:px-14 flex items-center justify-between">
-        {/* Brand Logo: KK Group */}
+      <div className="w-full max-w-[1440px] mx-auto px-5 sm:px-8 md:px-10 lg:px-12 flex items-center justify-between">
+        {/* Left Navigation Links (Desktop) */}
+        <nav className="hidden lg:flex items-center gap-7 text-[13px] font-semibold text-[#0F172A]">
+          <Link
+            href="#shop"
+            className="hover:text-purple-600 transition-colors tracking-tight"
+          >
+            {t.shop}
+          </Link>
+          <Link
+            href="#new-in"
+            className="hover:text-purple-600 transition-colors tracking-tight"
+          >
+            {t.newIn}
+          </Link>
+          <Link
+            href="#collections"
+            className="hover:text-purple-600 transition-colors tracking-tight"
+          >
+            {t.collections}
+          </Link>
+          <Link
+            href="#about"
+            className="hover:text-purple-600 transition-colors tracking-tight"
+          >
+            {t.about}
+          </Link>
+          <Link
+            href="#contact"
+            className="hover:text-purple-600 transition-colors tracking-tight"
+          >
+            {t.contact}
+          </Link>
+        </nav>
+
+        {/* Center Brand Logo: KK Group with Golden Emblem */}
         <Link
           href="/"
-          onClick={() => setMobileMenuOpen(false)}
-          className="flex items-center gap-2.5 group cursor-pointer shrink-0"
+          className="flex items-center gap-2 sm:gap-2.5 group select-none hover:opacity-95 transition-opacity"
         >
-          {/* Wireframe Geometric KK Peak Emblem in #FF9137 and #70FFD2 */}
-          <div className="w-8 h-8 relative flex items-center justify-center text-[#FF9137]">
-            <svg
-              viewBox="0 0 32 32"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              className="w-7 h-7"
-            >
-              <path
-                d="M3 25L13 7L23 25H3Z"
-                stroke="#FF9137"
-                strokeWidth="2.2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M17 25L23 14L29 25H17Z"
-                stroke="#70FFD2"
-                strokeWidth="2.2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M13 7L17 25"
-                stroke="#FFCC4D"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeDasharray="2 2"
-              />
-            </svg>
-          </div>
-
-          <div className="flex flex-col">
-            <span className="text-base sm:text-lg font-black tracking-widest text-[#0F172A] uppercase leading-none font-sans">
-              KK GROUP
-            </span>
-            <span className="text-[8px] sm:text-[9px] text-[#FF9137] font-extrabold tracking-[0.2em] uppercase mt-0.5">
-              ENTERPRISE SOLUTIONS
-            </span>
-          </div>
+          <img
+            src="/logos/logo-bg.png"
+            alt="KK Group Logo"
+            className="w-7 h-7 sm:w-8 sm:h-8 object-contain drop-shadow-xs transition-transform group-hover:scale-105"
+          />
+          <span className="font-black text-lg sm:text-xl md:text-2xl tracking-[0.16em] text-[#0F172A] uppercase">
+            {t.brand}
+          </span>
         </Link>
-
-        {/* Center Nav Links (Desktop) */}
-        <div className="hidden lg:flex items-center gap-8 text-xs font-semibold text-slate-800">
-          <div className="flex items-center gap-1 hover:text-[#FF9137] transition-colors cursor-pointer group">
-            <span>Destinations</span>
-            <ChevronDown className="w-3 h-3 text-slate-500 group-hover:text-[#FF9137] transition-colors" />
-          </div>
-
-          <div className="flex items-center gap-1 hover:text-[#FF9137] transition-colors cursor-pointer group">
-            <span>Experiences</span>
-            <ChevronDown className="w-3 h-3 text-slate-500 group-hover:text-[#FF9137] transition-colors" />
-          </div>
-
-          <Link href="#trips" className="hover:text-[#FF9137] transition-colors">
-            Trips
-          </Link>
-
-          <Link href="#about" className="hover:text-[#FF9137] transition-colors">
-            About Us
-          </Link>
-
-          <Link
-            href="/office-staff/login"
-            className="hover:text-[#FF9137] text-slate-700 transition-colors flex items-center gap-1"
-          >
-            <ShieldCheck className="w-3.5 h-3.5 text-[#FF9137]" />
-            <span>Staff Portal</span>
-          </Link>
-        </div>
 
         {/* Right Controls */}
         <div className="flex items-center gap-2.5 sm:gap-3">
-          {/* Search Ghost Button */}
-          <button
-            title="Search"
-            type="button"
-            className="w-8 h-8 rounded-full bg-white/90 hover:bg-white border border-slate-200/80 shadow-xs flex items-center justify-center text-slate-700 hover:text-[#0F172A] transition-all cursor-pointer"
-          >
-            <Search className="w-3.5 h-3.5" />
-          </button>
-
-          {/* Language Selector */}
+          {/* Search Button */}
           <button
             type="button"
-            className="hidden sm:flex items-center gap-1 text-xs font-semibold text-slate-800 hover:text-[#FF9137] py-1 px-2 rounded-lg hover:bg-black/5 transition-all cursor-pointer"
+            title={t.search}
+            aria-label="Search"
+            className="w-9 h-9 rounded-full flex items-center justify-center text-slate-700 hover:text-purple-600 hover:bg-slate-100 transition-all cursor-pointer"
           >
-            <Globe className="w-3.5 h-3.5 text-slate-600" />
-            <span>EN</span>
-            <ChevronDown className="w-3 h-3 text-slate-500" />
+            <Search className="w-4 h-4" />
           </button>
 
-          {/* Primary Warm Sunset CTA: Plan Your Trip (#FF9137) */}
+          {/* User Profile Avatar Pill */}
+          <Link
+            href="/dashboard"
+            title="Account"
+            className="w-8 h-8 rounded-full overflow-hidden border border-slate-200/90 shadow-xs hover:border-purple-400 transition-all flex items-center justify-center bg-slate-100 cursor-pointer"
+          >
+            <img
+              src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80"
+              alt="User profile"
+              className="w-full h-full object-cover"
+            />
+          </Link>
+
+          {/* Shopping Cart Pill Button ("1 item") */}
           <button
             type="button"
-            onClick={onPlanTrip}
-            className="hidden sm:flex bg-[#FF9137] hover:bg-[#FFCC4D] text-white hover:text-slate-950 font-bold text-xs px-5 py-2.5 rounded-full shadow-md items-center gap-1.5 transition-all cursor-pointer active:scale-95"
+            onClick={onCartClick}
+            aria-label="Shopping Cart"
+            className="flex items-center gap-2 bg-[#F5F3FF] hover:bg-[#EDE9FE] border border-[#DDD6FE] text-[#7C3AED] px-3.5 py-1.5 rounded-full text-xs font-bold transition-all shadow-xs cursor-pointer active:scale-95"
           >
-            <span>Plan Your Trip</span>
-            <ArrowRight className="w-3 h-3" />
+            <ShoppingBag className="w-3.5 h-3.5 text-[#7C3AED]" />
+            <span>{t.cartItems}</span>
           </button>
 
-          {/* Mobile Hamburger Toggle */}
+          {/* Bilingual Language Switcher Button (Customer Portal) */}
+          <button
+            type="button"
+            onClick={toggleLanguage}
+            title={language === 'en' ? 'മലയാളത്തിലേക്ക് മാറ്റുക' : 'Switch to English'}
+            className="hidden sm:flex items-center gap-1.5 text-xs font-bold py-1.5 px-3 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-800 shadow-xs transition-all cursor-pointer"
+          >
+            <Globe className="w-3.5 h-3.5 text-[#8B5CF6]" />
+            <span
+              className={`transition-colors text-[11px] ${
+                language === 'en' ? 'text-[#8B5CF6] font-black' : 'opacity-65'
+              }`}
+            >
+              EN
+            </span>
+            <span className="opacity-25">|</span>
+            <span
+              className={`transition-colors text-[11px] ${
+                language === 'ml' ? 'text-[#8B5CF6] font-black' : 'opacity-65'
+              }`}
+            >
+              മലയാളം
+            </span>
+          </button>
+
+          {/* Mobile Menu Hamburger */}
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden w-9 h-9 rounded-full bg-white/90 border border-slate-200/80 shadow-xs flex items-center justify-center text-slate-800 hover:text-[#FF9137] transition-all cursor-pointer"
-            aria-label="Toggle Navigation Menu"
+            className="lg:hidden w-9 h-9 rounded-full border border-slate-200 flex items-center justify-center text-slate-800 hover:text-purple-600 transition-all cursor-pointer"
+            aria-label="Toggle navigation menu"
           >
             {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
           </button>
@@ -160,55 +164,56 @@ export function Navbar({ onPlanTrip }: NavbarProps) {
 
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="lg:hidden w-full bg-[#FAF8F2]/98 border-t border-slate-200/80 px-6 py-5 shadow-2xl flex flex-col gap-4 animate-in slide-in-from-top-2 duration-200">
+        <div className="lg:hidden w-full bg-white border-t border-slate-100 px-6 py-5 shadow-xl flex flex-col gap-4 animate-in slide-in-from-top-2 duration-200">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+            <span className="text-xs font-bold text-slate-600">Language / ഭാഷ:</span>
+            <button
+              type="button"
+              onClick={toggleLanguage}
+              className="flex items-center gap-1.5 bg-[#F5F3FF] border border-[#DDD6FE] text-[#7C3AED] rounded-full px-3 py-1 text-xs font-bold shadow-xs cursor-pointer"
+            >
+              <Globe className="w-3 h-3 text-[#7C3AED]" />
+              <span className={language === 'en' ? 'font-black' : ''}>EN</span>
+              <span className="opacity-30">|</span>
+              <span className={language === 'ml' ? 'font-black' : ''}>മലയാളം</span>
+            </button>
+          </div>
+
           <Link
-            href="#destinations"
+            href="#shop"
             onClick={() => setMobileMenuOpen(false)}
-            className="text-sm font-bold text-slate-800 hover:text-[#FF9137] transition-colors py-1 border-b border-slate-100"
+            className="text-sm font-semibold text-slate-800 hover:text-purple-600 transition-colors py-1"
           >
-            Destinations
+            {t.shop}
           </Link>
           <Link
-            href="#experiences"
+            href="#new-in"
             onClick={() => setMobileMenuOpen(false)}
-            className="text-sm font-bold text-slate-800 hover:text-[#FF9137] transition-colors py-1 border-b border-slate-100"
+            className="text-sm font-semibold text-slate-800 hover:text-purple-600 transition-colors py-1"
           >
-            Experiences
+            {t.newIn}
           </Link>
           <Link
-            href="#trips"
+            href="#collections"
             onClick={() => setMobileMenuOpen(false)}
-            className="text-sm font-bold text-slate-800 hover:text-[#FF9137] transition-colors py-1 border-b border-slate-100"
+            className="text-sm font-semibold text-slate-800 hover:text-purple-600 transition-colors py-1"
           >
-            Trips
+            {t.collections}
           </Link>
           <Link
             href="#about"
             onClick={() => setMobileMenuOpen(false)}
-            className="text-sm font-bold text-slate-800 hover:text-[#FF9137] transition-colors py-1 border-b border-slate-100"
+            className="text-sm font-semibold text-slate-800 hover:text-purple-600 transition-colors py-1"
           >
-            About Us
+            {t.about}
           </Link>
           <Link
-            href="/office-staff/login"
+            href="#contact"
             onClick={() => setMobileMenuOpen(false)}
-            className="text-sm font-bold text-[#FF9137] flex items-center gap-1.5 py-1"
+            className="text-sm font-semibold text-slate-800 hover:text-purple-600 transition-colors py-1"
           >
-            <ShieldCheck className="w-4 h-4" />
-            <span>Staff Portal Login</span>
+            {t.contact}
           </Link>
-
-          <button
-            type="button"
-            onClick={() => {
-              setMobileMenuOpen(false);
-              onPlanTrip?.();
-            }}
-            className="w-full mt-2 bg-[#FF9137] hover:bg-[#FFCC4D] text-white hover:text-slate-950 font-bold text-xs py-3 rounded-full shadow-md flex items-center justify-center gap-2 transition-all cursor-pointer"
-          >
-            <span>Plan Your Trip</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </button>
         </div>
       )}
     </header>

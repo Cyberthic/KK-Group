@@ -17,67 +17,97 @@ import {
   Clock,
   Star,
 } from 'lucide-react';
+import { useLanguage } from '@/context/language-context';
+import { translations } from '@/lib/translations';
 
 interface PackageItem {
   id: string;
-  title: string;
-  location: string;
-  duration: string;
+  titleEn: string;
+  titleMl: string;
+  locationEn: string;
+  locationMl: string;
+  durationEn: string;
+  durationMl: string;
   price: string;
   rating: string;
   image: string;
 }
 
-const PACKAGES: PackageItem[] = [
+const RAW_PACKAGES: PackageItem[] = [
   {
-    id: 'greek-islands',
-    title: 'Greek Islands Escape',
-    location: 'Greece',
-    duration: '6 Days / 5 Nights',
-    price: '$1,299',
+    id: 'cococare',
+    titleEn: 'Cococare Elite Palm Squad (50 Palms)',
+    titleMl: 'കൊക്കോ കെയർ പാക്കേജ് (50 തെങ്ങ്)',
+    locationEn: 'Palakkad, Kerala',
+    locationMl: 'പാലക്കാട്, കേരളം',
+    durationEn: 'Full Day Shift',
+    durationMl: 'ഫുൾ ഡേ ഷിഫ്റ്റ്',
+    price: '₹4,500',
+    rating: '4.9',
+    image:
+      'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=700&auto=format&fit=crop&q=85',
+  },
+  {
+    id: 'jcb',
+    titleEn: 'JCB 3DX Heavy Excavation Squad',
+    titleMl: 'ജെസിബി 3DX എക്സ്കവേഷൻ',
+    locationEn: 'Ernakulam & Kochi',
+    locationMl: 'എറണാകുളം & കൊച്ചി',
+    durationEn: '8-Hour Day Shift',
+    durationMl: '8 മണിക്കൂർ ഷിഫ്റ്റ്',
+    price: '₹9,600',
     rating: '4.8',
     image:
-      'https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=700&auto=format&fit=crop&q=85',
+      'https://images.unsplash.com/photo-1579273166629-9e8c3b9b47e2?w=700&auto=format&fit=crop&q=85',
   },
   {
-    id: 'maldives',
-    title: 'Maldives Paradise',
-    location: 'Maldives',
-    duration: '5 Days / 4 Nights',
-    price: '$1,599',
+    id: 'plastering',
+    titleEn: 'Plastering & Wall Masonry Squad',
+    titleMl: 'പ്ലാസ്റ്ററിംഗ് & മേസൺ സംഘം',
+    locationEn: 'Thrissur & Malappuram',
+    locationMl: 'തൃശ്ശൂർ & മലപ്പുറം',
+    durationEn: '4 Workers Squad',
+    durationMl: '4 തൊഴിലാളികൾ',
+    price: '₹5,800',
     rating: '4.9',
     image:
-      'https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=700&auto=format&fit=crop&q=85',
+      'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=700&auto=format&fit=crop&q=85',
   },
   {
-    id: 'canadian-rockies',
-    title: 'Canadian Rockies',
-    location: 'Canada',
-    duration: '7 Days / 6 Nights',
-    price: '$1,799',
-    rating: '4.7',
-    image:
-      'https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?w=700&auto=format&fit=crop&q=85',
-  },
-  {
-    id: 'japan-discovery',
-    title: 'Japan Discovery',
-    location: 'Japan',
-    duration: '8 Days / 7 Nights',
-    price: '$2,199',
+    id: 'tiling',
+    titleEn: 'Tile, Marble & Granite Precision Laying',
+    titleMl: 'ടൈൽ & മാർബിൾ വർക്ക്',
+    locationEn: 'Calicut & Wayanad',
+    locationMl: 'കോഴിക്കോട് & വയനാട്',
+    durationEn: '3 Master Setters',
+    durationMl: '3 വിദഗ്ദ്ധർ',
+    price: '₹6,200',
     rating: '4.9',
     image:
-      'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=700&auto=format&fit=crop&q=85',
+      'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=700&auto=format&fit=crop&q=85',
   },
 ];
 
 export function PopularPackagesSection() {
-  const [activeTab, setActiveTab] = useState<'flights' | 'hotels' | 'cars' | 'experiences'>('flights');
-  const [fromLoc, setFromLoc] = useState('New York, USA');
-  const [toLoc, setToLoc] = useState('Paris, France');
+  const { language } = useLanguage();
+  const t = translations[language].popularPackages;
+
+  const [activeTab, setActiveTab] = useState<'cococare' | 'jcb' | 'plastering' | 'tiling'>('cococare');
+  const [fromLoc, setFromLoc] = useState(language === 'ml' ? 'പാലക്കാട്, കേരളം' : 'Palakkad, Kerala');
+  const [toLoc, setToLoc] = useState(language === 'ml' ? 'കൊച്ചി, എറണാകുളം' : 'Kochi, Ernakulam');
   const [departDate, setDepartDate] = useState('12 Jun, 2025');
   const [returnDate, setReturnDate] = useState('20 Jun, 2025');
-  const [travelers, setTravelers] = useState('2 Adults');
+  const [travelers, setTravelers] = useState(language === 'ml' ? '2-4 തൊഴിലാളികൾ' : 'Standard Squad (2-4)');
+
+  const packages = RAW_PACKAGES.map((pkg) => ({
+    id: pkg.id,
+    title: language === 'ml' ? pkg.titleMl : pkg.titleEn,
+    location: language === 'ml' ? pkg.locationMl : pkg.locationEn,
+    duration: language === 'ml' ? pkg.durationMl : pkg.durationEn,
+    price: pkg.price,
+    rating: pkg.rating,
+    image: pkg.image,
+  }));
 
   const handleSwap = () => {
     const temp = fromLoc;
@@ -105,71 +135,69 @@ export function PopularPackagesSection() {
         ======================================================== */}
         <div className="w-full drop-shadow-[0_12px_30px_rgba(0,0,0,0.04)]">
           {/* Top Asymmetric Tabs Bar */}
-          <div className="flex items-end pl-2 sm:pl-4">
-            {/* Tab 1: Flights (Active) */}
+          <div className="flex items-end pl-2 sm:pl-4 overflow-x-auto">
+            {/* Tab 1: Cococare Harvesting */}
             <button
               type="button"
-              onClick={() => setActiveTab('flights')}
-              className={`flex items-center gap-2 px-6 py-3 rounded-t-2xl font-bold text-xs sm:text-sm transition-all relative ${
-                activeTab === 'flights'
+              onClick={() => setActiveTab('cococare')}
+              className={`flex items-center gap-2 px-5 py-3 rounded-t-2xl font-bold text-xs sm:text-sm transition-all whitespace-nowrap cursor-pointer relative ${
+                activeTab === 'cococare'
                   ? 'bg-white text-[#FF9137] border-t border-x border-slate-200 z-10 shadow-xs'
                   : 'bg-slate-100 hover:bg-slate-200 text-slate-600 border-t border-x border-transparent'
               }`}
             >
-              <Plane className={`w-4 h-4 ${activeTab === 'flights' ? 'text-[#FF9137]' : 'text-slate-500'}`} />
-              <span>Flights</span>
+              <span>🌴 {t.tabs.cococare}</span>
             </button>
 
-            {/* Tab 2: Hotels */}
+            {/* Tab 2: JCB Earthmoving */}
             <button
               type="button"
-              onClick={() => setActiveTab('hotels')}
-              className={`flex items-center gap-2 px-6 py-3 rounded-t-2xl font-bold text-xs sm:text-sm transition-all ${
-                activeTab === 'hotels'
+              onClick={() => setActiveTab('jcb')}
+              className={`flex items-center gap-2 px-5 py-3 rounded-t-2xl font-bold text-xs sm:text-sm transition-all whitespace-nowrap cursor-pointer relative ${
+                activeTab === 'jcb'
                   ? 'bg-white text-[#FF9137] border-t border-x border-slate-200 z-10 shadow-xs'
                   : 'bg-slate-100 hover:bg-slate-200 text-slate-600 border-t border-x border-transparent'
               }`}
             >
-              <Building2 className="w-4 h-4 text-slate-500" />
-              <span>Hotels</span>
+              <span>🚜 {t.tabs.jcb}</span>
             </button>
 
-            {/* Tab 3: Cars */}
+            {/* Tab 3: Masonry & Plastering */}
             <button
               type="button"
-              onClick={() => setActiveTab('cars')}
-              className={`flex items-center gap-2 px-6 py-3 rounded-t-2xl font-bold text-xs sm:text-sm transition-all ${
-                activeTab === 'cars'
+              onClick={() => setActiveTab('plastering')}
+              className={`flex items-center gap-2 px-5 py-3 rounded-t-2xl font-bold text-xs sm:text-sm transition-all whitespace-nowrap cursor-pointer relative ${
+                activeTab === 'plastering'
                   ? 'bg-white text-[#FF9137] border-t border-x border-slate-200 z-10 shadow-xs'
                   : 'bg-slate-100 hover:bg-slate-200 text-slate-600 border-t border-x border-transparent'
               }`}
             >
-              <Car className="w-4 h-4 text-slate-500" />
-              <span>Cars</span>
+              <span>🧱 {t.tabs.plastering}</span>
             </button>
 
-            {/* Tab 4: Experiences */}
+            {/* Tab 4: Tiling */}
             <button
               type="button"
-              onClick={() => setActiveTab('experiences')}
-              className={`flex items-center gap-2 px-6 py-3 rounded-t-2xl font-bold text-xs sm:text-sm transition-all ${
-                activeTab === 'experiences'
+              onClick={() => setActiveTab('tiling')}
+              className={`flex items-center gap-2 px-5 py-3 rounded-t-2xl font-bold text-xs sm:text-sm transition-all whitespace-nowrap cursor-pointer relative ${
+                activeTab === 'tiling'
                   ? 'bg-white text-[#FF9137] border-t border-x border-slate-200 z-10 shadow-xs'
                   : 'bg-slate-100 hover:bg-slate-200 text-slate-600 border-t border-x border-transparent'
               }`}
             >
-              <Ticket className="w-4 h-4 text-slate-500" />
-              <span>Experiences</span>
+              <span>✨ {t.tabs.tiling}</span>
             </button>
           </div>
 
-          {/* Main White Card Form Body */}
-          <div className="bg-white rounded-3xl rounded-tl-none p-4 sm:p-6 border border-slate-200 shadow-sm">
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 lg:gap-4 items-center">
-              {/* From */}
+          {/* Main White Search Body */}
+          <div className="bg-white rounded-3xl rounded-tl-none p-5 sm:p-6 border border-slate-200 shadow-sm relative z-0">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 sm:gap-4 items-center">
+              {/* Origin / Site Location */}
               <div className="md:col-span-3 flex items-center justify-between bg-slate-50 hover:bg-slate-100/70 border border-slate-200 rounded-2xl p-3 px-4 transition-all">
-                <div className="flex flex-col w-full pr-2">
-                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">From</span>
+                <div className="flex flex-col">
+                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                    {t.search.locationLabel}
+                  </span>
                   <input
                     type="text"
                     value={fromLoc}
@@ -181,27 +209,34 @@ export function PopularPackagesSection() {
                   type="button"
                   onClick={handleSwap}
                   title="Swap Locations"
-                  className="w-7 h-7 rounded-full bg-white border border-slate-200 flex items-center justify-center text-[#FF9137] hover:bg-[#FFFC8C]/40 transition-all cursor-pointer shrink-0 shadow-xs"
+                  className="w-7 h-7 rounded-full bg-white hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-700 transition-all shadow-xs cursor-pointer"
                 >
-                  <ArrowUpDown className="w-3.5 h-3.5" />
+                  <ArrowUpDown className="w-3.5 h-3.5 text-[#FF9137]" />
                 </button>
               </div>
 
-              {/* To */}
-              <div className="md:col-span-3 bg-slate-50 hover:bg-slate-100/70 border border-slate-200 rounded-2xl p-3 px-4 transition-all">
-                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">To</span>
-                <input
-                  type="text"
-                  value={toLoc}
-                  onChange={(e) => setToLoc(e.target.value)}
-                  className="bg-transparent text-[#0F172A] font-bold text-xs sm:text-sm outline-none w-full mt-0.5"
-                />
+              {/* Destination Area */}
+              <div className="md:col-span-3 flex items-center justify-between bg-slate-50 hover:bg-slate-100/70 border border-slate-200 rounded-2xl p-3 px-4 transition-all">
+                <div className="flex flex-col">
+                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                    {language === 'ml' ? 'മേഖല' : 'Target Region'}
+                  </span>
+                  <input
+                    type="text"
+                    value={toLoc}
+                    onChange={(e) => setToLoc(e.target.value)}
+                    className="bg-transparent text-[#0F172A] font-bold text-xs sm:text-sm outline-none w-full mt-0.5"
+                  />
+                </div>
+                <MapPin className="w-4 h-4 text-[#FF9137] shrink-0" />
               </div>
 
-              {/* Depart */}
+              {/* Deployment Date */}
               <div className="md:col-span-2 flex items-center justify-between bg-slate-50 hover:bg-slate-100/70 border border-slate-200 rounded-2xl p-3 px-4 transition-all">
                 <div className="flex flex-col">
-                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Depart</span>
+                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                    {t.search.dateLabel}
+                  </span>
                   <input
                     type="text"
                     value={departDate}
@@ -212,26 +247,14 @@ export function PopularPackagesSection() {
                 <Calendar className="w-4 h-4 text-[#FF9137] shrink-0" />
               </div>
 
-              {/* Return */}
-              <div className="md:col-span-2 flex items-center justify-between bg-slate-50 hover:bg-slate-100/70 border border-slate-200 rounded-2xl p-3 px-4 transition-all">
-                <div className="flex flex-col">
-                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Return</span>
-                  <input
-                    type="text"
-                    value={returnDate}
-                    onChange={(e) => setReturnDate(e.target.value)}
-                    className="bg-transparent text-[#0F172A] font-bold text-xs sm:text-sm outline-none w-full mt-0.5"
-                  />
-                </div>
-                <Calendar className="w-4 h-4 text-[#FF9137] shrink-0" />
-              </div>
-
-              {/* Travelers & Search Button */}
-              <div className="md:col-span-2 flex items-center gap-2">
-                {/* Travelers Dropdown */}
+              {/* Squad Size & Search Button */}
+              <div className="md:col-span-4 flex items-center gap-2">
+                {/* Squad Size Dropdown */}
                 <div className="flex-1 flex items-center justify-between bg-slate-50 hover:bg-slate-100/70 border border-slate-200 rounded-2xl p-3 px-3.5 transition-all cursor-pointer">
                   <div className="flex flex-col">
-                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Travelers</span>
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                      {t.search.squadLabel}
+                    </span>
                     <span className="text-[#0F172A] font-bold text-xs sm:text-sm mt-0.5 whitespace-nowrap">
                       {travelers}
                     </span>
@@ -242,9 +265,9 @@ export function PopularPackagesSection() {
                 {/* Search Button (#FF9137) */}
                 <button
                   type="button"
-                  className="bg-[#FF9137] hover:bg-[#FFCC4D] text-white hover:text-slate-950 font-bold text-xs sm:text-sm px-6 py-3.5 rounded-2xl shadow-md transition-all active:scale-95 cursor-pointer"
+                  className="bg-[#FF9137] hover:bg-[#FFCC4D] text-white hover:text-slate-950 font-bold text-xs sm:text-sm px-6 py-3.5 rounded-2xl shadow-md transition-all active:scale-95 cursor-pointer whitespace-nowrap"
                 >
-                  Search
+                  {t.search.searchBtn}
                 </button>
               </div>
             </div>
@@ -252,23 +275,20 @@ export function PopularPackagesSection() {
         </div>
 
         {/* ========================================================
-            2. MIDDLE ROW: 4 ORIGAMI STYLE FEATURE TILES
+            2. MIDDLE ROW: 4 FEATURE TILES
         ======================================================== */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
           {/* Tile 1 */}
           <div className="bg-white rounded-3xl p-4 sm:p-5 border border-slate-200/90 flex items-center gap-4 shadow-sm hover:border-[#FF9137]/50 transition-all">
             <div className="w-14 h-14 rounded-2xl bg-[#FFFC8C]/50 border border-[#FFCC4D]/40 flex items-center justify-center text-[#FF9137] shadow-inner shrink-0 relative overflow-hidden">
-              <svg viewBox="0 0 40 40" className="w-7 h-7" fill="none">
-                <polygon points="6,20 34,8 24,34 18,22" fill="#FF9137" />
-                <polygon points="18,22 34,8 24,34" fill="#FFCC4D" opacity="0.8" />
-              </svg>
+              <ShieldCheck className="w-7 h-7 text-[#FF9137]" />
             </div>
             <div>
               <h4 className="text-xs sm:text-sm font-bold text-[#0F172A] leading-tight">
-                Best Price Guarantee
+                {t.features.f1Title}
               </h4>
               <p className="text-[11px] text-slate-600 mt-1 leading-normal">
-                Get the best deals or we match it.
+                {t.features.f1Desc}
               </p>
             </div>
           </div>
@@ -276,14 +296,14 @@ export function PopularPackagesSection() {
           {/* Tile 2 */}
           <div className="bg-white rounded-3xl p-4 sm:p-5 border border-slate-200/90 flex items-center gap-4 shadow-sm hover:border-[#FF9137]/50 transition-all">
             <div className="w-14 h-14 rounded-2xl bg-[#70FFD2]/25 border border-[#70FFD2]/50 flex items-center justify-center text-emerald-800 shadow-inner shrink-0 relative overflow-hidden">
-              <ShieldCheck className="w-7 h-7 text-emerald-800" />
+              <Clock className="w-7 h-7 text-emerald-800" />
             </div>
             <div>
               <h4 className="text-xs sm:text-sm font-bold text-[#0F172A] leading-tight">
-                Secure Booking
+                {t.features.f2Title}
               </h4>
               <p className="text-[11px] text-slate-600 mt-1 leading-normal">
-                Your data is safe with us.
+                {t.features.f2Desc}
               </p>
             </div>
           </div>
@@ -291,14 +311,14 @@ export function PopularPackagesSection() {
           {/* Tile 3 */}
           <div className="bg-white rounded-3xl p-4 sm:p-5 border border-slate-200/90 flex items-center gap-4 shadow-sm hover:border-[#FF9137]/50 transition-all">
             <div className="w-14 h-14 rounded-2xl bg-[#FFFC8C]/50 border border-[#FFCC4D]/40 flex items-center justify-center text-[#FF9137] shadow-inner shrink-0 relative overflow-hidden">
-              <Headphones className="w-7 h-7 text-[#FF9137]" />
+              <Briefcase className="w-7 h-7 text-[#FF9137]" />
             </div>
             <div>
               <h4 className="text-xs sm:text-sm font-bold text-[#0F172A] leading-tight">
-                24/7 Customer Support
+                {t.features.f3Title}
               </h4>
               <p className="text-[11px] text-slate-600 mt-1 leading-normal">
-                We're here to help, anytime.
+                {t.features.f3Desc}
               </p>
             </div>
           </div>
@@ -306,14 +326,14 @@ export function PopularPackagesSection() {
           {/* Tile 4 */}
           <div className="bg-white rounded-3xl p-4 sm:p-5 border border-slate-200/90 flex items-center gap-4 shadow-sm hover:border-[#FF9137]/50 transition-all">
             <div className="w-14 h-14 rounded-2xl bg-[#70FFD2]/25 border border-[#70FFD2]/50 flex items-center justify-center text-emerald-800 shadow-inner shrink-0 relative overflow-hidden">
-              <Briefcase className="w-7 h-7 text-emerald-800" />
+              <Headphones className="w-7 h-7 text-emerald-800" />
             </div>
             <div>
               <h4 className="text-xs sm:text-sm font-bold text-[#0F172A] leading-tight">
-                Custom Travel Packages
+                {t.features.f4Title}
               </h4>
               <p className="text-[11px] text-slate-600 mt-1 leading-normal">
-                Tailored experiences just for you.
+                {t.features.f4Desc}
               </p>
             </div>
           </div>
@@ -327,13 +347,13 @@ export function PopularPackagesSection() {
           <div className="flex items-center justify-between pb-3 border-b border-slate-100">
             <h3 className="text-sm sm:text-base font-extrabold text-[#0F172A] tracking-wider uppercase flex items-center gap-2">
               <span className="w-5 h-[2.5px] bg-[#FF9137] rounded-full inline-block" />
-              <span>Popular Packages</span>
+              <span>{t.headline}</span>
             </h3>
             <button
               type="button"
               className="flex items-center gap-2 text-xs font-bold text-[#FF9137] hover:underline cursor-pointer group"
             >
-              <span>View All Packages</span>
+              <span>{language === 'ml' ? 'എല്ലാ പാക്കേജുകളും' : 'View All Packages'}</span>
               <div className="w-5 h-5 rounded-full border border-[#FF9137] flex items-center justify-center group-hover:bg-[#FF9137] group-hover:text-white transition-all">
                 <ArrowRight className="w-2.5 h-2.5" />
               </div>
@@ -342,7 +362,7 @@ export function PopularPackagesSection() {
 
           {/* 4 Cards Grid with Signature Top-Right Dog-Ear Fold Accent */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {PACKAGES.map((pkg) => (
+            {packages.map((pkg) => (
               <div
                 key={pkg.id}
                 className="group rounded-3xl overflow-hidden bg-white border border-slate-200 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col justify-between"
@@ -388,7 +408,7 @@ export function PopularPackagesSection() {
                         {pkg.price}
                       </div>
                       <span className="text-[10px] text-slate-500 font-semibold">
-                        Per Person
+                        {language === 'ml' ? 'നിശ്ചിത നിരക്ക്' : 'Fixed Rate'}
                       </span>
                     </div>
 
@@ -401,6 +421,7 @@ export function PopularPackagesSection() {
                       {/* Circular Action Button */}
                       <button
                         type="button"
+                        title={t.reserveBtn}
                         className="w-7 h-7 rounded-full bg-[#70FFD2]/30 hover:bg-[#FF9137] text-slate-900 hover:text-white flex items-center justify-center transition-all cursor-pointer shadow-xs"
                       >
                         <ArrowRight className="w-3.5 h-3.5" />

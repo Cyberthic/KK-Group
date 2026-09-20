@@ -14,9 +14,13 @@ import {
   Mail,
   Maximize2,
 } from 'lucide-react';
+import { useLanguage } from '@/context/language-context';
+import { translations } from '@/lib/translations';
 
 export function CosmicConnectionsSection() {
   const [activeSlide, setActiveSlide] = useState(1);
+  const { language, toggleLanguage } = useLanguage();
+  const t = translations[language].cosmic;
 
   return (
     <section className="w-full relative py-14 lg:py-20 bg-[#FAF8F2] text-[#0F172A] overflow-hidden selection:bg-[#70FFD2] selection:text-slate-950">
@@ -50,22 +54,29 @@ export function CosmicConnectionsSection() {
             {/* Left: Pill Menu & Language Switcher */}
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2 bg-white/90 hover:bg-white backdrop-blur-xl border border-white/60 rounded-full py-1.5 px-3.5 shadow-md transition-all cursor-pointer">
-                <span className="text-xs font-bold text-[#0F172A] tracking-wide">Menu</span>
+                <span className="text-xs font-bold text-[#0F172A] tracking-wide">{t.menu}</span>
                 <span className="w-5 h-5 rounded-full bg-[#FF9137] shadow-sm flex items-center justify-center text-white text-[10px] font-bold">
                   ●
                 </span>
               </div>
 
-              <div className="flex items-center gap-1.5 bg-white/80 backdrop-blur-xl border border-white/60 rounded-full py-1.5 px-3 text-xs text-[#0F172A] shadow-md">
+              {/* Language Switcher Pill */}
+              <button
+                type="button"
+                onClick={toggleLanguage}
+                className="flex items-center gap-1.5 bg-white/90 hover:bg-white backdrop-blur-xl border border-white/60 rounded-full py-1.5 px-3 text-xs text-[#0F172A] shadow-md cursor-pointer transition-all"
+              >
                 <Globe className="w-3.5 h-3.5 text-[#FF9137]" />
-                <span className="font-bold text-[11px]">EN | FR</span>
-              </div>
+                <span className={`font-bold text-[11px] ${language === 'en' ? 'text-[#FF9137]' : ''}`}>EN</span>
+                <span className="opacity-30">|</span>
+                <span className={`font-bold text-[11px] ${language === 'ml' ? 'text-[#FF9137]' : ''}`}>മലയാളം</span>
+              </button>
             </div>
 
             {/* Right: Search Pill & User Profile */}
             <div className="flex items-center gap-3">
               <div className="hidden sm:flex items-center gap-2 bg-white/90 backdrop-blur-xl border border-white/60 rounded-full py-1.5 px-3.5 shadow-md">
-                <span className="text-xs text-slate-600 font-medium">Searching...</span>
+                <span className="text-xs text-slate-600 font-medium">{t.searching}</span>
                 <div className="w-6 h-6 rounded-full bg-[#FF9137] flex items-center justify-center text-white">
                   <Search className="w-3.5 h-3.5" />
                 </div>
@@ -135,7 +146,7 @@ export function CosmicConnectionsSection() {
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-black/20" />
               <div className="absolute bottom-2 inset-x-2 text-center">
                 <span className="text-[10px] sm:text-xs font-bold text-white drop-shadow-md">
-                  With Kids
+                  {t.withKids}
                 </span>
               </div>
             </div>
@@ -150,7 +161,7 @@ export function CosmicConnectionsSection() {
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-black/20" />
               <div className="absolute bottom-2 inset-x-2 text-center">
                 <span className="text-[10px] sm:text-xs font-bold text-white drop-shadow-md">
-                  And Pets
+                  {t.andPets}
                 </span>
               </div>
             </div>
@@ -169,7 +180,7 @@ export function CosmicConnectionsSection() {
                   />
                   <text className="text-[9px] font-extrabold uppercase tracking-widest fill-current">
                     <textPath href="#circlePath" startOffset="0%">
-                      Get started with us • Get started with us •
+                      {t.stampText}
                     </textPath>
                   </text>
                 </svg>
@@ -193,23 +204,29 @@ export function CosmicConnectionsSection() {
                 <div className="flex items-center gap-2 mb-1.5">
                   <span className="w-5 h-[2px] bg-[#FF9137] rounded-full inline-block" />
                   <span className="text-xs font-extrabold text-[#FF9137] uppercase tracking-wider block">
-                    Cosmic Connections
+                    {t.kicker}
                   </span>
                 </div>
-                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#0F172A] leading-[1.08] tracking-tight">
-                  Bridging the Gap <br />
-                  Between Earth <br />
-                  and Space
+                <h2
+                  className={`${
+                    language === 'ml'
+                      ? 'text-2xl sm:text-3xl lg:text-4xl font-bold leading-[1.25]'
+                      : 'text-3xl sm:text-4xl lg:text-5xl font-black leading-[1.08]'
+                  } text-[#0F172A] tracking-tight`}
+                >
+                  {t.headlinePart1} <br />
+                  {t.headlinePart2} <br />
+                  {t.headlinePart3}
                 </h2>
               </div>
 
               {/* +76k Travelers & Avatar Stack */}
               <div className="bg-white border border-slate-200/90 shadow-[0_4px_20px_rgba(0,0,0,0.04)] rounded-2xl p-3.5 sm:p-4 shrink-0 max-w-[240px]">
                 <div className="text-sm font-extrabold text-[#0F172A]">
-                  +76k <span className="font-semibold text-slate-600 text-xs">Enjoy travel with us.</span>
+                  {t.enjoyTravel}
                 </div>
                 <p className="text-[10px] text-slate-500 mt-1 leading-tight">
-                  For anyone incorporated in exploring space travel.
+                  {t.enjoySub}
                 </p>
                 {/* Overlapping Avatars */}
                 <div className="flex items-center -space-x-2 mt-2.5">
@@ -229,7 +246,7 @@ export function CosmicConnectionsSection() {
                     className="w-6 h-6 rounded-full border-2 border-white object-cover"
                   />
                   <div className="w-6 h-6 rounded-full bg-[#FF9137] text-white font-bold text-[9px] flex items-center justify-center border-2 border-white shadow-sm">
-                    More
+                    {t.more}
                   </div>
                 </div>
               </div>
@@ -237,7 +254,7 @@ export function CosmicConnectionsSection() {
 
             {/* Description Paragraph */}
             <p className="text-xs sm:text-sm text-slate-600 font-normal leading-relaxed max-w-lg">
-              It offers a wide range of content pointed to space tourism, including articles, videos and guides for modern explorers.
+              {t.description}
             </p>
 
             {/* Discover More Button & Social Icons */}
@@ -246,7 +263,7 @@ export function CosmicConnectionsSection() {
                 type="button"
                 className="rounded-full bg-[#FF9137] hover:bg-[#E57A22] px-6 py-2.5 text-xs sm:text-sm font-bold text-white transition-all shadow-md active:scale-95 cursor-pointer"
               >
-                Discover More
+                {t.discoverMore}
               </button>
 
               <div className="flex items-center gap-2">
@@ -292,7 +309,7 @@ export function CosmicConnectionsSection() {
                   />
                 </div>
                 <span className="text-[11px] sm:text-xs font-bold text-[#0F172A] mt-2 leading-tight">
-                  Journey to the other planets
+                  {t.planets.jupiter}
                 </span>
                 <div className="w-6 h-6 rounded-full bg-slate-100 group-hover/planet:bg-[#70FFD2] group-hover/planet:text-slate-950 flex items-center justify-center text-slate-600 mt-3 transition-all shadow-xs">
                   <ArrowUpRight className="w-3 h-3" />
@@ -309,7 +326,7 @@ export function CosmicConnectionsSection() {
                   />
                 </div>
                 <span className="text-[11px] sm:text-xs font-bold text-[#0F172A] mt-2 leading-tight">
-                  Unleash your inner astronaut
+                  {t.planets.mars}
                 </span>
                 <div className="w-6 h-6 rounded-full bg-slate-100 group-hover/planet:bg-[#70FFD2] group-hover/planet:text-slate-950 flex items-center justify-center text-slate-600 mt-3 transition-all shadow-xs">
                   <ArrowUpRight className="w-3 h-3" />
@@ -326,7 +343,7 @@ export function CosmicConnectionsSection() {
                   />
                 </div>
                 <span className="text-[11px] sm:text-xs font-bold text-[#0F172A] mt-2 leading-tight">
-                  Ultimate guide to planet travels
+                  {t.planets.neptune}
                 </span>
                 <div className="w-6 h-6 rounded-full bg-slate-100 group-hover/planet:bg-[#70FFD2] group-hover/planet:text-slate-950 flex items-center justify-center text-slate-600 mt-3 transition-all shadow-xs">
                   <ArrowUpRight className="w-3 h-3" />
@@ -374,13 +391,13 @@ export function CosmicConnectionsSection() {
               <div className="absolute bottom-4 inset-x-4 flex items-end justify-between z-10">
                 <div className="max-w-[70%]">
                   <p className="text-[11px] sm:text-xs text-white font-medium leading-snug drop-shadow-md line-clamp-2">
-                    Jupiter is the fifth planet from the Sun and the largest in the Solar System.
+                    {t.planets.jupiterDesc}
                   </p>
                   <button
                     type="button"
                     className="mt-2 text-[10px] font-bold uppercase tracking-wider bg-white/90 hover:bg-white text-[#0F172A] px-3 py-1 rounded-full transition-all border border-white/60 shadow-sm cursor-pointer"
                   >
-                    More
+                    {t.more}
                   </button>
                 </div>
 
@@ -426,13 +443,13 @@ export function CosmicConnectionsSection() {
               <div className="absolute bottom-4 inset-x-4 flex items-end justify-between z-10">
                 <div className="max-w-[70%]">
                   <p className="text-[11px] sm:text-xs text-white font-medium leading-snug drop-shadow-md line-clamp-2">
-                    Neptune is the eighth planet from the Sun and the farthest known planet in the Solar System.
+                    {t.planets.neptuneDesc}
                   </p>
                   <button
                     type="button"
                     className="mt-2 text-[10px] font-bold uppercase tracking-wider bg-white/90 hover:bg-white text-[#0F172A] px-3 py-1 rounded-full transition-all border border-white/60 shadow-sm cursor-pointer"
                   >
-                    More
+                    {t.more}
                   </button>
                 </div>
 
