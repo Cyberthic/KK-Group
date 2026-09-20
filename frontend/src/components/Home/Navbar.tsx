@@ -1,13 +1,18 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import {
   Search,
   Globe,
-  Sparkles,
   Menu,
   X,
+  User,
+  Clock,
+  Briefcase,
+  ShieldCheck,
+  LogOut,
+  ArrowRight,
 } from 'lucide-react';
 import { useLanguage } from '@/context/language-context';
 import { translations } from '@/utils/translations';
@@ -20,6 +25,8 @@ interface NavbarProps {
 export function Navbar({ onOpenEnquiry, onCartClick }: NavbarProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement>(null);
   const { language, toggleLanguage } = useLanguage();
   const t = translations[language].navbar;
 
@@ -31,6 +38,24 @@ export function Navbar({ onOpenEnquiry, onCartClick }: NavbarProps) {
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Close customer menu on click outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        userMenuRef.current &&
+        !userMenuRef.current.contains(e.target as Node)
+      ) {
+        setUserMenuOpen(false);
+      }
+    };
+    if (userMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [userMenuOpen]);
 
   return (
     <header
@@ -105,18 +130,90 @@ export function Navbar({ onOpenEnquiry, onCartClick }: NavbarProps) {
             <Search className="w-4 h-4" />
           </button>
 
-          {/* User Profile Avatar Pill */}
-          <Link
-            href="/dashboard"
-            title="Account"
-            className="w-8 h-8 rounded-full overflow-hidden border border-slate-200/90 shadow-xs hover:border-[#2A835F] transition-all flex items-center justify-center bg-slate-100 cursor-pointer"
-          >
-            <img
-              src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80"
-              alt="User profile"
-              className="w-full h-full object-cover"
-            />
-          </Link>
+          {/* User Profile Avatar with Stylish Customer Menu */}
+          <div className="relative" ref={userMenuRef}>
+            <button
+              type="button"
+              onClick={() => setUserMenuOpen((prev) => !prev)}
+              title="Account"
+              className={`w-8 h-8 rounded-full overflow-hidden border shadow-xs transition-all flex items-center justify-center bg-slate-100 cursor-pointer ${
+                userMenuOpen
+                  ? 'border-[#2A835F] ring-2 ring-[#2A835F]/20'
+                  : 'border-slate-200/90 hover:border-[#2A835F]'
+              }`}
+            >
+              <img
+                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80"
+                alt="User profile"
+                className="w-full h-full object-cover"
+              />
+            </button>
+
+            {/* Stylish Customer Menu Popover */}
+            {userMenuOpen && (
+              <div className="absolute right-0 mt-2.5 w-56 bg-white/98 backdrop-blur-2xl border-2 border-slate-200/90 rounded-2xl p-2 shadow-[0_20px_50px_-10px_rgba(0,0,0,0.2)] z-50 animate-in fade-in zoom-in-95 duration-150">
+                <div className="px-3 py-2 border-b border-slate-100 mb-1">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-[#2A835F] block">
+                    {language === 'ml' ? 'കസ്റ്റമർ പോർട്ടൽ' : 'Customer Account'}
+                  </span>
+                  <span className="text-xs font-bold text-slate-900 block truncate">
+                    KK Group Client
+                  </span>
+                </div>
+
+                <div className="flex flex-col gap-0.5">
+                  <Link
+                    href="/dashboard"
+                    onClick={() => setUserMenuOpen(false)}
+                    className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-[#EBF6F1] hover:text-[#2A835F] transition-all"
+                  >
+                    <User className="w-3.5 h-3.5 text-[#2A835F]" />
+                    <span>{language === 'ml' ? 'ഡാഷ്‌ബോർഡ്' : 'Customer Dashboard'}</span>
+                  </Link>
+
+                  <Link
+                    href="/dashboard"
+                    onClick={() => setUserMenuOpen(false)}
+                    className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-[#EBF6F1] hover:text-[#2A835F] transition-all"
+                  >
+                    <Clock className="w-3.5 h-3.5 text-[#2A835F]" />
+                    <span>{language === 'ml' ? 'ബുക്കിംഗ് ട്രാക്കിംഗ്' : 'Track My Bookings'}</span>
+                  </Link>
+
+                  <div className="h-px bg-slate-100 my-1" />
+
+                  <Link
+                    href="/worker/dashboard"
+                    onClick={() => setUserMenuOpen(false)}
+                    className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-all"
+                  >
+                    <Briefcase className="w-3.5 h-3.5 text-slate-400" />
+                    <span>{language === 'ml' ? 'വർക്കർ പോർട്ടൽ' : 'Worker Portal'}</span>
+                  </Link>
+
+                  <Link
+                    href="/office-staff/dashboard"
+                    onClick={() => setUserMenuOpen(false)}
+                    className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-all"
+                  >
+                    <ShieldCheck className="w-3.5 h-3.5 text-slate-400" />
+                    <span>{language === 'ml' ? 'സ്റ്റാഫ് പോർട്ടൽ' : 'Staff Portal'}</span>
+                  </Link>
+
+                  <div className="h-px bg-slate-100 my-1" />
+
+                  <Link
+                    href="/auth/login"
+                    onClick={() => setUserMenuOpen(false)}
+                    className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"
+                  >
+                    <LogOut className="w-3.5 h-3.5 text-slate-400 group-hover:text-red-600" />
+                    <span>{language === 'ml' ? 'ലോഗിൻ / രജിസ്റ്റർ' : 'Sign In / Register'}</span>
+                  </Link>
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* Enquiry / Get Quote Button (Styled to #2A835F Emerald Palette) */}
           <button
@@ -233,7 +330,7 @@ export function Navbar({ onOpenEnquiry, onCartClick }: NavbarProps) {
             }}
             className="w-full mt-2 flex items-center justify-center gap-2 bg-[#2A835F] hover:bg-[#236D4F] text-white py-2.5 rounded-xl text-xs font-bold shadow-sm transition-all cursor-pointer"
           >
-            <Sparkles className="w-3.5 h-3.5" />
+            <ArrowRight className="w-3.5 h-3.5" />
             <span>{t.enquireBtn}</span>
           </button>
         </div>

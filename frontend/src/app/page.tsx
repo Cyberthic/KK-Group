@@ -7,6 +7,7 @@ import { PopularPackagesSection } from '@/components/Home/PopularPackagesSection
 import { CosmicConnectionsSection } from '@/components/Home/CosmicConnectionsSection';
 import { Footer } from '@/components/Home/Footer';
 import { EnquiryBox } from '@/components/Home/EnquiryBox';
+import { HomeLoader } from '@/components/Home/HomeLoader';
 
 export default function HomePage() {
   const [isEnquiryOpen, setIsEnquiryOpen] = useState(false);
@@ -24,6 +25,9 @@ export default function HomePage() {
 
   return (
     <div className="w-full min-h-screen bg-white text-[#0F172A] font-sans antialiased selection:bg-[#2A835F] selection:text-white flex flex-col scroll-smooth">
+      {/* High-Tech Cool Splash Loader */}
+      <HomeLoader />
+
       {/* Fixed Navbar with Enquire Button */}
       <Navbar onOpenEnquiry={() => handleOpenEnquiry()} />
 
@@ -35,14 +39,14 @@ export default function HomePage() {
       </section>
 
       {/* ========================================================
-          2. SECOND SECTION: Popular Packages, Search Bar & Origami Features
+          2. SECOND SECTION: Popular Field Packages & Fleet Booking
       ======================================================== */}
-      <PopularPackagesSection />
+      <PopularPackagesSection onSelectPackage={handleOpenEnquiry} />
 
       {/* ========================================================
-          3. THIRD SECTION: Cosmic Connections & Planetary Horizons
+          3. THIRD SECTION: Regional Operations Network & Live Fleet
       ======================================================== */}
-      <CosmicConnectionsSection />
+      <CosmicConnectionsSection onOpenEnquiry={handleOpenEnquiry} />
 
       {/* ========================================================
           4. FOURTH SECTION: Newsletter Call-To-Action & Master Footer

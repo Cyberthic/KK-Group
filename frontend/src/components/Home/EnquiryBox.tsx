@@ -12,11 +12,11 @@ import {
   ChevronDown,
   Layers,
   X,
-  Sparkles,
 } from 'lucide-react';
 import { EnquiryService } from '@/services/enquiry.service';
 import { useLanguage } from '@/context/language-context';
 import { translations } from '@/utils/translations';
+import { StylishDropdown } from '@/components/Common/StylishDropdown';
 
 interface EnquiryBoxProps {
   isOpen?: boolean;
@@ -195,7 +195,6 @@ export function EnquiryBox({
             <h2 className="text-xl sm:text-2xl font-black text-[#0F172A] tracking-tight leading-snug">
               {t.title}
             </h2>
-            <Sparkles className="w-4 h-4 text-[#2A835F]" />
           </div>
 
           <div className="flex items-center gap-2">
@@ -264,30 +263,23 @@ export function EnquiryBox({
             </div>
           )}
 
-          {/* 1. Service Choosing Dropdown */}
-          <div className="bg-[#F7FCF9] hover:bg-[#EBF6F1]/80 border border-[#C3E6D5] focus-within:border-[#2A835F] focus-within:ring-2 focus-within:ring-[#2A835F]/20 rounded-2xl p-2.5 px-3.5 flex flex-col transition-all">
-            <label
-              htmlFor="service-select"
-              className="text-[10px] font-bold text-[#2A835F] uppercase tracking-wider flex items-center gap-1.5 mb-0.5"
-            >
-              <Layers className="w-3.5 h-3.5 text-[#2A835F]" />
-              <span>{t.chooseService}</span>
-            </label>
-            <div className="relative flex items-center">
-              <select
-                id="service-select"
-                value={selectedServiceId}
-                onChange={handleServiceChange}
-                className="w-full bg-transparent text-[#0F172A] text-xs font-bold pr-6 py-0.5 outline-none appearance-none cursor-pointer [&>option]:bg-white [&>option]:text-slate-900"
-              >
-                {SERVICE_OPTIONS.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.name}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="w-3.5 h-3.5 text-[#2A835F] pointer-events-none absolute right-0" />
-            </div>
+          {/* 1. Service Choosing Dropdown with StylishDropdown */}
+          <div className="flex flex-col w-full">
+            <StylishDropdown
+              options={SERVICE_OPTIONS.map((s) => ({
+                id: s.id,
+                label: s.name,
+                subtitle: s.defaultScale,
+              }))}
+              value={selectedServiceId}
+              onChange={(id) => {
+                setSelectedServiceId(id);
+                const matched = SERVICE_OPTIONS.find((s) => s.id === id);
+                if (matched) setSquadScale(matched.defaultScale);
+              }}
+              label={t.chooseService}
+              variant="boxed"
+            />
           </div>
 
           {/* 2. Full Name & Phone Number */}

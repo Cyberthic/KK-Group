@@ -7,7 +7,6 @@ import {
   MapPin,
   Phone,
   User,
-  Sparkles,
   ChevronDown,
   Layers,
   Calendar,
@@ -15,6 +14,7 @@ import {
 import { useLanguage } from '@/context/language-context';
 import { translations } from '@/utils/translations';
 import { EnquiryService } from '@/services/enquiry.service';
+import { StylishDropdown, DropdownOption } from '@/components/Common/StylishDropdown';
 
 interface HeroEnquiryBoxProps {
   onSuccess?: (trackingCode: string) => void;
@@ -34,6 +34,11 @@ export function HeroEnquiryBox({ onSuccess, className = '' }: HeroEnquiryBoxProp
     { id: 'electrical', name: t.servicesList.electrical },
     { id: 'plumbing', name: t.servicesList.plumbing },
   ];
+
+  const serviceDropdownOptions: DropdownOption[] = SERVICES.map((s) => ({
+    id: s.id,
+    label: s.name,
+  }));
 
   const [selectedServiceId, setSelectedServiceId] = useState(SERVICES[0].id);
   const [customerName, setCustomerName] = useState('');
@@ -101,21 +106,21 @@ export function HeroEnquiryBox({ onSuccess, className = '' }: HeroEnquiryBoxProp
       ======================================================== */}
       <div className="hidden lg:block w-full">
         {submittedRef ? (
-          <div className="w-full bg-white/95 backdrop-blur-2xl border-2 border-white/80 rounded-2xl lg:rounded-3xl xl:rounded-full p-5 lg:p-7 px-8 lg:px-10 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.35)] flex items-center justify-between gap-6 text-slate-800 animate-in fade-in zoom-in-95 duration-300">
-            <div className="flex items-center gap-5">
-              <div className="w-13 h-13 rounded-2xl bg-[#EBF6F1] flex items-center justify-center shrink-0 shadow-inner">
-                <CheckCircle2 className="w-7 h-7 text-[#2A835F]" />
+          <div className="w-full bg-white/95 backdrop-blur-2xl border-2 border-white/80 rounded-2xl lg:rounded-3xl xl:rounded-full p-4 lg:p-6 px-6 lg:px-8 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.35)] flex items-center justify-between gap-4 text-slate-800 animate-in fade-in zoom-in-95 duration-300">
+            <div className="flex items-center gap-4 min-w-0">
+              <div className="w-11 h-11 lg:w-12 lg:h-12 rounded-2xl bg-[#EBF6F1] flex items-center justify-center shrink-0 shadow-inner">
+                <CheckCircle2 className="w-6 h-6 text-[#2A835F]" />
               </div>
-              <div>
-                <div className="flex items-center gap-2 mb-1">
+              <div className="min-w-0">
+                <div className="flex items-center gap-2 mb-0.5">
                   <span className="text-xs font-black uppercase tracking-wider text-[#2A835F]">
                     {language === 'ml' ? 'അന്വേഷണം സ്വീകരിച്ചു' : 'Enquiry Received'}
                   </span>
-                  <span className="font-mono text-xs font-bold bg-[#EBF6F1] text-[#2A835F] px-2.5 py-0.5 rounded-full">
+                  <span className="font-mono text-xs font-bold bg-[#EBF6F1] text-[#2A835F] px-2 py-0.5 rounded-full">
                     REF: {submittedRef}
                   </span>
                 </div>
-                <p className="text-sm lg:text-base font-bold text-slate-700">
+                <p className="text-xs lg:text-sm font-bold text-slate-700 truncate">
                   {t.successMsg}
                 </p>
               </div>
@@ -123,7 +128,7 @@ export function HeroEnquiryBox({ onSuccess, className = '' }: HeroEnquiryBoxProp
             <button
               type="button"
               onClick={handleReset}
-              className="bg-[#2A835F] hover:bg-[#236D4F] text-white px-8 py-3.5 rounded-xl lg:rounded-2xl xl:rounded-full font-black text-xs uppercase tracking-wider transition-all active:scale-95 shadow-md shrink-0 cursor-pointer"
+              className="bg-[#2A835F] hover:bg-[#236D4F] text-white px-6 py-3 rounded-xl lg:rounded-2xl xl:rounded-full font-black text-xs uppercase tracking-wider transition-all active:scale-95 shadow-md shrink-0 cursor-pointer"
             >
               {t.submitAnother}
             </button>
@@ -131,44 +136,34 @@ export function HeroEnquiryBox({ onSuccess, className = '' }: HeroEnquiryBoxProp
         ) : (
           <form
             onSubmit={handleSubmit}
-            className="w-full bg-white/95 backdrop-blur-2xl border-2 border-white/80 rounded-2xl lg:rounded-3xl xl:rounded-full py-4 lg:py-5 px-6 lg:px-8 xl:px-10 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.35)] flex items-center justify-between gap-5 text-slate-800 transition-all hover:shadow-[0_30px_70px_-15px_rgba(0,0,0,0.4)]"
+            className="w-full bg-white/95 backdrop-blur-2xl border-2 border-white/80 rounded-2xl lg:rounded-3xl xl:rounded-full py-3.5 lg:py-4 xl:py-4.5 px-4 lg:px-6 xl:px-8 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.35)] flex items-center justify-between gap-3 lg:gap-4 xl:gap-5 text-slate-800 transition-all hover:shadow-[0_30px_70px_-15px_rgba(0,0,0,0.4)]"
           >
-            {/* Segment 1: Service Selector */}
-            <div className="flex-1 min-w-[210px] flex items-center gap-3.5 pr-2">
-              <div className="w-11 h-11 lg:w-12 lg:h-12 rounded-2xl bg-[#EBF6F1] flex items-center justify-center shrink-0">
-                <Sparkles className="w-5 h-5 text-[#2A835F]" />
+            {/* Segment 1: Service Selector with StylishDropdown */}
+            <div className="flex-[1.2] min-w-0 flex items-center gap-2.5 lg:gap-3">
+              <div className="w-10 h-10 lg:w-11 lg:h-11 rounded-2xl bg-[#EBF6F1] flex items-center justify-center shrink-0">
+                <Layers className="w-4 h-4 text-[#2A835F]" />
               </div>
-              <div className="flex flex-col text-left w-full overflow-hidden">
-                <label className="text-[10px] lg:text-[11px] font-black uppercase tracking-wider text-slate-400 mb-0.5">
-                  {t.chooseService}
-                </label>
-                <div className="relative flex items-center">
-                  <select
-                    value={selectedServiceId}
-                    onChange={(e) => setSelectedServiceId(e.target.value)}
-                    className="w-full text-xs lg:text-sm font-bold text-slate-900 bg-transparent focus:outline-none cursor-pointer appearance-none truncate pr-5"
-                  >
-                    {SERVICES.map((s) => (
-                      <option key={s.id} value={s.id} className="text-slate-900 font-semibold">
-                        {s.name}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown className="w-4 h-4 text-slate-400 absolute right-0 pointer-events-none" />
-                </div>
+              <div className="flex flex-col text-left w-full min-w-0">
+                <StylishDropdown
+                  options={serviceDropdownOptions}
+                  value={selectedServiceId}
+                  onChange={setSelectedServiceId}
+                  label={t.chooseService}
+                  variant="inline"
+                />
               </div>
             </div>
 
             {/* Vertical Divider */}
-            <div className="w-px h-10 lg:h-12 bg-slate-200/90 shrink-0" />
+            <div className="w-px h-8 lg:h-10 bg-slate-200/90 shrink-0" />
 
             {/* Segment 2: Customer Name */}
-            <div className="flex-1 min-w-[160px] flex items-center gap-3.5 px-2">
-              <div className="w-11 h-11 lg:w-12 lg:h-12 rounded-2xl bg-slate-100 flex items-center justify-center shrink-0">
-                <User className="w-5 h-5 text-slate-500" />
+            <div className="flex-1 min-w-0 flex items-center gap-2.5 lg:gap-3">
+              <div className="w-10 h-10 lg:w-11 lg:h-11 rounded-2xl bg-slate-100 flex items-center justify-center shrink-0">
+                <User className="w-4 h-4 text-slate-500" />
               </div>
-              <div className="flex flex-col text-left w-full">
-                <label className="text-[10px] lg:text-[11px] font-black uppercase tracking-wider text-slate-400 mb-0.5">
+              <div className="flex flex-col text-left w-full min-w-0">
+                <label className="text-[10px] lg:text-[11px] font-black uppercase tracking-wider text-slate-400 mb-0.5 truncate">
                   {t.yourName}
                 </label>
                 <input
@@ -176,22 +171,22 @@ export function HeroEnquiryBox({ onSuccess, className = '' }: HeroEnquiryBoxProp
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
                   placeholder={t.namePlaceholder}
-                  className="w-full text-xs lg:text-sm font-bold text-slate-900 placeholder-slate-400 bg-transparent focus:outline-none"
+                  className="w-full text-xs lg:text-sm font-bold text-slate-900 placeholder-slate-400 bg-transparent focus:outline-none truncate"
                   required
                 />
               </div>
             </div>
 
             {/* Vertical Divider */}
-            <div className="w-px h-10 lg:h-12 bg-slate-200/90 shrink-0" />
+            <div className="w-px h-8 lg:h-10 bg-slate-200/90 shrink-0" />
 
             {/* Segment 3: Customer Phone */}
-            <div className="flex-1 min-w-[160px] flex items-center gap-3.5 px-2">
-              <div className="w-11 h-11 lg:w-12 lg:h-12 rounded-2xl bg-slate-100 flex items-center justify-center shrink-0">
-                <Phone className="w-5 h-5 text-slate-500" />
+            <div className="flex-1 min-w-0 flex items-center gap-2.5 lg:gap-3">
+              <div className="w-10 h-10 lg:w-11 lg:h-11 rounded-2xl bg-slate-100 flex items-center justify-center shrink-0">
+                <Phone className="w-4 h-4 text-slate-500" />
               </div>
-              <div className="flex flex-col text-left w-full">
-                <label className="text-[10px] lg:text-[11px] font-black uppercase tracking-wider text-slate-400 mb-0.5">
+              <div className="flex flex-col text-left w-full min-w-0">
+                <label className="text-[10px] lg:text-[11px] font-black uppercase tracking-wider text-slate-400 mb-0.5 truncate">
                   {t.phoneNumber}
                 </label>
                 <input
@@ -199,22 +194,22 @@ export function HeroEnquiryBox({ onSuccess, className = '' }: HeroEnquiryBoxProp
                   value={customerPhone}
                   onChange={(e) => setCustomerPhone(e.target.value)}
                   placeholder={t.phonePlaceholder}
-                  className="w-full text-xs lg:text-sm font-bold text-slate-900 placeholder-slate-400 bg-transparent focus:outline-none"
+                  className="w-full text-xs lg:text-sm font-bold text-slate-900 placeholder-slate-400 bg-transparent focus:outline-none truncate"
                   required
                 />
               </div>
             </div>
 
             {/* Vertical Divider */}
-            <div className="w-px h-10 lg:h-12 bg-slate-200/90 shrink-0" />
+            <div className="w-px h-8 lg:h-10 bg-slate-200/90 shrink-0" />
 
             {/* Segment 4: Location */}
-            <div className="flex-1 min-w-[160px] flex items-center gap-3.5 px-2">
-              <div className="w-11 h-11 lg:w-12 lg:h-12 rounded-2xl bg-slate-100 flex items-center justify-center shrink-0">
-                <MapPin className="w-5 h-5 text-slate-500" />
+            <div className="flex-1 min-w-0 flex items-center gap-2.5 lg:gap-3">
+              <div className="w-10 h-10 lg:w-11 lg:h-11 rounded-2xl bg-slate-100 flex items-center justify-center shrink-0">
+                <MapPin className="w-4 h-4 text-slate-500" />
               </div>
-              <div className="flex flex-col text-left w-full">
-                <label className="text-[10px] lg:text-[11px] font-black uppercase tracking-wider text-slate-400 mb-0.5">
+              <div className="flex flex-col text-left w-full min-w-0">
+                <label className="text-[10px] lg:text-[11px] font-black uppercase tracking-wider text-slate-400 mb-0.5 truncate">
                   {t.location}
                 </label>
                 <input
@@ -222,7 +217,7 @@ export function HeroEnquiryBox({ onSuccess, className = '' }: HeroEnquiryBoxProp
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
                   placeholder={t.locationPlaceholder}
-                  className="w-full text-xs lg:text-sm font-bold text-slate-900 placeholder-slate-400 bg-transparent focus:outline-none"
+                  className="w-full text-xs lg:text-sm font-bold text-slate-900 placeholder-slate-400 bg-transparent focus:outline-none truncate"
                 />
               </div>
             </div>
@@ -231,7 +226,7 @@ export function HeroEnquiryBox({ onSuccess, className = '' }: HeroEnquiryBoxProp
             <button
               type="submit"
               disabled={isSubmitting}
-              className="bg-[#2A835F] hover:bg-[#236D4F] text-white px-8 lg:px-10 py-4 lg:py-4.5 rounded-xl lg:rounded-2xl xl:rounded-full font-black text-xs lg:text-sm uppercase tracking-wider inline-flex items-center gap-3 shadow-lg hover:shadow-xl transition-all active:scale-95 shrink-0 cursor-pointer disabled:opacity-60"
+              className="bg-[#2A835F] hover:bg-[#236D4F] text-white px-5 lg:px-7 xl:px-8 py-3.5 lg:py-4 rounded-xl lg:rounded-2xl xl:rounded-full font-black text-xs lg:text-sm uppercase tracking-wider inline-flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all active:scale-95 shrink-0 cursor-pointer disabled:opacity-60 whitespace-nowrap"
             >
               {isSubmitting ? (
                 <>
@@ -240,8 +235,8 @@ export function HeroEnquiryBox({ onSuccess, className = '' }: HeroEnquiryBoxProp
                 </>
               ) : (
                 <>
-                  <span>{t.submitBtn}</span>
-                  <ArrowRight className="w-4 h-4 text-white" />
+                  <span>{language === 'ml' ? 'അന്വേഷിക്കുക' : 'Enquire Now'}</span>
+                  <ArrowRight className="w-4 h-4 text-white shrink-0" />
                 </>
               )}
             </button>
@@ -285,10 +280,10 @@ export function HeroEnquiryBox({ onSuccess, className = '' }: HeroEnquiryBoxProp
         ) : (
           <form
             onSubmit={handleSubmit}
-            className="w-full bg-white/95 backdrop-blur-xl border border-white/60 rounded-3xl p-4 sm:p-5 shadow-2xl text-slate-800 flex flex-col justify-between aspect-[1/1] transition-all"
+            className="w-full bg-white/95 backdrop-blur-xl border-2 border-white/80 rounded-3xl p-4 sm:p-5 shadow-2xl text-slate-800 flex flex-col justify-between gap-3 min-h-[340px] sm:min-h-[360px] transition-all"
           >
             {/* Header / Kicker */}
-            <div className="flex items-center justify-between pb-1 border-b border-slate-100">
+            <div className="flex items-center justify-between pb-1.5 border-b border-slate-100">
               <div className="inline-flex items-center gap-1.5 bg-[#EBF6F1] text-[#2A835F] px-2.5 py-0.5 rounded-full text-[10px] font-bold">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#2A835F] animate-pulse" />
                 <span>{language === 'ml' ? 'ദ്രുത അന്വേഷണം' : 'Quick Enquiry'}</span>
@@ -298,26 +293,17 @@ export function HeroEnquiryBox({ onSuccess, className = '' }: HeroEnquiryBoxProp
               </span>
             </div>
 
-            {/* Service Dropdown */}
+            {/* Service Dropdown with StylishDropdown */}
             <div className="flex flex-col gap-1">
               <label className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500">
                 {t.chooseService}
               </label>
-              <div className="relative flex items-center bg-slate-100/90 hover:bg-slate-100 border border-slate-200/80 rounded-xl px-2.5 py-2">
-                <Sparkles className="w-3.5 h-3.5 text-[#2A835F] shrink-0 mr-2" />
-                <select
-                  value={selectedServiceId}
-                  onChange={(e) => setSelectedServiceId(e.target.value)}
-                  className="w-full text-xs font-bold text-slate-800 bg-transparent focus:outline-none cursor-pointer appearance-none truncate pr-4"
-                >
-                  {SERVICES.map((s) => (
-                    <option key={s.id} value={s.id} className="text-slate-900 font-semibold">
-                      {s.name}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 pointer-events-none" />
-              </div>
+              <StylishDropdown
+                options={serviceDropdownOptions}
+                value={selectedServiceId}
+                onChange={setSelectedServiceId}
+                variant="boxed"
+              />
             </div>
 
             {/* Name and Phone (Grid 2 cols for compactness) */}
@@ -378,16 +364,16 @@ export function HeroEnquiryBox({ onSuccess, className = '' }: HeroEnquiryBoxProp
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-[#2A835F] hover:bg-[#236D4F] text-white py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all active:scale-95 disabled:opacity-60 cursor-pointer mt-1"
+              className="w-full bg-[#2A835F] hover:bg-[#236D4F] text-white py-3 rounded-xl font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all active:scale-95 disabled:opacity-60 cursor-pointer mt-1"
             >
               {isSubmitting ? (
                 <>
-                  <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   <span>{t.submitting}</span>
                 </>
               ) : (
                 <>
-                  <span>{t.submitBtn}</span>
+                  <span>{language === 'ml' ? 'അന്വേഷിക്കുക' : 'Enquire Now'}</span>
                   <ArrowRight className="w-3.5 h-3.5 text-white" />
                 </>
               )}

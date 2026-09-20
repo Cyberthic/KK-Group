@@ -12,6 +12,7 @@ import {
   Zap,
   Clock,
   ChevronRight,
+  Sparkles,
 } from 'lucide-react';
 import { useLanguage } from '@/context/language-context';
 import { translations } from '@/utils/translations';
@@ -35,48 +36,48 @@ export function Footer() {
   };
 
   return (
-    <footer className="w-full relative bg-[#FAF8F2] text-[#0F172A] overflow-hidden border-t border-slate-200/90 selection:bg-[#70FFD2] selection:text-slate-950 pt-16 lg:pt-24 pb-10">
-      {/* Ambient Top Glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-[#FFFC8C]/30 blur-[140px] pointer-events-none" />
+    <footer className="w-full relative bg-slate-950 text-white overflow-hidden border-t border-slate-800/80 selection:bg-[#2A835F] selection:text-white pt-16 lg:pt-24 pb-12">
+      {/* Subtle Top Ambient Emerald Glow */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[300px] bg-[#2A835F]/10 blur-[150px] pointer-events-none" />
 
-      <div className="w-full max-w-[1440px] mx-auto px-6 sm:px-8 md:px-10 lg:px-12 xl:px-14 relative z-10 flex flex-col gap-16 lg:gap-20">
+      <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 relative z-10 flex flex-col gap-14 lg:gap-18">
         {/* ========================================================
-            1. NEWSLETTER CALL-TO-ACTION CHASSIS (Light Warm Sand Card)
+            1. NEWSLETTER / PRIORITY DISPATCH BENTO CHASSIS
         ======================================================== */}
-        <div className="w-full bg-gradient-to-br from-[#FFFDF5] via-[#FFF9E6] to-[#F2FBF7] border border-[#FFCC4D]/40 rounded-3xl sm:rounded-[36px] p-8 sm:p-12 shadow-[0_10px_35px_rgba(0,0,0,0.04)] relative overflow-hidden">
-          {/* Subtle Background Neo-Mint Tint Accent */}
-          <div className="absolute -right-16 -bottom-16 w-80 h-80 rounded-full bg-[#70FFD2]/15 blur-3xl pointer-events-none" />
+        <div className="w-full bg-slate-900/90 border border-slate-800/80 rounded-3xl sm:rounded-[36px] p-6 sm:p-10 lg:p-12 shadow-2xl relative overflow-hidden">
+          {/* Ambient Glow Inside Card */}
+          <div className="absolute -right-16 -bottom-16 w-80 h-80 rounded-full bg-[#2A835F]/15 blur-3xl pointer-events-none" />
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
             {/* Left: Headline & Perks */}
             <div className="lg:col-span-7 flex flex-col gap-3">
-              <div className="flex items-center gap-2">
-                <span className="w-6 h-[2px] bg-[#FF9137] rounded-full inline-block" />
-                <span className="text-[10px] sm:text-[11px] font-extrabold tracking-[0.25em] text-[#FF9137] uppercase">
-                  {t.stayInformed}
-                </span>
+              <div className="inline-flex items-center gap-2 text-xs font-black tracking-widest text-[#2A835F] uppercase bg-[#EBF6F1]/10 px-3 py-1 rounded-full border border-[#2A835F]/30 w-fit">
+                <svg viewBox="0 0 24 24" fill="#2A835F" className="w-3.5 h-3.5 text-[#2A835F]">
+                  <path d="M12 0L14.7 9.3L24 12L14.7 14.7L12 24L9.3 14.7L0 12L9.3 9.3L12 0Z" />
+                </svg>
+                <span>{t.stayInformed}</span>
               </div>
 
-              <h3 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#0F172A] tracking-tight leading-tight">
+              <h3 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight leading-tight">
                 {t.newsletterTitle}
               </h3>
 
-              <p className="text-xs sm:text-sm text-slate-600 font-normal leading-relaxed max-w-xl mt-1">
+              <p className="text-xs sm:text-sm text-slate-300 font-normal leading-relaxed max-w-xl mt-1">
                 {t.newsletterDesc}
               </p>
 
               {/* 3 Perks Chips */}
               <div className="flex flex-wrap items-center gap-4 mt-3">
-                <div className="flex items-center gap-1.5 text-xs font-bold text-[#0F172A]">
-                  <Zap className="w-3.5 h-3.5 text-[#FF9137]" />
+                <div className="flex items-center gap-1.5 text-xs font-bold text-slate-200">
+                  <Zap className="w-4 h-4 text-[#2A835F]" />
                   <span>{t.priority}</span>
                 </div>
-                <div className="flex items-center gap-1.5 text-xs font-bold text-[#0F172A]">
-                  <ShieldCheck className="w-3.5 h-3.5 text-[#FF9137]" />
+                <div className="flex items-center gap-1.5 text-xs font-bold text-slate-200">
+                  <ShieldCheck className="w-4 h-4 text-[#2A835F]" />
                   <span>{t.verified}</span>
                 </div>
-                <div className="flex items-center gap-1.5 text-xs font-bold text-[#0F172A]">
-                  <Clock className="w-3.5 h-3.5 text-[#FF9137]" />
+                <div className="flex items-center gap-1.5 text-xs font-bold text-slate-200">
+                  <Clock className="w-4 h-4 text-[#2A835F]" />
                   <span>{t.notice}</span>
                 </div>
               </div>
@@ -85,38 +86,38 @@ export function Footer() {
             {/* Right: Newsletter Input Form */}
             <div className="lg:col-span-5 flex flex-col">
               {isSubscribed ? (
-                <div className="bg-emerald-50 border border-emerald-300 rounded-2xl p-5 sm:p-6 text-center space-y-2 shadow-sm animate-in fade-in zoom-in duration-300">
-                  <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto">
+                <div className="bg-[#EBF6F1]/10 border border-[#2A835F]/40 rounded-2xl p-5 sm:p-6 text-center space-y-2 shadow-sm animate-in fade-in zoom-in duration-300">
+                  <div className="w-10 h-10 rounded-full bg-[#2A835F] text-white flex items-center justify-center mx-auto shadow-md">
                     <CheckCircle2 className="w-6 h-6" />
                   </div>
-                  <h4 className="text-sm font-bold text-emerald-950">{t.subscribedTitle}</h4>
-                  <p className="text-xs text-emerald-800 leading-relaxed">
+                  <h4 className="text-sm font-bold text-white">{t.subscribedTitle}</h4>
+                  <p className="text-xs text-slate-300 leading-relaxed">
                     {t.subscribedMsg}
                   </p>
                 </div>
               ) : (
                 <form onSubmit={handleSubscribe} className="flex flex-col gap-2.5">
-                  <div className="relative flex items-center bg-white hover:border-slate-300 border border-slate-200 focus-within:border-[#FF9137] rounded-2xl p-1.5 pl-4 transition-all shadow-sm">
+                  <div className="relative flex items-center bg-slate-950 border border-slate-800 focus-within:border-[#2A835F] rounded-2xl p-1.5 pl-4 transition-all shadow-inner">
                     <input
                       type="email"
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder={t.emailPlaceholder}
-                      className="w-full bg-transparent text-[#0F172A] text-xs sm:text-sm font-medium placeholder:text-slate-400 outline-none pr-3"
+                      className="w-full bg-transparent text-white text-xs sm:text-sm font-medium outline-none placeholder:text-slate-500 pr-2"
                     />
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="bg-[#FF9137] hover:bg-[#E57A22] text-white font-bold text-xs sm:text-sm px-5 py-3 rounded-xl flex items-center gap-1.5 transition-all shadow-md active:scale-95 shrink-0 cursor-pointer disabled:opacity-60"
+                      className="bg-[#2A835F] hover:bg-[#236D4F] text-white px-5 sm:px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-wider flex items-center gap-1.5 shadow-md hover:shadow-lg transition-all active:scale-95 shrink-0 cursor-pointer disabled:opacity-50"
                     >
                       <span>{isSubmitting ? '...' : t.subscribeBtn}</span>
-                      <ArrowRight className="w-4 h-4" />
+                      <ArrowRight className="w-3.5 h-3.5" />
                     </button>
                   </div>
-                  <p className="text-[11px] text-slate-500 pl-2">
+                  <span className="text-[11px] text-slate-400 pl-2">
                     {t.spamNotice}
-                  </p>
+                  </span>
                 </form>
               )}
             </div>
@@ -124,223 +125,123 @@ export function Footer() {
         </div>
 
         {/* ========================================================
-            2. MAIN FOOTER DIRECTORY (4 Columns)
+            2. MASTER BRANDING & DIRECTORY NAVIGATION
         ======================================================== */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 lg:gap-12 pb-12 border-b border-slate-200/90">
-          {/* Col 1: Brand Logo & Company Blurb (4 cols) */}
-          <div className="md:col-span-4 flex flex-col items-start gap-4">
-            <Link href="/" className="flex items-center gap-2.5 group cursor-pointer">
-              {/* Wireframe Geometric KK Peak Emblem */}
-              <div className="w-8 h-8 relative flex items-center justify-center">
-                <svg
-                  viewBox="0 0 32 32"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-7 h-7"
-                >
-                  <path
-                    d="M3 25L13 7L23 25H3Z"
-                    stroke="#FF9137"
-                    strokeWidth="2.2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M17 25L23 14L29 25H17Z"
-                    stroke="#70FFD2"
-                    strokeWidth="2.2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M13 7L17 25"
-                    stroke="#FFCC4D"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeDasharray="2 2"
-                  />
-                </svg>
-              </div>
-
-              <div className="flex flex-col">
-                <span className="text-base sm:text-lg font-black tracking-widest text-[#0F172A] uppercase leading-none font-sans">
-                  KK GROUP
-                </span>
-                <span className="text-[8px] sm:text-[9px] text-[#FF9137] font-extrabold tracking-[0.2em] uppercase mt-0.5">
-                  {language === 'ml' ? 'എന്റർപ്രൈസ് സൊല്യൂഷൻസ്' : 'ENTERPRISE SOLUTIONS'}
-                </span>
-              </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-12 pt-4">
+          {/* Brand Info */}
+          <div className="lg:col-span-4 flex flex-col gap-4">
+            <Link href="/" className="inline-block">
+              <img
+                src="/logos/named-logo-bg.png"
+                alt="KK Group Logo"
+                className="h-9 sm:h-10 w-auto object-contain brightness-110"
+              />
             </Link>
 
-            <p className="text-xs text-slate-600 leading-relaxed max-w-sm mt-1">
+            <p className="text-xs sm:text-sm text-slate-400 font-normal leading-relaxed max-w-sm">
               {t.blurb}
             </p>
 
-            <div className="space-y-2 text-xs text-slate-600 font-medium mt-2">
-              <div className="flex items-center gap-2.5">
-                <Phone className="w-3.5 h-3.5 text-[#FF9137]" />
+            <div className="flex flex-col gap-2 pt-2 text-xs font-semibold text-slate-300">
+              <div className="flex items-center gap-2">
+                <Phone className="w-4 h-4 text-[#2A835F] shrink-0" />
                 <span>{t.operationsDesk}</span>
               </div>
-              <div className="flex items-center gap-2.5">
-                <Mail className="w-3.5 h-3.5 text-[#FF9137]" />
-                <span>dispatch@kkgroup.com</span>
-              </div>
-              <div className="flex items-center gap-2.5">
-                <MapPin className="w-3.5 h-3.5 text-[#FF9137]" />
+              <div className="flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-[#2A835F] shrink-0" />
                 <span>{t.centralHQ}</span>
               </div>
             </div>
           </div>
 
-          {/* Col 2: Core Services (3 cols) */}
-          <div className="md:col-span-3 flex flex-col gap-3">
-            <h4 className="font-extrabold text-xs uppercase tracking-widest text-[#0F172A] mb-1">
+          {/* Column 2: Specialized Services */}
+          <div className="lg:col-span-3 flex flex-col gap-3">
+            <h4 className="text-xs font-black tracking-widest text-[#2A835F] uppercase mb-1">
               {t.servicesTitle}
             </h4>
-            <ul className="space-y-2 text-xs text-slate-600">
-              <li>
-                <a href="#services" className="hover:text-[#FF9137] transition-colors flex items-center gap-1.5">
-                  <ChevronRight className="w-3 h-3 text-[#FF9137]" />
-                  <span>{t.servicesList.cococare}</span>
-                </a>
-              </li>
-              <li>
-                <a href="#services" className="hover:text-[#FF9137] transition-colors flex items-center gap-1.5">
-                  <ChevronRight className="w-3 h-3 text-[#FF9137]" />
-                  <span>{t.servicesList.jcb}</span>
-                </a>
-              </li>
-              <li>
-                <a href="#services" className="hover:text-[#FF9137] transition-colors flex items-center gap-1.5">
-                  <ChevronRight className="w-3 h-3 text-[#FF9137]" />
-                  <span>{t.servicesList.plastering}</span>
-                </a>
-              </li>
-              <li>
-                <a href="#services" className="hover:text-[#FF9137] transition-colors flex items-center gap-1.5">
-                  <ChevronRight className="w-3 h-3 text-[#FF9137]" />
-                  <span>{t.servicesList.tiling}</span>
-                </a>
-              </li>
-              <li>
-                <a href="#services" className="hover:text-[#FF9137] transition-colors flex items-center gap-1.5">
-                  <ChevronRight className="w-3 h-3 text-[#FF9137]" />
-                  <span>{t.servicesList.pipeline}</span>
-                </a>
-              </li>
+            <ul className="flex flex-col gap-2.5 text-xs font-medium text-slate-400">
+              {Object.entries(t.servicesList).map(([key, val]) => (
+                <li key={key}>
+                  <Link
+                    href={`/services#${key}`}
+                    className="hover:text-white hover:translate-x-1 transition-all inline-flex items-center gap-1.5"
+                  >
+                    <ChevronRight className="w-3 h-3 text-[#2A835F]" />
+                    <span>{val}</span>
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
-          {/* Col 3: Company & Portals (2 cols) */}
-          <div className="md:col-span-2 flex flex-col gap-3">
-            <h4 className="font-extrabold text-xs uppercase tracking-widest text-[#0F172A] mb-1">
+          {/* Column 3: Portals & Roles */}
+          <div className="lg:col-span-2 flex flex-col gap-3">
+            <h4 className="text-xs font-black tracking-widest text-[#2A835F] uppercase mb-1">
               {t.companyTitle}
             </h4>
-            <ul className="space-y-2 text-xs text-slate-600">
+            <ul className="flex flex-col gap-2.5 text-xs font-medium text-slate-400">
               <li>
-                <a href="#about" className="hover:text-[#FF9137] transition-colors">
-                  {t.companyList.about}
-                </a>
-              </li>
-              <li>
-                <Link href="/office-staff/login" className="hover:text-[#FF9137] transition-colors">
-                  {t.companyList.staff}
-                </Link>
-              </li>
-              <li>
-                <Link href="/worker/dashboard" className="hover:text-[#FF9137] transition-colors">
-                  {t.companyList.worker}
-                </Link>
-              </li>
-              <li>
-                <Link href="/dashboard" className="hover:text-[#FF9137] transition-colors">
+                <Link href="/auth/login" className="hover:text-white transition-colors">
                   {t.companyList.customer}
                 </Link>
               </li>
               <li>
-                <a href="#careers" className="hover:text-[#FF9137] transition-colors">
-                  {t.companyList.careers}
-                </a>
+                <Link href="/auth/login" className="hover:text-white transition-colors">
+                  {t.companyList.worker}
+                </Link>
+              </li>
+              <li>
+                <Link href="/auth/login" className="hover:text-white transition-colors">
+                  {t.companyList.staff}
+                </Link>
+              </li>
+              <li>
+                <Link href="/about" className="hover:text-white transition-colors">
+                  {t.companyList.about}
+                </Link>
               </li>
             </ul>
           </div>
 
-          {/* Col 4: Regional Deployment Centers (3 cols) */}
-          <div className="md:col-span-3 flex flex-col gap-3">
-            <h4 className="font-extrabold text-xs uppercase tracking-widest text-[#0F172A] mb-1">
-              {t.centersTitle}
+          {/* Column 4: Regional Deployment Hubs */}
+          <div className="lg:col-span-3 flex flex-col gap-3">
+            <h4 className="text-xs font-black tracking-widest text-[#2A835F] uppercase mb-1">
+              {language === 'ml' ? 'റീജിയണൽ ഹബ്ബുകൾ' : 'Regional Hubs'}
             </h4>
-            <div className="space-y-2.5 text-xs text-slate-600">
-              <div className="p-3 rounded-xl bg-white border border-slate-200/90 shadow-xs">
-                <div className="font-bold text-[#0F172A]">{t.palakkadHub}</div>
-                <div className="text-[11px] text-slate-500">{t.palakkadSub}</div>
-              </div>
-              <div className="p-3 rounded-xl bg-white border border-slate-200/90 shadow-xs">
-                <div className="font-bold text-[#0F172A]">{t.kochiYard}</div>
-                <div className="text-[11px] text-slate-500">{t.kochiSub}</div>
-              </div>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              {language === 'ml'
+                ? 'പാലക്കാട്, എറണാകുളം, തൃശ്ശൂർ, കോഴിക്കോട് ഡിവിഷനുകളിൽ ഉടനടി ലഭ്യമായ സേവന ശൃംഖല.'
+                : 'Primary coordination centers operating round the clock across Palakkad, Ernakulam, Thrissur, Calicut, and Southern divisions.'}
+            </p>
+
+            <div className="p-3 bg-slate-900 border border-slate-800 rounded-xl mt-2 flex items-center gap-3">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#2A835F] animate-ping" />
+              <span className="text-xs font-bold text-slate-200">
+                {language === 'ml' ? 'ഓപ്പറേഷൻസ് കൺട്രോൾ റൂം സജീവം' : 'Central Control Active'}
+              </span>
             </div>
           </div>
         </div>
 
         {/* ========================================================
-            3. BOTTOM SUB-BAR: Copyright, Legal & Socials
+            3. BOTTOM LEGAL / COPYRIGHT BAR
         ======================================================== */}
-        <div className="flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
-          <p>&copy; {new Date().getFullYear()} KK Group Enterprises. {t.rights}</p>
-
-          <div className="flex flex-wrap items-center gap-6 text-[11px]">
-            <a href="#privacy" className="hover:text-[#FF9137] transition-colors">
-              {t.privacy}
-            </a>
-            <a href="#terms" className="hover:text-[#FF9137] transition-colors">
-              {t.terms}
-            </a>
-            <a href="#safety" className="hover:text-[#FF9137] transition-colors">
-              {t.safety}
-            </a>
-            <a href="#compliance" className="hover:text-[#FF9137] transition-colors">
-              {t.compliance}
-            </a>
-          </div>
-
-          {/* Social Icons */}
-          <div className="flex items-center gap-2">
-            <a
-              href="#facebook"
-              title="Facebook"
-              className="w-7 h-7 rounded-full border border-slate-200 bg-white hover:border-[#FF9137] hover:bg-[#FFFC8C]/30 flex items-center justify-center text-slate-600 hover:text-[#FF9137] transition-all shadow-xs"
-            >
-              <svg className="w-3 h-3 fill-current" viewBox="0 0 24 24">
-                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
-              </svg>
-            </a>
-            <a
-              href="#instagram"
-              title="Instagram"
-              className="w-7 h-7 rounded-full border border-slate-200 bg-white hover:border-[#FF9137] hover:bg-[#FFFC8C]/30 flex items-center justify-center text-slate-600 hover:text-[#FF9137] transition-all shadow-xs"
-            >
-              <svg className="w-3 h-3 fill-none stroke-current stroke-2" viewBox="0 0 24 24">
-                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
-              </svg>
-            </a>
-            <a
-              href="#email"
-              title="Contact Dispatch"
-              className="w-7 h-7 rounded-full border border-slate-200 bg-white hover:border-[#FF9137] hover:bg-[#FFFC8C]/30 flex items-center justify-center text-slate-600 hover:text-[#FF9137] transition-all shadow-xs"
-            >
-              <Mail className="w-3 h-3" />
-            </a>
-          </div>
-        </div>
-
-        {/* Faint Massive Watermark */}
-        <div className="relative w-full overflow-hidden pointer-events-none mt-2 -mb-8 flex justify-center">
-          <span className="text-[54px] sm:text-[90px] md:text-[130px] lg:text-[170px] font-black tracking-[0.2em] uppercase text-black/[0.03] select-none whitespace-nowrap font-sans leading-none">
-            KK GROUP
+        <div className="pt-8 border-t border-slate-800/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] font-semibold text-slate-500">
+          <span>
+            © {new Date().getFullYear()} KK Group Operations Ltd. All rights reserved.
           </span>
+
+          <div className="flex items-center gap-6">
+            <Link href="/privacy" className="hover:text-slate-300 transition-colors">
+              Privacy Policy
+            </Link>
+            <Link href="/terms" className="hover:text-slate-300 transition-colors">
+              Terms of Service
+            </Link>
+            <Link href="/security" className="hover:text-slate-300 transition-colors">
+              Security Protocol
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

@@ -13,16 +13,18 @@ interface LanguageContextType {
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
-const LANGUAGE_STORAGE_KEY = 'kk_group_preferred_language';
+const LANGUAGE_STORAGE_KEY = 'kk_group_preferred_language_v2';
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [language, setLanguageState] = useState<Language>('en');
+  const [language, setLanguageState] = useState<Language>('ml');
 
   useEffect(() => {
     try {
       const savedLang = localStorage.getItem(LANGUAGE_STORAGE_KEY) as Language | null;
       if (savedLang === 'en' || savedLang === 'ml') {
         setLanguageState(savedLang);
+      } else {
+        setLanguageState('ml');
       }
     } catch {
       // LocalStorage might be unavailable in restricted sandbox

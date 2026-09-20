@@ -40,8 +40,8 @@ export default function RootLayout({
 }) {
   return (
     <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} ${anekMalayalam.variable} h-full antialiased`}
+      lang="ml"
+      className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} ${anekMalayalam.variable} lang-ml h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-white text-zinc-900 font-sans selection:bg-emerald-500 selection:text-white">
         <LanguageProvider>

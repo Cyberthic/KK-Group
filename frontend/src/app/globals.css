@@ -98,3 +98,9 @@ html[lang="ml"],
   writing-mode: vertical-rl;
 }
 
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+

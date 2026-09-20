@@ -2,23 +2,21 @@
 
 import React, { useState } from 'react';
 import {
-  Plane,
-  Building2,
-  Car,
-  Ticket,
-  ArrowUpDown,
   Calendar,
   ChevronDown,
   ArrowRight,
   ShieldCheck,
-  Headphones,
   Briefcase,
   MapPin,
   Clock,
   Star,
+  Users,
+  CheckCircle2,
+  Sparkles,
 } from 'lucide-react';
 import { useLanguage } from '@/context/language-context';
 import { translations } from '@/utils/translations';
+import { StylishDropdown } from '@/components/Common/StylishDropdown';
 
 interface PackageItem {
   id: string;
@@ -31,6 +29,8 @@ interface PackageItem {
   price: string;
   rating: string;
   image: string;
+  tagEn: string;
+  tagMl: string;
 }
 
 const RAW_PACKAGES: PackageItem[] = [
@@ -38,236 +38,238 @@ const RAW_PACKAGES: PackageItem[] = [
     id: 'cococare',
     titleEn: 'Cococare Elite Palm Squad (50 Palms)',
     titleMl: 'കൊക്കോ കെയർ പാക്കേജ് (50 തെങ്ങ്)',
-    locationEn: 'Palakkad, Kerala',
-    locationMl: 'പാലക്കാട്, കേരളം',
-    durationEn: 'Full Day Shift',
-    durationMl: 'ഫുൾ ഡേ ഷിഫ്റ്റ്',
+    locationEn: 'Palakkad, Kerala • Full Day',
+    locationMl: 'പാലക്കാട്, കേരളം • ഫുൾ ഡേ',
+    durationEn: '4 Certified Climbers',
+    durationMl: '4 വിദഗ്ദ്ധ തൊഴിലാളികൾ',
     price: '₹4,500',
     rating: '4.9',
     image:
       'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=700&auto=format&fit=crop&q=85',
+    tagEn: 'Agriculture',
+    tagMl: 'കൃഷി',
   },
   {
     id: 'jcb',
     titleEn: 'JCB 3DX Heavy Excavation Squad',
     titleMl: 'ജെസിബി 3DX എക്സ്കവേഷൻ',
-    locationEn: 'Ernakulam & Kochi',
-    locationMl: 'എറണാകുളം & കൊച്ചി',
-    durationEn: '8-Hour Day Shift',
-    durationMl: '8 മണിക്കൂർ ഷിഫ്റ്റ്',
+    locationEn: 'Ernakulam & Kochi • 8h Shift',
+    locationMl: 'എറണാകുളം & കൊച്ചി • 8 മണിക്കൂർ',
+    durationEn: 'Heavy Machine + Pilot',
+    durationMl: 'മെഷീൻ + പൈലറ്റ്',
     price: '₹9,600',
-    rating: '4.8',
+    rating: '4.9',
     image:
       'https://images.unsplash.com/photo-1579273166629-9e8c3b9b47e2?w=700&auto=format&fit=crop&q=85',
+    tagEn: 'Machinery',
+    tagMl: 'മെഷിനറി',
   },
   {
     id: 'plastering',
     titleEn: 'Plastering & Wall Masonry Squad',
     titleMl: 'പ്ലാസ്റ്ററിംഗ് & മേസൺ സംഘം',
-    locationEn: 'Thrissur & Malappuram',
-    locationMl: 'തൃശ്ശൂർ & മലപ്പുറം',
-    durationEn: '4 Workers Squad',
-    durationMl: '4 തൊഴിലാളികൾ',
+    locationEn: 'Thrissur & Malappuram • 4 Workers',
+    locationMl: 'തൃശ്ശൂർ & മലപ്പുറം • 4 തൊഴിലാളികൾ',
+    durationEn: '4 Craft Operatives',
+    durationMl: '4 ക്രാഫ്റ്റ് വിദഗ്ദ്ധർ',
     price: '₹5,800',
-    rating: '4.9',
+    rating: '4.8',
     image:
       'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=700&auto=format&fit=crop&q=85',
+    tagEn: 'Construction',
+    tagMl: 'നിർമ്മാണം',
   },
   {
     id: 'tiling',
     titleEn: 'Tile, Marble & Granite Precision Laying',
-    titleMl: 'ടൈൽ & മാർബിൾ വർക്ക്',
-    locationEn: 'Calicut & Wayanad',
-    locationMl: 'കോഴിക്കോട് & വയനാട്',
+    titleMl: 'ടൈൽ & മാർബിൾ പ്രിസിഷൻ വർക്ക്',
+    locationEn: 'Calicut & Wayanad • 3 Technicians',
+    locationMl: 'കോഴിക്കോട് & വയനാട് • 3 വിദഗ്ദ്ധർ',
     durationEn: '3 Master Setters',
-    durationMl: '3 വിദഗ്ദ്ധർ',
+    durationMl: '3 മാസ്റ്റർ വിദഗ്ദ്ധർ',
     price: '₹6,200',
     rating: '4.9',
     image:
       'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=700&auto=format&fit=crop&q=85',
+    tagEn: 'Finishing',
+    tagMl: 'ഫിനിഷിംഗ്',
   },
 ];
 
-export function PopularPackagesSection() {
+interface PopularPackagesSectionProps {
+  onSelectPackage?: (packageName: string) => void;
+}
+
+export function PopularPackagesSection({ onSelectPackage }: PopularPackagesSectionProps) {
   const { language } = useLanguage();
   const t = translations[language].popularPackages;
 
-  const [activeTab, setActiveTab] = useState<'cococare' | 'jcb' | 'plastering' | 'tiling'>('cococare');
-  const [fromLoc, setFromLoc] = useState(language === 'ml' ? 'പാലക്കാട്, കേരളം' : 'Palakkad, Kerala');
-  const [toLoc, setToLoc] = useState(language === 'ml' ? 'കൊച്ചി, എറണാകുളം' : 'Kochi, Ernakulam');
-  const [departDate, setDepartDate] = useState('12 Jun, 2025');
-  const [returnDate, setReturnDate] = useState('20 Jun, 2025');
-  const [travelers, setTravelers] = useState(language === 'ml' ? '2-4 തൊഴിലാളികൾ' : 'Standard Squad (2-4)');
+  const [activeTab, setActiveTab] = useState<'all' | 'cococare' | 'jcb' | 'plastering' | 'tiling'>('all');
+  const [district, setDistrict] = useState('Palakkad');
+  const [executionDate, setExecutionDate] = useState('Immediate / Next 48h');
+  const [squadScale, setSquadScale] = useState('Standard Squad (2-4)');
 
-  const packages = RAW_PACKAGES.map((pkg) => ({
-    id: pkg.id,
-    title: language === 'ml' ? pkg.titleMl : pkg.titleEn,
-    location: language === 'ml' ? pkg.locationMl : pkg.locationEn,
-    duration: language === 'ml' ? pkg.durationMl : pkg.durationEn,
-    price: pkg.price,
-    rating: pkg.rating,
-    image: pkg.image,
-  }));
-
-  const handleSwap = () => {
-    const temp = fromLoc;
-    setFromLoc(toLoc);
-    setToLoc(temp);
-  };
+  const filteredPackages = RAW_PACKAGES.filter((pkg) => {
+    if (activeTab === 'all') return true;
+    return pkg.id === activeTab;
+  });
 
   return (
-    <section className="w-full relative py-14 lg:py-20 bg-[#FAF8F2] text-[#0F172A] overflow-hidden selection:bg-[#70FFD2] selection:text-slate-950">
-      {/* Ambient Warm Facets in Palette Tints (#FFFC8C, #FFCC4D, #70FFD2) */}
-      <div className="absolute top-0 right-0 w-[600px] h-[360px] pointer-events-none opacity-30 mix-blend-multiply z-0">
-        <svg viewBox="0 0 550 320" fill="none" className="w-full h-full">
-          <polygon points="100,0 260,80 180,180" fill="#FFFC8C" opacity="0.6" />
-          <polygon points="260,80 420,20 350,140" fill="#FFCC4D" opacity="0.5" />
-          <polygon points="420,20 550,0 550,120 450,120" fill="#70FFD2" opacity="0.4" />
-          <polygon points="350,140 450,120 550,180 430,240" fill="#FFFC8C" opacity="0.5" />
-          <polygon points="180,180 260,80 350,140 280,240" fill="#FFCC4D" opacity="0.4" />
-          <polygon points="280,240 350,140 430,240 360,310" fill="#70FFD2" opacity="0.3" />
-        </svg>
-      </div>
+    <section className="w-full relative py-16 lg:py-24 bg-white text-[#0F172A] overflow-hidden selection:bg-[#2A835F] selection:text-white">
+      {/* Subtle Ambient Emerald Glow in Background */}
+      <div className="absolute top-1/4 right-0 w-[500px] h-[500px] bg-[#EBF6F1]/60 rounded-full blur-[120px] pointer-events-none z-0" />
+      <div className="absolute bottom-10 left-0 w-[450px] h-[450px] bg-[#2A835F]/5 rounded-full blur-[100px] pointer-events-none z-0" />
 
-      <div className="w-full max-w-[1440px] mx-auto px-6 sm:px-8 md:px-10 lg:px-12 xl:px-14 relative z-10 flex flex-col gap-10 lg:gap-14">
+      <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 relative z-10 flex flex-col gap-10 lg:gap-14">
         {/* ========================================================
-            1. TOP HORIZONTAL SEARCH CHASSIS WITH STEPPED TAB
+            1. SECTION HEADER: Cinematic Bilingual Title
         ======================================================== */}
-        <div className="w-full drop-shadow-[0_12px_30px_rgba(0,0,0,0.04)]">
-          {/* Top Asymmetric Tabs Bar */}
-          <div className="flex items-end pl-2 sm:pl-4 overflow-x-auto">
-            {/* Tab 1: Cococare Harvesting */}
-            <button
-              type="button"
-              onClick={() => setActiveTab('cococare')}
-              className={`flex items-center gap-2 px-5 py-3 rounded-t-2xl font-bold text-xs sm:text-sm transition-all whitespace-nowrap cursor-pointer relative ${
-                activeTab === 'cococare'
-                  ? 'bg-white text-[#FF9137] border-t border-x border-slate-200 z-10 shadow-xs'
-                  : 'bg-slate-100 hover:bg-slate-200 text-slate-600 border-t border-x border-transparent'
-              }`}
-            >
-              <span>🌴 {t.tabs.cococare}</span>
-            </button>
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-2 border-b border-slate-100">
+          <div className="flex flex-col">
+            {/* Sparkle Badge */}
+            <div className="inline-flex items-center gap-2 text-xs font-black tracking-widest text-[#2A835F] uppercase mb-2">
+              <svg viewBox="0 0 24 24" fill="#2A835F" className="w-4 h-4 text-[#2A835F] shrink-0">
+                <path d="M12 0L14.7 9.3L24 12L14.7 14.7L12 24L9.3 14.7L0 12L9.3 9.3L12 0Z" />
+              </svg>
+              <span>{t.badge}</span>
+            </div>
 
-            {/* Tab 2: JCB Earthmoving */}
-            <button
-              type="button"
-              onClick={() => setActiveTab('jcb')}
-              className={`flex items-center gap-2 px-5 py-3 rounded-t-2xl font-bold text-xs sm:text-sm transition-all whitespace-nowrap cursor-pointer relative ${
-                activeTab === 'jcb'
-                  ? 'bg-white text-[#FF9137] border-t border-x border-slate-200 z-10 shadow-xs'
-                  : 'bg-slate-100 hover:bg-slate-200 text-slate-600 border-t border-x border-transparent'
+            {/* Main Headline */}
+            <h2
+              className={`font-black text-[#0F172A] tracking-tight uppercase ${
+                language === 'ml'
+                  ? 'text-2xl sm:text-4xl lg:text-[42px] leading-tight'
+                  : 'text-3xl sm:text-5xl lg:text-[48px] leading-[1.05]'
               }`}
+              style={{
+                fontFamily:
+                  language === 'ml' ? 'var(--font-anek-malayalam)' : undefined,
+              }}
             >
-              <span>🚜 {t.tabs.jcb}</span>
-            </button>
+              {t.headline}
+            </h2>
 
-            {/* Tab 3: Masonry & Plastering */}
-            <button
-              type="button"
-              onClick={() => setActiveTab('plastering')}
-              className={`flex items-center gap-2 px-5 py-3 rounded-t-2xl font-bold text-xs sm:text-sm transition-all whitespace-nowrap cursor-pointer relative ${
-                activeTab === 'plastering'
-                  ? 'bg-white text-[#FF9137] border-t border-x border-slate-200 z-10 shadow-xs'
-                  : 'bg-slate-100 hover:bg-slate-200 text-slate-600 border-t border-x border-transparent'
-              }`}
-            >
-              <span>🧱 {t.tabs.plastering}</span>
-            </button>
-
-            {/* Tab 4: Tiling */}
-            <button
-              type="button"
-              onClick={() => setActiveTab('tiling')}
-              className={`flex items-center gap-2 px-5 py-3 rounded-t-2xl font-bold text-xs sm:text-sm transition-all whitespace-nowrap cursor-pointer relative ${
-                activeTab === 'tiling'
-                  ? 'bg-white text-[#FF9137] border-t border-x border-slate-200 z-10 shadow-xs'
-                  : 'bg-slate-100 hover:bg-slate-200 text-slate-600 border-t border-x border-transparent'
-              }`}
-            >
-              <span>✨ {t.tabs.tiling}</span>
-            </button>
+            {/* Subtitle */}
+            <p className="text-slate-600 font-semibold text-xs sm:text-sm lg:text-base max-w-2xl mt-2 leading-relaxed">
+              {t.description}
+            </p>
           </div>
 
-          {/* Main White Search Body */}
-          <div className="bg-white rounded-3xl rounded-tl-none p-5 sm:p-6 border border-slate-200 shadow-sm relative z-0">
+          {/* Quick Stats Pill */}
+          <div className="flex items-center gap-3 bg-[#EBF6F1] border border-[#C3E6D5] rounded-2xl p-3 px-5 w-fit shrink-0 shadow-xs">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#2A835F] animate-pulse" />
+            <div className="flex flex-col">
+              <span className="text-[11px] font-black uppercase text-[#2A835F] tracking-wider">
+                {language === 'ml' ? 'തത്സമയ ലഭ്യത' : 'Live Fleet Status'}
+              </span>
+              <span className="text-xs font-bold text-slate-800">
+                {language === 'ml' ? '14 ജില്ലകളിലും സുസജ്ജം' : 'Active Across 14 Districts'}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* ========================================================
+            2. INTERACTIVE FILTER TABS & SEARCH CHASSIS
+        ======================================================== */}
+        <div className="w-full drop-shadow-[0_12px_30px_rgba(0,0,0,0.06)]">
+          {/* Filter Tabs Bar */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+            {[
+              { id: 'all', label: language === 'ml' ? 'എല്ലാ പാക്കേജുകളും' : 'All Packages' },
+              { id: 'cococare', label: `🌴 ${t.tabs.cococare}` },
+              { id: 'jcb', label: `🚜 ${t.tabs.jcb}` },
+              { id: 'plastering', label: `🧱 ${t.tabs.plastering}` },
+              { id: 'tiling', label: `✨ ${t.tabs.tiling}` },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActiveTab(tab.id as any)}
+                className={`flex items-center gap-2 px-5 py-2.5 rounded-full font-extrabold text-xs sm:text-sm transition-all whitespace-nowrap cursor-pointer active:scale-95 ${
+                  activeTab === tab.id
+                    ? 'bg-[#2A835F] text-white shadow-md'
+                    : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                }`}
+              >
+                <span>{tab.label}</span>
+              </button>
+            ))}
+          </div>
+
+          {/* Search Card Chassis */}
+          <div className="mt-3 bg-white/95 backdrop-blur-xl rounded-3xl p-4 sm:p-6 border-2 border-slate-200/80 shadow-lg">
             <div className="grid grid-cols-1 md:grid-cols-12 gap-3 sm:gap-4 items-center">
-              {/* Origin / Site Location */}
-              <div className="md:col-span-3 flex items-center justify-between bg-slate-50 hover:bg-slate-100/70 border border-slate-200 rounded-2xl p-3 px-4 transition-all">
-                <div className="flex flex-col">
-                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
-                    {t.search.locationLabel}
-                  </span>
-                  <input
-                    type="text"
-                    value={fromLoc}
-                    onChange={(e) => setFromLoc(e.target.value)}
-                    className="bg-transparent text-[#0F172A] font-bold text-xs sm:text-sm outline-none w-full mt-0.5"
+              {/* Field 1: District */}
+              <div className="md:col-span-4 flex items-center gap-3 bg-slate-50 hover:bg-slate-100/80 border border-slate-200/90 rounded-2xl p-3 px-4 transition-all">
+                <div className="w-9 h-9 rounded-xl bg-[#EBF6F1] flex items-center justify-center shrink-0">
+                  <MapPin className="w-4 h-4 text-[#2A835F]" />
+                </div>
+                <div className="flex flex-col w-full min-w-0">
+                  <StylishDropdown
+                    options={[
+                      { id: 'Palakkad', label: language === 'ml' ? 'പാലക്കാട്' : 'Palakkad Division', badge: 'Active' },
+                      { id: 'Ernakulam & Kochi', label: language === 'ml' ? 'എറണാകുളം & കൊച്ചി' : 'Ernakulam & Kochi', badge: 'Active' },
+                      { id: 'Thrissur', label: language === 'ml' ? 'തൃശ്ശൂർ' : 'Thrissur Division' },
+                      { id: 'Malappuram', label: language === 'ml' ? 'മലപ്പുറം' : 'Malappuram Division' },
+                      { id: 'Calicut (Kozhikode)', label: language === 'ml' ? 'കോഴിക്കോട്' : 'Calicut Division' },
+                      { id: 'Wayanad', label: language === 'ml' ? 'വയനാട്' : 'Wayanad Division' },
+                      { id: 'Kannur', label: language === 'ml' ? 'കണ്ണൂർ' : 'Kannur Division' },
+                      { id: 'Kottayam', label: language === 'ml' ? 'കോട്ടയം' : 'Kottayam Division' },
+                      { id: 'Alappuzha', label: language === 'ml' ? 'ആലപ്പുഴ' : 'Alappuzha Division' },
+                      { id: 'Trivandrum', label: language === 'ml' ? 'തിരുവനന്തപുരം' : 'Trivandrum Central' },
+                    ]}
+                    value={district}
+                    onChange={setDistrict}
+                    label={t.search.locationLabel}
+                    variant="inline"
                   />
                 </div>
-                <button
-                  type="button"
-                  onClick={handleSwap}
-                  title="Swap Locations"
-                  className="w-7 h-7 rounded-full bg-white hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-700 transition-all shadow-xs cursor-pointer"
-                >
-                  <ArrowUpDown className="w-3.5 h-3.5 text-[#FF9137]" />
-                </button>
               </div>
 
-              {/* Destination Area */}
-              <div className="md:col-span-3 flex items-center justify-between bg-slate-50 hover:bg-slate-100/70 border border-slate-200 rounded-2xl p-3 px-4 transition-all">
-                <div className="flex flex-col">
-                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
-                    {language === 'ml' ? 'മേഖല' : 'Target Region'}
-                  </span>
-                  <input
-                    type="text"
-                    value={toLoc}
-                    onChange={(e) => setToLoc(e.target.value)}
-                    className="bg-transparent text-[#0F172A] font-bold text-xs sm:text-sm outline-none w-full mt-0.5"
-                  />
+              {/* Field 2: Date */}
+              <div className="md:col-span-3 flex items-center gap-3 bg-slate-50 hover:bg-slate-100/80 border border-slate-200/90 rounded-2xl p-3 px-4 transition-all">
+                <div className="w-9 h-9 rounded-xl bg-[#EBF6F1] flex items-center justify-center shrink-0">
+                  <Calendar className="w-4 h-4 text-[#2A835F]" />
                 </div>
-                <MapPin className="w-4 h-4 text-[#FF9137] shrink-0" />
-              </div>
-
-              {/* Deployment Date */}
-              <div className="md:col-span-2 flex items-center justify-between bg-slate-50 hover:bg-slate-100/70 border border-slate-200 rounded-2xl p-3 px-4 transition-all">
-                <div className="flex flex-col">
-                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                <div className="flex flex-col w-full">
+                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">
                     {t.search.dateLabel}
                   </span>
                   <input
                     type="text"
-                    value={departDate}
-                    onChange={(e) => setDepartDate(e.target.value)}
-                    className="bg-transparent text-[#0F172A] font-bold text-xs sm:text-sm outline-none w-full mt-0.5"
+                    value={executionDate}
+                    onChange={(e) => setExecutionDate(e.target.value)}
+                    placeholder="Immediate / Date"
+                    className="bg-transparent text-slate-900 font-bold text-xs sm:text-sm outline-none w-full mt-0.5"
                   />
                 </div>
-                <Calendar className="w-4 h-4 text-[#FF9137] shrink-0" />
               </div>
 
-              {/* Squad Size & Search Button */}
-              <div className="md:col-span-4 flex items-center gap-2">
-                {/* Squad Size Dropdown */}
-                <div className="flex-1 flex items-center justify-between bg-slate-50 hover:bg-slate-100/70 border border-slate-200 rounded-2xl p-3 px-3.5 transition-all cursor-pointer">
-                  <div className="flex flex-col">
-                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
-                      {t.search.squadLabel}
-                    </span>
-                    <span className="text-[#0F172A] font-bold text-xs sm:text-sm mt-0.5 whitespace-nowrap">
-                      {travelers}
-                    </span>
-                  </div>
-                  <ChevronDown className="w-3.5 h-3.5 text-slate-500" />
+              {/* Field 3: Squad Scale */}
+              <div className="md:col-span-3 flex items-center gap-3 bg-slate-50 hover:bg-slate-100/80 border border-slate-200/90 rounded-2xl p-3 px-4 transition-all">
+                <div className="w-9 h-9 rounded-xl bg-[#EBF6F1] flex items-center justify-center shrink-0">
+                  <Users className="w-4 h-4 text-[#2A835F]" />
                 </div>
+                <div className="flex flex-col w-full">
+                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">
+                    {t.search.squadLabel}
+                  </span>
+                  <span className="text-slate-900 font-bold text-xs sm:text-sm mt-0.5 truncate">
+                    {squadScale}
+                  </span>
+                </div>
+              </div>
 
-                {/* Search Button (#FF9137) */}
+              {/* CTA Search Button */}
+              <div className="md:col-span-2">
                 <button
                   type="button"
-                  className="bg-[#FF9137] hover:bg-[#FFCC4D] text-white hover:text-slate-950 font-bold text-xs sm:text-sm px-6 py-3.5 rounded-2xl shadow-md transition-all active:scale-95 cursor-pointer whitespace-nowrap"
+                  onClick={() => onSelectPackage?.('General Squad Query')}
+                  className="w-full bg-[#2A835F] hover:bg-[#236D4F] text-white py-3.5 px-4 rounded-2xl font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all active:scale-95 cursor-pointer"
                 >
-                  {t.search.searchBtn}
+                  <span>{t.search.searchBtn}</span>
+                  <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
             </div>
@@ -275,163 +277,133 @@ export function PopularPackagesSection() {
         </div>
 
         {/* ========================================================
-            2. MIDDLE ROW: 4 FEATURE TILES
+            3. PACKAGE CARDS GRID (Luxury Dark-Glass / Card Aesthetic)
         ======================================================== */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-          {/* Tile 1 */}
-          <div className="bg-white rounded-3xl p-4 sm:p-5 border border-slate-200/90 flex items-center gap-4 shadow-sm hover:border-[#FF9137]/50 transition-all">
-            <div className="w-14 h-14 rounded-2xl bg-[#FFFC8C]/50 border border-[#FFCC4D]/40 flex items-center justify-center text-[#FF9137] shadow-inner shrink-0 relative overflow-hidden">
-              <ShieldCheck className="w-7 h-7 text-[#FF9137]" />
-            </div>
-            <div>
-              <h4 className="text-xs sm:text-sm font-bold text-[#0F172A] leading-tight">
-                {t.features.f1Title}
-              </h4>
-              <p className="text-[11px] text-slate-600 mt-1 leading-normal">
-                {t.features.f1Desc}
-              </p>
-            </div>
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {filteredPackages.map((pkg) => {
+            const title = language === 'ml' ? pkg.titleMl : pkg.titleEn;
+            const location = language === 'ml' ? pkg.locationMl : pkg.locationEn;
+            const duration = language === 'ml' ? pkg.durationMl : pkg.durationEn;
+            const tag = language === 'ml' ? pkg.tagMl : pkg.tagEn;
 
-          {/* Tile 2 */}
-          <div className="bg-white rounded-3xl p-4 sm:p-5 border border-slate-200/90 flex items-center gap-4 shadow-sm hover:border-[#FF9137]/50 transition-all">
-            <div className="w-14 h-14 rounded-2xl bg-[#70FFD2]/25 border border-[#70FFD2]/50 flex items-center justify-center text-emerald-800 shadow-inner shrink-0 relative overflow-hidden">
-              <Clock className="w-7 h-7 text-emerald-800" />
-            </div>
-            <div>
-              <h4 className="text-xs sm:text-sm font-bold text-[#0F172A] leading-tight">
-                {t.features.f2Title}
-              </h4>
-              <p className="text-[11px] text-slate-600 mt-1 leading-normal">
-                {t.features.f2Desc}
-              </p>
-            </div>
-          </div>
-
-          {/* Tile 3 */}
-          <div className="bg-white rounded-3xl p-4 sm:p-5 border border-slate-200/90 flex items-center gap-4 shadow-sm hover:border-[#FF9137]/50 transition-all">
-            <div className="w-14 h-14 rounded-2xl bg-[#FFFC8C]/50 border border-[#FFCC4D]/40 flex items-center justify-center text-[#FF9137] shadow-inner shrink-0 relative overflow-hidden">
-              <Briefcase className="w-7 h-7 text-[#FF9137]" />
-            </div>
-            <div>
-              <h4 className="text-xs sm:text-sm font-bold text-[#0F172A] leading-tight">
-                {t.features.f3Title}
-              </h4>
-              <p className="text-[11px] text-slate-600 mt-1 leading-normal">
-                {t.features.f3Desc}
-              </p>
-            </div>
-          </div>
-
-          {/* Tile 4 */}
-          <div className="bg-white rounded-3xl p-4 sm:p-5 border border-slate-200/90 flex items-center gap-4 shadow-sm hover:border-[#FF9137]/50 transition-all">
-            <div className="w-14 h-14 rounded-2xl bg-[#70FFD2]/25 border border-[#70FFD2]/50 flex items-center justify-center text-emerald-800 shadow-inner shrink-0 relative overflow-hidden">
-              <Headphones className="w-7 h-7 text-emerald-800" />
-            </div>
-            <div>
-              <h4 className="text-xs sm:text-sm font-bold text-[#0F172A] leading-tight">
-                {t.features.f4Title}
-              </h4>
-              <p className="text-[11px] text-slate-600 mt-1 leading-normal">
-                {t.features.f4Desc}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* ========================================================
-            3. BOTTOM SECTION: POPULAR PACKAGES (White Card Frame)
-        ======================================================== */}
-        <div className="w-full bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-200 flex flex-col gap-6">
-          {/* Header Row */}
-          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-            <h3 className="text-sm sm:text-base font-extrabold text-[#0F172A] tracking-wider uppercase flex items-center gap-2">
-              <span className="w-5 h-[2.5px] bg-[#FF9137] rounded-full inline-block" />
-              <span>{t.headline}</span>
-            </h3>
-            <button
-              type="button"
-              className="flex items-center gap-2 text-xs font-bold text-[#FF9137] hover:underline cursor-pointer group"
-            >
-              <span>{language === 'ml' ? 'എല്ലാ പാക്കേജുകളും' : 'View All Packages'}</span>
-              <div className="w-5 h-5 rounded-full border border-[#FF9137] flex items-center justify-center group-hover:bg-[#FF9137] group-hover:text-white transition-all">
-                <ArrowRight className="w-2.5 h-2.5" />
-              </div>
-            </button>
-          </div>
-
-          {/* 4 Cards Grid with Signature Top-Right Dog-Ear Fold Accent */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {packages.map((pkg) => (
+            return (
               <div
                 key={pkg.id}
-                className="group rounded-3xl overflow-hidden bg-white border border-slate-200 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col justify-between"
+                className="bg-white rounded-[28px] sm:rounded-[32px] border-2 border-slate-200/80 overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 flex flex-col justify-between group hover:-translate-y-1.5"
               >
-                {/* Image Container with Top-Right Folded Corner */}
-                <div className="relative aspect-[4/3] w-full overflow-hidden">
+                {/* Card Image Stage */}
+                <div className="relative w-full h-48 overflow-hidden bg-slate-900">
                   <img
                     src={pkg.image}
-                    alt={pkg.title}
+                    alt={title}
                     className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
                   />
-                  {/* Dog-Ear Fold Accent Top-Right in #FFFC8C & #70FFD2 */}
-                  <div className="absolute top-0 right-0 w-8 h-8 pointer-events-none">
-                    <div className="w-full h-full bg-[#FFFC8C] [clip-path:polygon(0_0,100%_0,100%_100%)] shadow-sm border-b border-l border-[#FFCC4D]" />
-                  </div>
-                </div>
+                  {/* Subtle Gradient Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
 
-                {/* Card Content */}
-                <div className="p-4 sm:p-5 flex flex-col gap-3">
-                  <div>
-                    <h4 className="text-sm sm:text-base font-bold text-[#0F172A] leading-snug">
-                      {pkg.title}
-                    </h4>
-
-                    {/* Metadata Row: Location & Duration */}
-                    <div className="flex items-center gap-3 mt-1.5 text-[11px] text-slate-500">
-                      <div className="flex items-center gap-1">
-                        <MapPin className="w-3 h-3 text-[#FF9137]" />
-                        <span>{pkg.location}</span>
-                      </div>
-                      <span className="text-slate-300">•</span>
-                      <div className="flex items-center gap-1">
-                        <Clock className="w-3 h-3 text-[#FF9137]" />
-                        <span>{pkg.duration}</span>
-                      </div>
+                  {/* Top Badges */}
+                  <div className="absolute top-3 inset-x-3 flex items-center justify-between">
+                    <span className="bg-white/90 backdrop-blur-md text-[#2A835F] px-2.5 py-1 rounded-full text-[11px] font-extrabold shadow-sm">
+                      {tag}
+                    </span>
+                    <div className="flex items-center gap-1 bg-black/60 backdrop-blur-md text-white px-2 py-0.5 rounded-full text-[11px] font-bold">
+                      <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+                      <span>{pkg.rating}</span>
                     </div>
                   </div>
 
-                  {/* Pricing & Rating Bottom Row */}
-                  <div className="flex items-end justify-between pt-2.5 border-t border-slate-100">
-                    <div>
-                      <div className="text-base sm:text-lg font-black text-[#FF9137] leading-none">
+                  {/* Bottom Image Caption */}
+                  <div className="absolute bottom-2.5 left-3 right-3 text-white">
+                    <span className="text-[11px] font-bold text-white/90 truncate block">
+                      {location}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Card Content Stage */}
+                <div className="p-5 flex flex-col justify-between flex-1 gap-4">
+                  <div>
+                    <h3 className="text-base sm:text-lg font-black text-slate-900 leading-snug group-hover:text-[#2A835F] transition-colors">
+                      {title}
+                    </h3>
+                    <div className="flex items-center gap-2 mt-2 text-xs font-semibold text-slate-500">
+                      <Clock className="w-3.5 h-3.5 text-[#2A835F]" />
+                      <span>{duration}</span>
+                    </div>
+                  </div>
+
+                  {/* Price & Action Row */}
+                  <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                    <div className="flex flex-col">
+                      <span className="text-[10px] font-bold uppercase text-slate-400">
+                        {t.from}
+                      </span>
+                      <span className="text-xl font-black text-[#2A835F]">
                         {pkg.price}
-                      </div>
-                      <span className="text-[10px] text-slate-500 font-semibold">
-                        {language === 'ml' ? 'നിശ്ചിത നിരക്ക്' : 'Fixed Rate'}
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                      <div className="flex items-center gap-1 text-[11px] font-bold text-slate-800">
-                        <Star className="w-3 h-3 fill-[#FFCC4D] text-[#FFCC4D]" />
-                        <span>{pkg.rating}</span>
-                      </div>
-
-                      {/* Circular Action Button */}
-                      <button
-                        type="button"
-                        title={t.reserveBtn}
-                        className="w-7 h-7 rounded-full bg-[#70FFD2]/30 hover:bg-[#FF9137] text-slate-900 hover:text-white flex items-center justify-center transition-all cursor-pointer shadow-xs"
-                      >
-                        <ArrowRight className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
+                    <button
+                      type="button"
+                      onClick={() => onSelectPackage?.(title)}
+                      className="bg-[#0F172A] group-hover:bg-[#2A835F] text-white px-4 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-md active:scale-95 cursor-pointer"
+                    >
+                      <span>{t.reserveBtn}</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </button>
                   </div>
                 </div>
               </div>
-            ))}
-          </div>
+            );
+          })}
+        </div>
+
+        {/* ========================================================
+            4. FOUR PERKS BANNER (Emerald Tints & Clean Vectors)
+        ======================================================== */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
+          {[
+            {
+              icon: ShieldCheck,
+              title: t.features.f1Title,
+              desc: t.features.f1Desc,
+            },
+            {
+              icon: Clock,
+              title: t.features.f2Title,
+              desc: t.features.f2Desc,
+            },
+            {
+              icon: CheckCircle2,
+              title: t.features.f3Title,
+              desc: t.features.f3Desc,
+            },
+            {
+              icon: Briefcase,
+              title: t.features.f4Title,
+              desc: t.features.f4Desc,
+            },
+          ].map((f, idx) => {
+            const IconComponent = f.icon;
+            return (
+              <div
+                key={idx}
+                className="bg-[#F7FCF9] border border-[#C3E6D5] rounded-2xl p-4 sm:p-5 flex items-start gap-3.5 shadow-xs hover:shadow-md transition-shadow"
+              >
+                <div className="w-10 h-10 rounded-xl bg-[#EBF6F1] flex items-center justify-center shrink-0 border border-[#C3E6D5]/60">
+                  <IconComponent className="w-5 h-5 text-[#2A835F]" />
+                </div>
+                <div className="flex flex-col">
+                  <h4 className="text-xs sm:text-sm font-black text-slate-900 leading-tight">
+                    {f.title}
+                  </h4>
+                  <p className="text-[11px] sm:text-xs font-semibold text-slate-500 mt-1 leading-relaxed">
+                    {f.desc}
+                  </p>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>
