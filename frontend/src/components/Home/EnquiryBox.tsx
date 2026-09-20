@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   CheckCircle2,
   ArrowRight,
@@ -11,17 +11,28 @@ import {
   Calendar,
   ChevronDown,
   Layers,
+  X,
+  Sparkles,
 } from 'lucide-react';
 import { EnquiryService } from '@/services/enquiry.service';
 import { useLanguage } from '@/context/language-context';
-import { translations } from '@/lib/translations';
+import { translations } from '@/utils/translations';
 
 interface EnquiryBoxProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+  initialService?: string;
   className?: string;
   onEnquirySuccess?: (trackingCode: string) => void;
 }
 
-export function EnquiryBox({ className = '', onEnquirySuccess }: EnquiryBoxProps) {
+export function EnquiryBox({
+  isOpen,
+  onClose,
+  initialService,
+  className = '',
+  onEnquirySuccess,
+}: EnquiryBoxProps) {
   const { language } = useLanguage();
   const t = translations[language].enquiry;
 
@@ -70,12 +81,41 @@ export function EnquiryBox({ className = '', onEnquirySuccess }: EnquiryBoxProps
   const [location, setLocation] = useState('');
   const [preferredDate, setPreferredDate] = useState('');
 
-  const currentService = SERVICE_OPTIONS.find((s) => s.id === selectedServiceId) || SERVICE_OPTIONS[0];
+  // Pre-select service if passed from hero card or other triggers
+  useEffect(() => {
+    if (initialService) {
+      const lower = initialService.toLowerCase();
+      const matched = SERVICE_OPTIONS.find(
+        (s) =>
+          s.id.toLowerCase().includes(lower) ||
+          s.name.toLowerCase().includes(lower) ||
+          lower.includes(s.id.toLowerCase())
+      );
+      if (matched) {
+        setSelectedServiceId(matched.id);
+      }
+    }
+  }, [initialService]);
+
+  const currentService =
+    SERVICE_OPTIONS.find((s) => s.id === selectedServiceId) || SERVICE_OPTIONS[0];
   const [squadScale, setSquadScale] = useState(currentService.defaultScale);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittedRef, setSubmittedRef] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  // Close on Escape key
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose?.();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   const handleServiceChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const id = e.target.value;
@@ -141,52 +181,80 @@ export function EnquiryBox({ className = '', onEnquirySuccess }: EnquiryBoxProps
     setPreferredDate('');
   };
 
-  return (
+  if (isOpen === false) return null;
+
+  const cardContent = (
     <div
       id="enquiry-card"
-      className={`w-full max-w-[420px] lg:max-w-[440px] bg-white/95 backdrop-blur-2xl border border-white rounded-3xl p-5 sm:p-6 shadow-[0_20px_50px_rgba(0,0,0,0.06)] flex flex-col gap-3.5 transition-all ${className}`}
+      className={`w-full max-w-[460px] bg-white rounded-[32px] p-6 sm:p-7 shadow-[0_25px_60px_rgba(42,131,95,0.16)] border border-emerald-100 flex flex-col gap-4 text-[#0F172A] relative ${className}`}
     >
       {/* Header */}
       <div>
         <div className="flex items-center justify-between">
-          <h2 className="text-lg sm:text-xl font-black text-[#0F172A] tracking-tight leading-snug flex items-center gap-2">
-            <span>{t.title}</span>
-            <span className="w-2.5 h-2.5 rounded-full bg-[#70FFD2] border border-[#0F172A]/10 shadow-xs" />
-          </h2>
-          <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-800 bg-[#FFFC8C]/70 border border-[#FFCC4D]/50 px-2.5 py-0.5 rounded-full">
-            {t.liveDispatch}
-          </span>
+          <div className="flex items-center gap-2">
+            <h2 className="text-xl sm:text-2xl font-black text-[#0F172A] tracking-tight leading-snug">
+              {t.title}
+            </h2>
+            <Sparkles className="w-4 h-4 text-[#2A835F]" />
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#2A835F] bg-[#EBF6F1] border border-[#C3E6D5] px-2.5 py-0.5 rounded-full">
+              {t.liveDispatch}
+            </span>
+            {onClose && (
+              <button
+                type="button"
+                onClick={onClose}
+                aria-label="Close modal"
+                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </div>
         </div>
-        <p className="text-xs text-slate-600 mt-1 font-medium">
+        <p className="text-xs text-slate-500 mt-1 font-medium">
           {t.subtitle}
         </p>
       </div>
 
       {/* Success View */}
       {submittedRef ? (
-        <div className="bg-emerald-50 border border-emerald-300 rounded-2xl p-5 text-center space-y-3 animate-in fade-in zoom-in duration-300">
-          <div className="w-12 h-12 rounded-full bg-[#70FFD2]/40 text-emerald-800 flex items-center justify-center mx-auto border border-emerald-300">
+        <div className="bg-[#F2F9F5] border border-[#C3E6D5] rounded-2xl p-6 text-center space-y-3.5 animate-in fade-in zoom-in duration-300">
+          <div className="w-12 h-12 rounded-full bg-[#2A835F]/10 text-[#2A835F] flex items-center justify-center mx-auto border border-[#C3E6D5]">
             <CheckCircle2 className="w-7 h-7" />
           </div>
           <div>
             <h3 className="text-base font-bold text-slate-900">{t.successTitle}</h3>
-            <p className="text-xs text-slate-700 mt-1 leading-relaxed">
+            <p className="text-xs text-slate-600 mt-1 leading-relaxed">
               {language === 'ml' ? 'നിങ്ങളുടെ ട്രാക്കിംഗ് നമ്പർ:' : 'Your tracking reference is:'}{' '}
-              <strong className="font-mono text-[#FF9137] text-sm block mt-0.5">
+              <strong className="font-mono text-[#2A835F] text-sm block mt-1 tracking-wider">
                 {submittedRef}
               </strong>
             </p>
           </div>
-          <p className="text-[11px] text-slate-600 leading-normal">
+          <p className="text-[11px] text-slate-500 leading-normal">
             {t.successMsg}
           </p>
-          <button
-            type="button"
-            onClick={handleReset}
-            className="mt-2 text-xs font-bold text-[#FF9137] hover:underline cursor-pointer"
-          >
-            {t.submitAnother}
-          </button>
+          <div className="flex items-center justify-center gap-3 pt-2">
+            <button
+              type="button"
+              onClick={handleReset}
+              className="text-xs font-bold text-[#2A835F] hover:text-[#236D4F] underline cursor-pointer"
+            >
+              {t.submitAnother}
+            </button>
+            {onClose && (
+              <button
+                type="button"
+                onClick={onClose}
+                className="bg-[#0F172A] hover:bg-black text-white text-xs font-bold py-1.5 px-4 rounded-full transition-all cursor-pointer"
+              >
+                {language === 'ml' ? 'അടയ്ക്കുക' : 'Close'}
+              </button>
+            )}
+          </div>
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
@@ -197,12 +265,12 @@ export function EnquiryBox({ className = '', onEnquirySuccess }: EnquiryBoxProps
           )}
 
           {/* 1. Service Choosing Dropdown */}
-          <div className="bg-slate-50/90 hover:bg-slate-100/80 border border-slate-200 rounded-xl p-2.5 px-3 flex flex-col transition-all focus-within:border-[#FF9137]">
+          <div className="bg-[#F7FCF9] hover:bg-[#EBF6F1]/80 border border-[#C3E6D5] focus-within:border-[#2A835F] focus-within:ring-2 focus-within:ring-[#2A835F]/20 rounded-2xl p-2.5 px-3.5 flex flex-col transition-all">
             <label
               htmlFor="service-select"
-              className="text-[10px] font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5 mb-1"
+              className="text-[10px] font-bold text-[#2A835F] uppercase tracking-wider flex items-center gap-1.5 mb-0.5"
             >
-              <Layers className="w-3 h-3 text-[#FF9137]" />
+              <Layers className="w-3.5 h-3.5 text-[#2A835F]" />
               <span>{t.chooseService}</span>
             </label>
             <div className="relative flex items-center">
@@ -218,16 +286,16 @@ export function EnquiryBox({ className = '', onEnquirySuccess }: EnquiryBoxProps
                   </option>
                 ))}
               </select>
-              <ChevronDown className="w-3.5 h-3.5 text-slate-500 pointer-events-none absolute right-0" />
+              <ChevronDown className="w-3.5 h-3.5 text-[#2A835F] pointer-events-none absolute right-0" />
             </div>
           </div>
 
           {/* 2. Full Name & Phone Number */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
             {/* Name */}
-            <div className="bg-slate-50/90 hover:bg-slate-100/80 border border-slate-200 rounded-xl p-2.5 px-3 flex flex-col transition-all focus-within:border-[#FF9137]">
-              <label className="text-[10px] font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5 mb-0.5">
-                <User className="w-3 h-3 text-[#FF9137]" />
+            <div className="bg-[#F7FCF9] hover:bg-[#EBF6F1]/80 border border-[#C3E6D5] focus-within:border-[#2A835F] focus-within:ring-2 focus-within:ring-[#2A835F]/20 rounded-2xl p-2.5 px-3.5 flex flex-col transition-all">
+              <label className="text-[10px] font-bold text-[#2A835F] uppercase tracking-wider flex items-center gap-1.5 mb-0.5">
+                <User className="w-3.5 h-3.5 text-[#2A835F]" />
                 <span>{t.yourName}</span>
               </label>
               <input
@@ -241,9 +309,9 @@ export function EnquiryBox({ className = '', onEnquirySuccess }: EnquiryBoxProps
             </div>
 
             {/* Phone */}
-            <div className="bg-slate-50/90 hover:bg-slate-100/80 border border-slate-200 rounded-xl p-2.5 px-3 flex flex-col transition-all focus-within:border-[#FF9137]">
-              <label className="text-[10px] font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5 mb-0.5">
-                <Phone className="w-3 h-3 text-[#FF9137]" />
+            <div className="bg-[#F7FCF9] hover:bg-[#EBF6F1]/80 border border-[#C3E6D5] focus-within:border-[#2A835F] focus-within:ring-2 focus-within:ring-[#2A835F]/20 rounded-2xl p-2.5 px-3.5 flex flex-col transition-all">
+              <label className="text-[10px] font-bold text-[#2A835F] uppercase tracking-wider flex items-center gap-1.5 mb-0.5">
+                <Phone className="w-3.5 h-3.5 text-[#2A835F]" />
                 <span>{t.phoneNumber}</span>
               </label>
               <input
@@ -258,10 +326,10 @@ export function EnquiryBox({ className = '', onEnquirySuccess }: EnquiryBoxProps
           </div>
 
           {/* 3. Email (Optional) */}
-          <div className="bg-slate-50/90 hover:bg-slate-100/80 border border-slate-200 rounded-xl p-2.5 px-3 flex flex-col transition-all focus-within:border-[#FF9137]">
+          <div className="bg-[#F7FCF9] hover:bg-[#EBF6F1]/80 border border-[#C3E6D5] focus-within:border-[#2A835F] focus-within:ring-2 focus-within:ring-[#2A835F]/20 rounded-2xl p-2.5 px-3.5 flex flex-col transition-all">
             <div className="flex items-center justify-between mb-0.5">
-              <label className="text-[10px] font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
-                <Mail className="w-3 h-3 text-[#FF9137]" />
+              <label className="text-[10px] font-bold text-[#2A835F] uppercase tracking-wider flex items-center gap-1.5">
+                <Mail className="w-3.5 h-3.5 text-[#2A835F]" />
                 <span>{t.emailAddress}</span>
               </label>
               <span className="text-[9px] font-semibold text-slate-400 uppercase tracking-wider">
@@ -280,9 +348,9 @@ export function EnquiryBox({ className = '', onEnquirySuccess }: EnquiryBoxProps
           {/* 4. Location & Preferred Date */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
             {/* Location */}
-            <div className="bg-slate-50/90 hover:bg-slate-100/80 border border-slate-200 rounded-xl p-2.5 px-3 flex flex-col transition-all focus-within:border-[#FF9137]">
-              <label className="text-[10px] font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5 mb-0.5">
-                <MapPin className="w-3 h-3 text-[#FF9137]" />
+            <div className="bg-[#F7FCF9] hover:bg-[#EBF6F1]/80 border border-[#C3E6D5] focus-within:border-[#2A835F] focus-within:ring-2 focus-within:ring-[#2A835F]/20 rounded-2xl p-2.5 px-3.5 flex flex-col transition-all">
+              <label className="text-[10px] font-bold text-[#2A835F] uppercase tracking-wider flex items-center gap-1.5 mb-0.5">
+                <MapPin className="w-3.5 h-3.5 text-[#2A835F]" />
                 <span>{t.location}</span>
               </label>
               <input
@@ -295,9 +363,9 @@ export function EnquiryBox({ className = '', onEnquirySuccess }: EnquiryBoxProps
             </div>
 
             {/* Preferred Date */}
-            <div className="bg-slate-50/90 hover:bg-slate-100/80 border border-slate-200 rounded-xl p-2.5 px-3 flex flex-col transition-all focus-within:border-[#FF9137]">
-              <label className="text-[10px] font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5 mb-0.5">
-                <Calendar className="w-3 h-3 text-[#FF9137]" />
+            <div className="bg-[#F7FCF9] hover:bg-[#EBF6F1]/80 border border-[#C3E6D5] focus-within:border-[#2A835F] focus-within:ring-2 focus-within:ring-[#2A835F]/20 rounded-2xl p-2.5 px-3.5 flex flex-col transition-all">
+              <label className="text-[10px] font-bold text-[#2A835F] uppercase tracking-wider flex items-center gap-1.5 mb-0.5">
+                <Calendar className="w-3.5 h-3.5 text-[#2A835F]" />
                 <span>{t.preferredDate}</span>
               </label>
               <input
@@ -310,11 +378,11 @@ export function EnquiryBox({ className = '', onEnquirySuccess }: EnquiryBoxProps
             </div>
           </div>
 
-          {/* Submit Sunset Orange CTA Button (#FF9137) */}
+          {/* Submit Button in KK Green (#2A835F) */}
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-[#FF9137] hover:bg-[#FFCC4D] text-white hover:text-slate-950 font-bold text-xs sm:text-sm py-3 rounded-xl shadow-md flex items-center justify-center gap-2 mt-1 transition-all cursor-pointer active:scale-95 disabled:opacity-60"
+            className="w-full bg-[#2A835F] hover:bg-[#236D4F] text-white font-bold text-xs sm:text-sm py-3.5 rounded-2xl shadow-lg shadow-emerald-700/20 flex items-center justify-center gap-2 mt-1.5 transition-all cursor-pointer active:scale-95 disabled:opacity-60"
           >
             <span>{isSubmitting ? t.submitting : t.submitBtn}</span>
             <ArrowRight className="w-4 h-4" />
@@ -323,4 +391,22 @@ export function EnquiryBox({ className = '', onEnquirySuccess }: EnquiryBoxProps
       )}
     </div>
   );
+
+  // If used as modal (isOpen === true)
+  if (isOpen) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md overflow-y-auto animate-in fade-in duration-200">
+        <div
+          className="fixed inset-0"
+          onClick={onClose}
+          aria-hidden="true"
+        />
+        <div className="relative z-10 my-auto">
+          {cardContent}
+        </div>
+      </div>
+    );
+  }
+
+  return cardContent;
 }

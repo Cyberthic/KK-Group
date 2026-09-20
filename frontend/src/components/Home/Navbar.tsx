@@ -5,18 +5,19 @@ import Link from 'next/link';
 import {
   Search,
   Globe,
-  ShoppingBag,
+  Sparkles,
   Menu,
   X,
 } from 'lucide-react';
 import { useLanguage } from '@/context/language-context';
-import { translations } from '@/lib/translations';
+import { translations } from '@/utils/translations';
 
 interface NavbarProps {
+  onOpenEnquiry?: () => void;
   onCartClick?: () => void;
 }
 
-export function Navbar({ onCartClick }: NavbarProps) {
+export function Navbar({ onOpenEnquiry, onCartClick }: NavbarProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { language, toggleLanguage } = useLanguage();
@@ -41,52 +42,55 @@ export function Navbar({ onCartClick }: NavbarProps) {
     >
       <div className="w-full max-w-[1440px] mx-auto px-5 sm:px-8 md:px-10 lg:px-12 flex items-center justify-between">
         {/* Left Navigation Links (Desktop) */}
-        <nav className="hidden lg:flex items-center gap-7 text-[13px] font-semibold text-[#0F172A]">
+        <nav className="hidden lg:flex items-center gap-6 xl:gap-7 text-[13px] font-semibold text-[#0F172A]">
           <Link
-            href="#shop"
-            className="hover:text-purple-600 transition-colors tracking-tight"
+            href="/"
+            className="hover:text-[#2A835F] transition-colors tracking-tight"
           >
-            {t.shop}
-          </Link>
-          <Link
-            href="#new-in"
-            className="hover:text-purple-600 transition-colors tracking-tight"
-          >
-            {t.newIn}
-          </Link>
-          <Link
-            href="#collections"
-            className="hover:text-purple-600 transition-colors tracking-tight"
-          >
-            {t.collections}
+            {t.home}
           </Link>
           <Link
             href="#about"
-            className="hover:text-purple-600 transition-colors tracking-tight"
+            className="hover:text-[#2A835F] transition-colors tracking-tight"
           >
             {t.about}
           </Link>
           <Link
+            href="#services"
+            className="hover:text-[#2A835F] transition-colors tracking-tight"
+          >
+            {t.services}
+          </Link>
+          <Link
+            href="#projects"
+            className="hover:text-[#2A835F] transition-colors tracking-tight"
+          >
+            {t.projects}
+          </Link>
+          <Link
+            href="#businesses"
+            className="hover:text-[#2A835F] transition-colors tracking-tight whitespace-nowrap"
+          >
+            {t.ourBusinesses}
+          </Link>
+          <Link
             href="#contact"
-            className="hover:text-purple-600 transition-colors tracking-tight"
+            className="hover:text-[#2A835F] transition-colors tracking-tight"
           >
             {t.contact}
           </Link>
         </nav>
 
-        {/* Center Brand Logo: KK Group with Golden Emblem */}
+        {/* Center Brand Logo: KK Group Named Logo */}
         <Link
           href="/"
-          className="flex items-center gap-2 sm:gap-2.5 group select-none hover:opacity-95 transition-opacity"
+          className="flex items-center select-none hover:opacity-90 transition-opacity"
         >
           <img
-            src="/logos/logo-bg.png"
-            alt="KK Group Logo"
-            className="w-7 h-7 sm:w-8 sm:h-8 object-contain drop-shadow-xs transition-transform group-hover:scale-105"
+            src="/logos/named-logo-bg.png"
+            alt="KK Group"
+            className="h-7 sm:h-8 md:h-9 w-auto object-contain transition-transform hover:scale-[1.02]"
           />
-          <span className="font-black text-lg sm:text-xl md:text-2xl tracking-[0.16em] text-[#0F172A] uppercase">
-            {t.brand}
-          </span>
         </Link>
 
         {/* Right Controls */}
@@ -96,7 +100,7 @@ export function Navbar({ onCartClick }: NavbarProps) {
             type="button"
             title={t.search}
             aria-label="Search"
-            className="w-9 h-9 rounded-full flex items-center justify-center text-slate-700 hover:text-purple-600 hover:bg-slate-100 transition-all cursor-pointer"
+            className="w-9 h-9 rounded-full flex items-center justify-center text-slate-700 hover:text-[#2A835F] hover:bg-slate-100 transition-all cursor-pointer"
           >
             <Search className="w-4 h-4" />
           </button>
@@ -105,7 +109,7 @@ export function Navbar({ onCartClick }: NavbarProps) {
           <Link
             href="/dashboard"
             title="Account"
-            className="w-8 h-8 rounded-full overflow-hidden border border-slate-200/90 shadow-xs hover:border-purple-400 transition-all flex items-center justify-center bg-slate-100 cursor-pointer"
+            className="w-8 h-8 rounded-full overflow-hidden border border-slate-200/90 shadow-xs hover:border-[#2A835F] transition-all flex items-center justify-center bg-slate-100 cursor-pointer"
           >
             <img
               src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80"
@@ -114,15 +118,14 @@ export function Navbar({ onCartClick }: NavbarProps) {
             />
           </Link>
 
-          {/* Shopping Cart Pill Button ("1 item") */}
+          {/* Enquiry / Get Quote Button (Styled to #2A835F Emerald Palette) */}
           <button
             type="button"
-            onClick={onCartClick}
-            aria-label="Shopping Cart"
-            className="flex items-center gap-2 bg-[#F5F3FF] hover:bg-[#EDE9FE] border border-[#DDD6FE] text-[#7C3AED] px-3.5 py-1.5 rounded-full text-xs font-bold transition-all shadow-xs cursor-pointer active:scale-95"
+            onClick={onOpenEnquiry}
+            aria-label="Service Enquiry"
+            className="flex items-center gap-1.5 bg-[#2A835F] hover:bg-[#236D4F] text-white px-3.5 sm:px-4 py-1.5 rounded-full text-xs font-bold transition-all shadow-sm cursor-pointer active:scale-95"
           >
-            <ShoppingBag className="w-3.5 h-3.5 text-[#7C3AED]" />
-            <span>{t.cartItems}</span>
+            <span>{t.enquireBtn}</span>
           </button>
 
           {/* Bilingual Language Switcher Button (Customer Portal) */}
@@ -132,10 +135,10 @@ export function Navbar({ onCartClick }: NavbarProps) {
             title={language === 'en' ? 'മലയാളത്തിലേക്ക് മാറ്റുക' : 'Switch to English'}
             className="hidden sm:flex items-center gap-1.5 text-xs font-bold py-1.5 px-3 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-800 shadow-xs transition-all cursor-pointer"
           >
-            <Globe className="w-3.5 h-3.5 text-[#8B5CF6]" />
+            <Globe className="w-3.5 h-3.5 text-[#2A835F]" />
             <span
               className={`transition-colors text-[11px] ${
-                language === 'en' ? 'text-[#8B5CF6] font-black' : 'opacity-65'
+                language === 'en' ? 'text-[#2A835F] font-black' : 'opacity-65'
               }`}
             >
               EN
@@ -143,7 +146,7 @@ export function Navbar({ onCartClick }: NavbarProps) {
             <span className="opacity-25">|</span>
             <span
               className={`transition-colors text-[11px] ${
-                language === 'ml' ? 'text-[#8B5CF6] font-black' : 'opacity-65'
+                language === 'ml' ? 'text-[#2A835F] font-black' : 'opacity-65'
               }`}
             >
               മലയാളം
@@ -154,7 +157,7 @@ export function Navbar({ onCartClick }: NavbarProps) {
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden w-9 h-9 rounded-full border border-slate-200 flex items-center justify-center text-slate-800 hover:text-purple-600 transition-all cursor-pointer"
+            className="lg:hidden w-9 h-9 rounded-full border border-slate-200 flex items-center justify-center text-slate-800 hover:text-[#2A835F] transition-all cursor-pointer"
             aria-label="Toggle navigation menu"
           >
             {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
@@ -170,9 +173,9 @@ export function Navbar({ onCartClick }: NavbarProps) {
             <button
               type="button"
               onClick={toggleLanguage}
-              className="flex items-center gap-1.5 bg-[#F5F3FF] border border-[#DDD6FE] text-[#7C3AED] rounded-full px-3 py-1 text-xs font-bold shadow-xs cursor-pointer"
+              className="flex items-center gap-1.5 bg-[#EBF6F1] border border-[#C3E6D5] text-[#2A835F] rounded-full px-3 py-1 text-xs font-bold shadow-xs cursor-pointer"
             >
-              <Globe className="w-3 h-3 text-[#7C3AED]" />
+              <Globe className="w-3 h-3 text-[#2A835F]" />
               <span className={language === 'en' ? 'font-black' : ''}>EN</span>
               <span className="opacity-30">|</span>
               <span className={language === 'ml' ? 'font-black' : ''}>മലയാളം</span>
@@ -180,40 +183,59 @@ export function Navbar({ onCartClick }: NavbarProps) {
           </div>
 
           <Link
-            href="#shop"
+            href="/"
             onClick={() => setMobileMenuOpen(false)}
-            className="text-sm font-semibold text-slate-800 hover:text-purple-600 transition-colors py-1"
+            className="text-sm font-semibold text-slate-800 hover:text-[#2A835F] transition-colors py-1"
           >
-            {t.shop}
-          </Link>
-          <Link
-            href="#new-in"
-            onClick={() => setMobileMenuOpen(false)}
-            className="text-sm font-semibold text-slate-800 hover:text-purple-600 transition-colors py-1"
-          >
-            {t.newIn}
-          </Link>
-          <Link
-            href="#collections"
-            onClick={() => setMobileMenuOpen(false)}
-            className="text-sm font-semibold text-slate-800 hover:text-purple-600 transition-colors py-1"
-          >
-            {t.collections}
+            {t.home}
           </Link>
           <Link
             href="#about"
             onClick={() => setMobileMenuOpen(false)}
-            className="text-sm font-semibold text-slate-800 hover:text-purple-600 transition-colors py-1"
+            className="text-sm font-semibold text-slate-800 hover:text-[#2A835F] transition-colors py-1"
           >
             {t.about}
           </Link>
           <Link
+            href="#services"
+            onClick={() => setMobileMenuOpen(false)}
+            className="text-sm font-semibold text-slate-800 hover:text-[#2A835F] transition-colors py-1"
+          >
+            {t.services}
+          </Link>
+          <Link
+            href="#projects"
+            onClick={() => setMobileMenuOpen(false)}
+            className="text-sm font-semibold text-slate-800 hover:text-[#2A835F] transition-colors py-1"
+          >
+            {t.projects}
+          </Link>
+          <Link
+            href="#businesses"
+            onClick={() => setMobileMenuOpen(false)}
+            className="text-sm font-semibold text-slate-800 hover:text-[#2A835F] transition-colors py-1"
+          >
+            {t.ourBusinesses}
+          </Link>
+          <Link
             href="#contact"
             onClick={() => setMobileMenuOpen(false)}
-            className="text-sm font-semibold text-slate-800 hover:text-purple-600 transition-colors py-1"
+            className="text-sm font-semibold text-slate-800 hover:text-[#2A835F] transition-colors py-1"
           >
             {t.contact}
           </Link>
+
+          <button
+            type="button"
+            onClick={() => {
+              setMobileMenuOpen(false);
+              onOpenEnquiry?.();
+            }}
+            className="w-full mt-2 flex items-center justify-center gap-2 bg-[#2A835F] hover:bg-[#236D4F] text-white py-2.5 rounded-xl text-xs font-bold shadow-sm transition-all cursor-pointer"
+          >
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>{t.enquireBtn}</span>
+          </button>
         </div>
       )}
     </header>

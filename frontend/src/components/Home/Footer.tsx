@@ -14,7 +14,7 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import { useLanguage } from '@/context/language-context';
-import { translations } from '@/lib/translations';
+import { translations } from '@/utils/translations';
 
 export function Footer() {
   const { language } = useLanguage();

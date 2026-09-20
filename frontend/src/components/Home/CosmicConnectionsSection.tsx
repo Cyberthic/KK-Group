@@ -15,7 +15,7 @@ import {
   Maximize2,
 } from 'lucide-react';
 import { useLanguage } from '@/context/language-context';
-import { translations } from '@/lib/translations';
+import { translations } from '@/utils/translations';
 
 export function CosmicConnectionsSection() {
   const [activeSlide, setActiveSlide] = useState(1);

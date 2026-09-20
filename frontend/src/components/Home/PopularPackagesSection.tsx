@@ -18,7 +18,7 @@ import {
   Star,
 } from 'lucide-react';
 import { useLanguage } from '@/context/language-context';
-import { translations } from '@/lib/translations';
+import { translations } from '@/utils/translations';
 
 interface PackageItem {
   id: string;
