@@ -34,7 +34,7 @@ export const translations = {
       featuredLook: 'Featured Look',
       productTitle: 'Graffiti Hoodie',
       productSub: 'Streetwear Essential',
-      productPrice: '$79.99',
+      productPrice: '₹4,999',
     },
     enquiry: {
       title: 'Service Enquiry',
@@ -244,7 +244,7 @@ export const translations = {
       featuredLook: 'ഫീച്ചർ ചെയ്ത ലുക്ക്',
       productTitle: 'ഗ്രാഫിറ്റി ഹൂഡി',
       productSub: 'സ്ട്രീറ്റ്‌വെയർ',
-      productPrice: '$79.99',
+      productPrice: '₹4,999',
     },
     enquiry: {
       title: 'സേവന അന്വേഷണം',

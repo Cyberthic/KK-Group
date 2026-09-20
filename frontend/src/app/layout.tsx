@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Playfair_Display, Anek_Malayalam } from 'next/font/g
 import './globals.css';
 import { AuthProvider } from '@/context/auth-context';
 import { LanguageProvider } from '@/context/language-context';
+import { ToastProvider } from '@/context/toast-context';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -46,7 +47,9 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col bg-white text-zinc-900 font-sans selection:bg-emerald-500 selection:text-white">
         <LanguageProvider>
           <AuthProvider>
-            <main className="flex-1 flex flex-col">{children}</main>
+            <ToastProvider>
+              <main className="flex-1 flex flex-col">{children}</main>
+            </ToastProvider>
           </AuthProvider>
         </LanguageProvider>
       </body>

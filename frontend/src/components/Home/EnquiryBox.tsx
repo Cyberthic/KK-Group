@@ -17,6 +17,8 @@ import { EnquiryService } from '@/services/enquiry.service';
 import { useLanguage } from '@/context/language-context';
 import { translations } from '@/utils/translations';
 import { StylishDropdown } from '@/components/Common/StylishDropdown';
+import { validateMobileNumber, sanitizePhoneInput } from '@/validations';
+import { useToast } from '@/context/toast-context';
 
 interface EnquiryBoxProps {
   isOpen?: boolean;
@@ -34,6 +36,7 @@ export function EnquiryBox({
   onEnquirySuccess,
 }: EnquiryBoxProps) {
   const { language } = useLanguage();
+  const toast = useToast();
   const t = translations[language].enquiry;
 
   const SERVICE_OPTIONS = [
@@ -130,12 +133,32 @@ export function EnquiryBox({
     e.preventDefault();
     setErrorMessage(null);
 
-    if (!customerName.trim() || !customerPhone.trim()) {
-      setErrorMessage(
+    if (!customerName.trim()) {
+      const title =
+        language === 'ml' ? 'നിങ്ങളുടെ പേര് നൽകുക' : 'Customer Name Required';
+      const msg =
         language === 'ml'
-          ? 'ദയവായി നിങ്ങളുടെ പേരും ഫോൺ നമ്പറും രേഖപ്പെടുത്തുക.'
-          : 'Please provide both your name and phone number.'
-      );
+          ? 'സേവനം ബുക്ക് ചെയ്യുന്നതിനായി നിങ്ങളുടെ പേര് രേഖപ്പെടുത്തുക.'
+          : 'Please provide your name to continue.';
+      setErrorMessage(msg);
+      toast.warning(title, msg);
+      return;
+    }
+
+    const phoneValidation = validateMobileNumber(customerPhone, language);
+    if (!phoneValidation.isValid) {
+      const title =
+        phoneValidation.title ||
+        (language === 'ml'
+          ? 'മൊബൈൽ നമ്പർ പരിശോധിക്കുക'
+          : 'Invalid Mobile Number');
+      const msg =
+        phoneValidation.error ||
+        (language === 'ml'
+          ? 'ദയവായി സാധുവായ 10 അക്ക മൊബൈൽ നമ്പർ നൽകുക.'
+          : 'Please provide a valid 10-digit mobile number.');
+      setErrorMessage(msg);
+      toast.warning(title, msg);
       return;
     }
 
@@ -144,29 +167,45 @@ export function EnquiryBox({
       const res = await EnquiryService.createEnquiry({
         serviceName: currentService.name,
         customerName: customerName.trim(),
-        customerPhone: customerPhone.trim(),
+        customerPhone: phoneValidation.cleanPhone,
         customerEmail: customerEmail.trim() || undefined,
-        location: location.trim() || 'Kerala / Regional Deployment',
-        preferredDate: preferredDate.trim() || 'Immediate / Next 48 hrs',
+        location: location.trim() || undefined,
         message: `Service: ${currentService.name} | Scale: ${squadScale} | Location: ${
-          location || 'Not specified'
-        }`,
+          location.trim() || 'Kerala'
+        }${preferredDate.trim() ? ` | Preferred: ${preferredDate.trim()}` : ''}`,
       });
 
-      const refCode = res.enquiry?.id
-        ? `KK-ENQ-${res.enquiry.id.slice(0, 6).toUpperCase()}`
-        : `KK-ENQ-${Math.floor(1000 + Math.random() * 9000)}`;
+      const refCode =
+        res.enquiry?.trackingNumber ||
+        (res.enquiry?.id ? `ENQ-${res.enquiry.id.slice(0, 8).toUpperCase()}` : null) ||
+        `ENQ-${Math.floor(100000 + Math.random() * 900000)}`;
 
       setSubmittedRef(refCode);
       if (onEnquirySuccess) {
         onEnquirySuccess(refCode);
       }
-    } catch {
-      const fallbackCode = `KK-ENQ-${Math.floor(1000 + Math.random() * 9000)}`;
-      setSubmittedRef(fallbackCode);
-      if (onEnquirySuccess) {
-        onEnquirySuccess(fallbackCode);
-      }
+
+      toast.success(
+        language === 'ml'
+          ? 'അന്വേഷണം വിജയകരമായി അയച്ചു!'
+          : 'Enquiry Dispatched Successfully!',
+        language === 'ml'
+          ? `റഫറൻസ് നമ്പർ: ${refCode}. ഞങ്ങളുടെ ടീം ഉടൻ നിങ്ങളെ വിളിക്കുന്നതാണ്.`
+          : `Reference ID: ${refCode}. Operations team will contact you shortly.`
+      );
+    } catch (err: any) {
+      console.error('Failed to submit enquiry:', err);
+      const title =
+        language === 'ml'
+          ? 'സമർപ്പണത്തിൽ തടസ്സം നേരിട്ടു'
+          : 'Enquiry Submission Failed';
+      const msg =
+        err?.message ||
+        (language === 'ml'
+          ? 'അന്വേഷണം സമർപ്പിക്കുന്നതിൽ പിശക് സംഭവിച്ചു. ദയവായി വീണ്ടും ശ്രമിക്കുക.'
+          : 'Failed to submit enquiry. Please check your connection and try again.');
+      setErrorMessage(msg);
+      toast.error(title, msg);
     } finally {
       setIsSubmitting(false);
     }
@@ -302,18 +341,28 @@ export function EnquiryBox({
 
             {/* Phone */}
             <div className="bg-[#F7FCF9] hover:bg-[#EBF6F1]/80 border border-[#C3E6D5] focus-within:border-[#2A835F] focus-within:ring-2 focus-within:ring-[#2A835F]/20 rounded-2xl p-2.5 px-3.5 flex flex-col transition-all">
-              <label className="text-[10px] font-bold text-[#2A835F] uppercase tracking-wider flex items-center gap-1.5 mb-0.5">
-                <Phone className="w-3.5 h-3.5 text-[#2A835F]" />
-                <span>{t.phoneNumber}</span>
-              </label>
-              <input
-                type="tel"
-                value={customerPhone}
-                onChange={(e) => setCustomerPhone(e.target.value)}
-                placeholder={t.phonePlaceholder}
-                required
-                className="bg-transparent text-[#0F172A] text-xs font-bold placeholder:text-slate-400 outline-none w-full mt-0.5"
-              />
+              <div className="flex items-center justify-between mb-0.5">
+                <label className="text-[10px] font-bold text-[#2A835F] uppercase tracking-wider flex items-center gap-1.5">
+                  <Phone className="w-3.5 h-3.5 text-[#2A835F]" />
+                  <span>{t.phoneNumber}</span>
+                </label>
+                <span className="text-[9px] font-bold text-slate-400">
+                  {customerPhone.length > 0 ? `${customerPhone.length}/10` : '10 Digits'}
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5 mt-0.5">
+                <span className="text-xs font-bold text-[#2A835F] select-none shrink-0">+91</span>
+                <input
+                  type="tel"
+                  inputMode="numeric"
+                  maxLength={10}
+                  value={customerPhone}
+                  onChange={(e) => setCustomerPhone(sanitizePhoneInput(e.target.value))}
+                  placeholder="9876543210"
+                  required
+                  className="bg-transparent text-[#0F172A] text-xs font-bold placeholder:text-slate-400 outline-none w-full tracking-wider"
+                />
+              </div>
             </div>
           </div>
 

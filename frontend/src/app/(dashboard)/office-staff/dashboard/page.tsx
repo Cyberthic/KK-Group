@@ -24,7 +24,7 @@ import {
   Link2,
   Clock,
   X,
-  DollarSign,
+  IndianRupee,
   Sparkles,
   UserCheck,
   HardHat,
@@ -984,13 +984,13 @@ export default function OfficeStaffDashboardPage() {
             <div className="mt-4 pt-2">
               <div className="flex items-end justify-between gap-2 h-20 px-1">
                 {[
-                  { month: 'Jul', height: 26, val: '$ 42k' },
-                  { month: 'Aug', height: 38, val: '$ 68k' },
-                  { month: 'Sep', height: 48, val: '$ 84k' },
-                  { month: 'Sep', height: 62, val: '$ 95k' },
-                  { month: 'Oct', height: 75, val: '$ 115k' },
-                  { month: 'Nov', height: 86, val: '$ 130k' },
-                  { month: 'Dec', height: 100, val: '$ 142k' },
+                  { month: 'Jul', height: 26, val: '₹ 42k' },
+                  { month: 'Aug', height: 38, val: '₹ 68k' },
+                  { month: 'Sep', height: 48, val: '₹ 84k' },
+                  { month: 'Sep', height: 62, val: '₹ 95k' },
+                  { month: 'Oct', height: 75, val: '₹ 115k' },
+                  { month: 'Nov', height: 86, val: '₹ 130k' },
+                  { month: 'Dec', height: 100, val: '₹ 142k' },
                 ].map((col, idx) => (
                   <div
                     key={idx}
@@ -1119,7 +1119,7 @@ export default function OfficeStaffDashboardPage() {
 
               <div className="flex items-center gap-2 mt-2">
                 <div className="text-2xl sm:text-[26px] font-extrabold text-slate-900 tracking-tight">
-                  $ 186,540.00
+                  ₹ 1,86,540.00
                 </div>
                 <span className="text-[11px] font-medium text-slate-500 bg-slate-100 px-2.5 py-0.5 rounded-full">
                   {stats.availableWorkers} Ready
@@ -1819,7 +1819,7 @@ export default function OfficeStaffDashboardPage() {
 
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1">
-                  Amount ($ USD)
+                  Amount (₹ INR)
                 </label>
                 <input
                   type="number"
@@ -1989,7 +1989,7 @@ export default function OfficeStaffDashboardPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in">
           <div className="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-slate-200 text-center">
             <div className="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-200 text-[#5851F8] flex items-center justify-center mx-auto mb-3">
-              <DollarSign className="w-6 h-6" />
+              <IndianRupee className="w-6 h-6" />
             </div>
 
             <h3 className="text-base font-bold text-slate-900">

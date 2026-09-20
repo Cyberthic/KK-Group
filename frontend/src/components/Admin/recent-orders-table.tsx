@@ -9,7 +9,7 @@ const orders = [
     category: 'Shoes, Shirt',
     status: 'Pending',
     items: '2 Items',
-    total: '$789.00',
+    total: '₹7,890.00',
   },
   {
     id: '#878909',
@@ -18,7 +18,7 @@ const orders = [
     category: 'Sneakers, T-shirt',
     status: 'Completed',
     items: '3 Items',
-    total: '$967.00',
+    total: '₹9,670.00',
   },
 ];
 

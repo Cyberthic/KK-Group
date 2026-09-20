@@ -21,7 +21,13 @@ export class EnquiryService {
 
   async createEnquiry(dto: CreateEnquiryDto, customerId?: string) {
     const trackingNumber = `ENQ-${new Date().getFullYear()}-${crypto.randomInt(100000, 999999)}`;
-    const parsedDate = dto.preferredDate ? new Date(dto.preferredDate) : undefined;
+    let parsedDate: Date | undefined = undefined;
+    if (dto.preferredDate) {
+      const candidate = new Date(dto.preferredDate);
+      if (!isNaN(candidate.getTime())) {
+        parsedDate = candidate;
+      }
+    }
 
     const enquiry = await this.enquiryRepo.create({
       trackingNumber,

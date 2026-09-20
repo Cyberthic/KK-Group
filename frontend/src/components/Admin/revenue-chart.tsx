@@ -25,7 +25,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-[#FF5A36] text-white px-3 py-1.5 rounded-lg text-sm font-semibold shadow-lg relative">
-        ${payload[0].value.toLocaleString()}
+        ₹{payload[0].value.toLocaleString()}
         <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-[#FF5A36] rotate-45"></div>
       </div>
     );
@@ -58,7 +58,7 @@ export function RevenueChart() {
               axisLine={false}
               tickLine={false}
               tick={{ fill: '#9ca3af', fontSize: 12 }}
-              tickFormatter={(value) => `${value / 1000}k`}
+              tickFormatter={(value) => `₹${value / 1000}k`}
             />
             <Tooltip content={<CustomTooltip />} cursor={{ fill: 'transparent' }} />
             <Bar dataKey="revenue" radius={[20, 20, 20, 20]} barSize={40}>

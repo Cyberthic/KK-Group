@@ -15,6 +15,8 @@ import { useLanguage } from '@/context/language-context';
 import { translations } from '@/utils/translations';
 import { EnquiryService } from '@/services/enquiry.service';
 import { StylishDropdown, DropdownOption } from '@/components/Common/StylishDropdown';
+import { validateMobileNumber, sanitizePhoneInput } from '@/validations';
+import { useToast } from '@/context/toast-context';
 
 interface HeroEnquiryBoxProps {
   onSuccess?: (trackingCode: string) => void;
@@ -23,6 +25,7 @@ interface HeroEnquiryBoxProps {
 
 export function HeroEnquiryBox({ onSuccess, className = '' }: HeroEnquiryBoxProps) {
   const { language } = useLanguage();
+  const toast = useToast();
   const t = translations[language].enquiry;
 
   const SERVICES = [
@@ -55,12 +58,33 @@ export function HeroEnquiryBox({ onSuccess, className = '' }: HeroEnquiryBoxProp
     e.preventDefault();
     setErrorMessage(null);
 
-    if (!customerName.trim() || !customerPhone.trim()) {
-      setErrorMessage(
+    if (!customerName.trim()) {
+      const title =
+        language === 'ml' ? 'നിങ്ങളുടെ പേര് നൽകുക' : 'Customer Name Required';
+      const msg =
         language === 'ml'
-          ? 'ദയവായി പേരും ഫോൺ നമ്പറും നൽകുക'
-          : 'Please enter both your name and phone number'
-      );
+          ? 'സേവനം ബുക്ക് ചെയ്യുന്നതിനായി നിങ്ങളുടെ പൂർണ്ണ നാമം രേഖപ്പെടുത്തുക.'
+          : 'Please enter your full name to proceed with the enquiry.';
+      setErrorMessage(msg);
+      toast.warning(title, msg);
+      return;
+    }
+
+    // Strict 10-digit mobile number validation with large toast warnings
+    const phoneValidation = validateMobileNumber(customerPhone, language);
+    if (!phoneValidation.isValid) {
+      const title =
+        phoneValidation.title ||
+        (language === 'ml'
+          ? 'മൊബൈൽ നമ്പർ പരിശോധിക്കുക'
+          : 'Invalid Mobile Number');
+      const msg =
+        phoneValidation.error ||
+        (language === 'ml'
+          ? 'ദയവായി സാധുവായ 10 അക്ക മൊബൈൽ നമ്പർ നൽകുക'
+          : 'Please enter a valid 10-digit mobile number');
+      setErrorMessage(msg);
+      toast.warning(title, msg);
       return;
     }
 
@@ -69,23 +93,43 @@ export function HeroEnquiryBox({ onSuccess, className = '' }: HeroEnquiryBoxProp
       const res = await EnquiryService.createEnquiry({
         serviceName: currentService.name,
         customerName: customerName.trim(),
-        customerPhone: customerPhone.trim(),
-        location: location.trim() || 'Kerala, India',
-        preferredDate: 'Immediate / Next 48 hrs',
-        message: `Quick booking from Hero section for ${currentService.name}`,
+        customerPhone: phoneValidation.cleanPhone,
+        location: location.trim() || undefined,
+        message: `Quick enquiry from Home Hero for ${currentService.name}${
+          location.trim() ? ` (Location: ${location.trim()})` : ''
+        }`,
       });
 
       const trackingCode =
-        res.enquiry?.id?.slice(0, 8).toUpperCase() ||
-        `KK-${Math.floor(100000 + Math.random() * 900000)}`;
+        res.enquiry?.trackingNumber ||
+        (res.enquiry?.id ? `ENQ-${res.enquiry.id.slice(0, 8).toUpperCase()}` : null) ||
+        `ENQ-${Math.floor(100000 + Math.random() * 900000)}`;
 
       setSubmittedRef(trackingCode);
       onSuccess?.(trackingCode);
+
+      // Large success toast
+      toast.success(
+        language === 'ml'
+          ? 'അന്വേഷണം വിജയകരമായി അയച്ചു!'
+          : 'Enquiry Dispatched Successfully!',
+        language === 'ml'
+          ? `ട്രാക്കിംഗ് നമ്പർ: ${trackingCode}. ഞങ്ങളുടെ ടീം ഉടൻ നിങ്ങളെ വിളിക്കുന്നതാണ്.`
+          : `Tracking ID: ${trackingCode}. Our operations coordinator will call you shortly.`
+      );
     } catch (err: any) {
-      console.warn('Backend enquiry error, generating offline reference:', err);
-      const fallbackCode = `KK-${Math.floor(100000 + Math.random() * 900000)}`;
-      setSubmittedRef(fallbackCode);
-      onSuccess?.(fallbackCode);
+      console.error('Backend enquiry error:', err);
+      const title =
+        language === 'ml'
+          ? 'സമർപ്പണത്തിൽ തടസ്സം നേരിട്ടു'
+          : 'Enquiry Dispatch Failed';
+      const msg =
+        err?.message ||
+        (language === 'ml'
+          ? 'അന്വേഷണം സമർപ്പിക്കുന്നതിൽ തടസ്സം നേരിട്ടു. ദയവായി വീണ്ടും ശ്രമിക്കുക.'
+          : 'Failed to submit enquiry. Please check your connection and try again.');
+      setErrorMessage(msg);
+      toast.error(title, msg);
     } finally {
       setIsSubmitting(false);
     }
@@ -186,17 +230,29 @@ export function HeroEnquiryBox({ onSuccess, className = '' }: HeroEnquiryBoxProp
                 <Phone className="w-4 h-4 text-slate-500" />
               </div>
               <div className="flex flex-col text-left w-full min-w-0">
-                <label className="text-[10px] lg:text-[11px] font-black uppercase tracking-wider text-slate-400 mb-0.5 truncate">
-                  {t.phoneNumber}
-                </label>
-                <input
-                  type="tel"
-                  value={customerPhone}
-                  onChange={(e) => setCustomerPhone(e.target.value)}
-                  placeholder={t.phonePlaceholder}
-                  className="w-full text-xs lg:text-sm font-bold text-slate-900 placeholder-slate-400 bg-transparent focus:outline-none truncate"
-                  required
-                />
+                <div className="flex items-center justify-between mb-0.5">
+                  <label className="text-[10px] lg:text-[11px] font-black uppercase tracking-wider text-slate-400 truncate">
+                    {t.phoneNumber}
+                  </label>
+                  <span className="text-[9px] font-bold text-slate-400">
+                    {customerPhone.length > 0 ? `${customerPhone.length}/10` : '10 Digits'}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs lg:text-sm font-black text-[#2A835F] select-none shrink-0">
+                    +91
+                  </span>
+                  <input
+                    type="tel"
+                    inputMode="numeric"
+                    maxLength={10}
+                    value={customerPhone}
+                    onChange={(e) => setCustomerPhone(sanitizePhoneInput(e.target.value))}
+                    placeholder="9876543210"
+                    className="w-full text-xs lg:text-sm font-bold text-slate-900 placeholder-slate-400 bg-transparent focus:outline-none tracking-wider"
+                    required
+                  />
+                </div>
               </div>
             </div>
 
@@ -326,17 +382,24 @@ export function HeroEnquiryBox({ onSuccess, className = '' }: HeroEnquiryBoxProp
               </div>
 
               <div className="flex flex-col gap-1">
-                <label className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500">
-                  {t.phoneNumber}
-                </label>
-                <div className="flex items-center bg-slate-100/90 border border-slate-200/80 rounded-xl px-2.5 py-1.5">
-                  <Phone className="w-3 h-3 text-slate-400 shrink-0 mr-1.5" />
+                <div className="flex items-center justify-between">
+                  <label className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500">
+                    {t.phoneNumber}
+                  </label>
+                  <span className="text-[9px] font-bold text-slate-400">
+                    {customerPhone.length > 0 ? `${customerPhone.length}/10` : '10 Digits'}
+                  </span>
+                </div>
+                <div className="flex items-center bg-slate-100/90 border border-slate-200/80 rounded-xl px-2.5 py-1.5 focus-within:border-[#2A835F] focus-within:ring-1 focus-within:ring-[#2A835F]/30">
+                  <span className="text-xs font-bold text-[#2A835F] mr-1 select-none">+91</span>
                   <input
                     type="tel"
+                    inputMode="numeric"
+                    maxLength={10}
                     value={customerPhone}
-                    onChange={(e) => setCustomerPhone(e.target.value)}
+                    onChange={(e) => setCustomerPhone(sanitizePhoneInput(e.target.value))}
                     placeholder="9876543210"
-                    className="w-full text-xs font-semibold text-slate-800 placeholder-slate-400 bg-transparent focus:outline-none"
+                    className="w-full text-xs font-semibold text-slate-800 placeholder-slate-400 bg-transparent focus:outline-none tracking-wider"
                     required
                   />
                 </div>
