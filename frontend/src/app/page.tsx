@@ -5,6 +5,7 @@ import { Navbar } from '@/components/Home/Navbar';
 import { HeroSection } from '@/components/Home/HeroSection';
 import { PopularPackagesSection } from '@/components/Home/PopularPackagesSection';
 import { CosmicConnectionsSection } from '@/components/Home/CosmicConnectionsSection';
+import { FaqSection } from '@/components/Home/FaqSection';
 import { Footer } from '@/components/Home/Footer';
 import { EnquiryBox } from '@/components/Home/EnquiryBox';
 import { HomeLoader } from '@/components/Home/HomeLoader';
@@ -49,7 +50,12 @@ export default function HomePage() {
       <CosmicConnectionsSection onOpenEnquiry={handleOpenEnquiry} />
 
       {/* ========================================================
-          4. FOURTH SECTION: Newsletter Call-To-Action & Master Footer
+          4. FOURTH SECTION: Frequently Asked Questions (FAQ)
+      ======================================================== */}
+      <FaqSection onOpenEnquiry={handleOpenEnquiry} />
+
+      {/* ========================================================
+          5. FIFTH SECTION: Master Footer with Curvy Top Edges
       ======================================================== */}
       <Footer />
 

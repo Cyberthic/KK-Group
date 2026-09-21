@@ -59,8 +59,7 @@ const RAW_PACKAGES: PackageItem[] = [
     durationMl: 'മെഷീൻ + പൈലറ്റ്',
     price: '₹9,600',
     rating: '4.9',
-    image:
-      'https://images.unsplash.com/photo-1579273166629-9e8c3b9b47e2?w=700&auto=format&fit=crop&q=85',
+    image: '/images/field_ops_telemetry.jpg',
     tagEn: 'Machinery',
     tagMl: 'മെഷിനറി',
   },

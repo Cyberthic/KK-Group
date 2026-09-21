@@ -164,6 +164,40 @@ export const translations = {
           'Ernakulam, Thrissur, Kottayam, Alappuzha & Trivandrum industrial operations.',
       },
     },
+    faq: {
+      kicker: 'QUESTIONS & ANSWERS',
+      title: 'Frequently Asked Questions',
+      subtitle:
+        'Clear answers about rapid squad mobilization, certified operators, transparent shift rates, and district coverage across Kerala.',
+      contactPrompt: 'Still have questions?',
+      contactAction: 'Talk to Operations Desk',
+      items: [
+        {
+          q: 'How rapidly can a field squad or heavy machine be deployed to my site?',
+          a: 'Our dispatch hubs in Palakkad, Ernakulam, Thrissur, and Calicut maintain on-standby squads. For standard earthmoving (JCB) and agricultural climber crews, dispatch notice is typically within 15 minutes with arrival within 2 to 24 hours depending on your district.',
+        },
+        {
+          q: 'Are all KK Group field workers and machine operators certified and insured?',
+          a: 'Yes. Every operative undergoes background verification, trade safety orientation, and carries comprehensive site accident insurance. Machine pilots are commercially licensed with mandatory periodic safety recertifications.',
+        },
+        {
+          q: 'How do you charge for JCB, excavation, and heavy equipment?',
+          a: 'Heavy equipment is billed on transparent half-day (4 hours) or full-day (8 hours) shift models including a certified machine pilot and standard fuel allocation. Overtime rates are fixed upfront with zero hidden mobilization charges.',
+        },
+        {
+          q: 'What is included in the Cococare palm harvesting package?',
+          a: 'Each Cococare squad brings mechanical climbing gear, crown cleaning tools, and organic pest sprayers. The standard squad covers up to 50 palms per shift, including nut harvesting, dead frond pruning, and crown wellness inspections.',
+        },
+        {
+          q: 'Which districts across Kerala are covered by KK Group?',
+          a: 'We cover all 14 districts across 3 operational divisions: Malabar (Palakkad, Kozhikode, Malappuram, Wayanad, Kannur, Kasaragod), Central (Ernakulam, Thrissur, Kottayam, Idukki), and Southern Travancore (Alappuzha, Kollam, Pathanamthitta, Thiruvananthapuram).',
+        },
+        {
+          q: 'What payment options are supported and is advance booking required?',
+          a: 'We accept UPI, IMPS bank transfers, and corporate invoicing. For residential jobs, a nominal dispatch advance secures your slot, with the balance payable upon shift sign-off and supervisor verification.',
+        },
+      ],
+    },
     footer: {
       stayInformed: 'STAY INFORMED & PREPARED',
       newsletterTitle: 'Subscribe for Priority Dispatch, Seasonal Schedules & Enterprise Rates',
@@ -372,6 +406,40 @@ export const translations = {
         jupiterDesc: 'പാലക്കാട്, കോഴിക്കോട്, മലപ്പുറം, വയനാട് & കണ്ണൂർ ഡിവിഷനുകൾ.',
         neptuneDesc: 'എറണാകുളം, തൃശ്ശൂർ, കോട്ടയം, ആലപ്പുഴ & തിരുവനന്തപുരം ഡിവിഷനുകൾ.',
       },
+    },
+    faq: {
+      kicker: 'ചോദ്യോത്തരങ്ങൾ',
+      title: 'പതിവായി ചോദിക്കുന്ന ചോദ്യങ്ങൾ',
+      subtitle:
+        'തൊഴിലാളികളുടെ ലഭ്യത, യന്ത്രസാമഗ്രികൾ, നിരക്കുകൾ, കേരളത്തിലെ സേവന മേഖലകൾ എന്നിവയെക്കുറിച്ചുള്ള വ്യക്തമായ വിവരങ്ങൾ.',
+      contactPrompt: 'കൂടുതൽ വിവരങ്ങൾ വേണമെന്നുണ്ടോ?',
+      contactAction: 'ഓപ്പറേഷൻസ് ഡെസ്കുമായി ബന്ധപ്പെടുക',
+      items: [
+        {
+          q: 'നിങ്ങളുടെ തൊഴിലാളികളെയോ മെഷീനുകളെയോ എത്ര വേഗത്തിൽ സൈറ്റിലെത്തിക്കാം?',
+          a: 'പാലക്കാട്, എറണാകുളം, തൃശ്ശൂർ, കോഴിക്കോട് ഹബ്ബുകളിൽ നിന്ന് 15 മിനിറ്റിനുള്ളിൽ ഓർഡർ സ്ഥിരീകരിച്ച്, നിങ്ങളുടെ ലൊക്കേഷനനുസരിച്ച് 2 മുതൽ 24 മണിക്കൂറിനകം വിദഗ്ദ്ധ സംഘങ്ങളെ സൈറ്റിലെത്തിക്കുന്നു.',
+        },
+        {
+          q: 'തൊഴിലാളികൾ സർട്ടിഫൈഡ് ചെയ്തവരും ഇൻഷുറൻസ് ഉള്ളവരുമാണോ?',
+          a: 'അതെ, എല്ലാ തൊഴിലാളികളും കൃത്യമായ പശ്ചാത്തല പരിശോധനയും സുരക്ഷാ പരിശീലനവും ഇൻഷുറൻസ് പരിരക്ഷയുമുള്ളവരാണ്. മെഷീൻ പൈലറ്റുമാർ കൊമേഴ്സ്യൽ ലൈസൻസുള്ള വിദഗ്ദ്ധരാണ്.',
+        },
+        {
+          q: 'ജെസിബി ഉൾപ്പെടെയുള്ള മെഷീനുകളുടെ നിരക്കുകൾ എങ്ങനെയാണ്?',
+          a: 'ഹാഫ് ഡേ (4 മണിക്കൂർ), ഫുൾ ഡേ (8 മണിക്കൂർ) ഷിഫ്റ്റുകളായാണ് നിരക്ക് കണക്കാക്കുന്നത്. വിദഗ്ദ്ധ പൈലറ്റും ഇന്ധനവും ഇതിൽ ഉൾപ്പെടുന്നു. മറച്ചുവെച്ച അധിക നിരക്കുകൾ ഒന്നുമില്ല.',
+        },
+        {
+          q: 'കൊക്കോ കെയർ തെങ്ങുകയറ്റ പാക്കേജിൽ എന്തൊക്കെ ഉൾപ്പെടുന്നു?',
+          a: 'മെക്കാനിക്കൽ ക്ലൈംബിംഗ് മെഷീനുകൾ ഉപയോഗിച്ച് തേങ്ങയിടൽ, തലപ്പ് വൃത്തിയാക്കൽ, ജൈവ കീടനാശിനി പ്രയോഗം എന്നിവ ഒരു ഷിഫ്റ്റിൽ 50 തെങ്ങുകൾ വരെ പൂർത്തിയാക്കാം.',
+        },
+        {
+          q: 'കേരളത്തിലെ ഏതൊക്കെ ജില്ലകളിൽ നിങ്ങളുടെ സേവനം ലഭ്യമാണ്?',
+          a: 'കേരളത്തിലെ മുഴുവൻ 14 ജില്ലകളിലും (മലബാർ, മധ്യകേരളം, തെക്കൻ കേരളം ഡിവിഷനുകൾ) ഞങ്ങളുടെ സേവനം ലഭ്യമാണ്.',
+        },
+        {
+          q: 'പേയ്മെന്റ് രീതികളും ബുക്കിംഗ് നിബന്ധനകളും എന്തൊക്കെയാണ്?',
+          a: 'യുപിഐ, ബാങ്ക് ട്രാൻസ്ഫർ, കോർപ്പറേറ്റ് ഇൻവോയ്സ് എന്നിവ വഴി പേയ്മെന്റ് ചെയ്യാം. ബുക്കിംഗ് മുൻകൂറായി ഉറപ്പുവരുത്തിയ ശേഷം ബാക്കി തുക ജോലി പൂർത്തിയായ ശേഷം നൽകാം.',
+        },
+      ],
     },
     footer: {
       stayInformed: 'വിവരങ്ങൾ അറിയൂ',

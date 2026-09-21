@@ -36,8 +36,8 @@ export function CosmicConnectionsSection({ onOpenEnquiry }: CosmicConnectionsSec
       districts: 'Palakkad • Kozhikode • Malappuram • Wayanad • Kannur',
       activeSquads: '180+ Squads',
       leadTime: 'Immediate / Next 24h',
-      image:
-        'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=800&auto=format&fit=crop&q=85',
+      image: '/images/malabar_ops.jpg',
+      badge: 'Malabar Agro & Plantations Division',
     },
     {
       id: 'central',
@@ -46,8 +46,8 @@ export function CosmicConnectionsSection({ onOpenEnquiry }: CosmicConnectionsSec
       districts: 'Ernakulam • Thrissur • Kottayam • Idukki',
       activeSquads: '220+ Squads',
       leadTime: '15-Min Dispatch Notice',
-      image:
-        'https://images.unsplash.com/photo-1579273166629-9e8c3b9b47e2?w=800&auto=format&fit=crop&q=85',
+      image: '/images/field_ops_telemetry.jpg',
+      badge: 'Central Industrial Corridor & Fleet Telemetry',
     },
     {
       id: 'south',
@@ -56,8 +56,8 @@ export function CosmicConnectionsSection({ onOpenEnquiry }: CosmicConnectionsSec
       districts: 'Alappuzha • Kollam • Pathanamthitta • Thiruvananthapuram',
       activeSquads: '150+ Squads',
       leadTime: 'Immediate / Next 24h',
-      image:
-        'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&auto=format&fit=crop&q=85',
+      image: '/images/south_ops.jpg',
+      badge: 'Travancore Civil & Marine Development Hub',
     },
   ];
 
@@ -70,16 +70,30 @@ export function CosmicConnectionsSection({ onOpenEnquiry }: CosmicConnectionsSec
             MAIN BENTO CHASSIS (Dark Cinematic Slate Matching Hero)
         ======================================================== */}
         <div className="w-full bg-slate-950 rounded-[36px] sm:rounded-[48px] md:rounded-[56px] relative overflow-hidden p-6 sm:p-10 lg:p-14 text-white shadow-2xl border border-slate-800/40">
-          {/* Background Ambient Imagery with Cinematic Dark Gradients */}
-          <div className="absolute inset-0 z-0 pointer-events-none">
-            <img
-              src={currentDiv.image}
-              alt="KK Group Operations Network"
-              className="w-full h-full object-cover object-center brightness-75 contrast-110 transition-all duration-700"
-            />
-            {/* Dark Cinematic Overlays */}
-            <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/75 to-black/50" />
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-black/40" />
+          {/* Background Ambient Imagery with Cinematic Dark Gradients & Cross-fade */}
+          <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+            {DIVISIONS.map((div) => (
+              <img
+                key={div.id}
+                src={div.image}
+                alt={div.name}
+                className={`absolute inset-0 w-full h-full object-cover object-center transition-all duration-700 ease-out ${
+                  activeDivision === div.id
+                    ? 'opacity-85 scale-100'
+                    : 'opacity-0 scale-105 pointer-events-none'
+                }`}
+              />
+            ))}
+
+            {/* Cinematic Gradient Overlays tailored for readability and vivid background visibility */}
+            {/* Desktop: Horizontal gradient shielding left text while revealing the vibrant site on the right */}
+            <div className="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-slate-950/65 to-slate-950/25 hidden lg:block" />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/75 via-transparent to-slate-950/30 hidden lg:block" />
+            {/* Mobile / Tablet: Balanced vertical gradient */}
+            <div className="absolute inset-0 bg-gradient-to-b from-slate-950/95 via-slate-950/70 to-slate-950/85 lg:hidden block" />
+
+            {/* Subtle Brand Green Ambient Glow Accent */}
+            <div className="absolute -top-24 -right-24 w-96 h-96 bg-[#2A835F]/20 rounded-full blur-3xl pointer-events-none" />
           </div>
 
           {/* Bento Content Grid */}
